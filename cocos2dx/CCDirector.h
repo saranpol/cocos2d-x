@@ -37,6 +37,9 @@ THE SOFTWARE.
 #include "label_nodes/CCLabelTTF.h"
 #include "ccTypeInfo.h"
 
+// #HLP_BEGIN
+#include "CCTransition.h"
+// #HLP_END
 
 NS_CC_BEGIN
 
@@ -110,6 +113,10 @@ public:
     /** Get current running Scene. Director can only run one Scene at the time */
     inline CCScene* getRunningScene(void) { return m_pRunningScene; }
 
+    // #HLP_BEGIN
+    inline CCArray* getSceneArray(void) { return m_pobScenesStack; }
+    // #HLP_END
+
     /** Get the FPS value */
     inline double getAnimationInterval(void) { return m_dAnimationInterval; }
     /** Set the FPS value. */
@@ -125,6 +132,11 @@ public:
 
     /** Get the CCEGLView, where everything is rendered */
     inline CCEGLView* getOpenGLView(void) { return m_pobOpenGLView; }
+
+    // #HLP_BEGIN
+    void updateOpenGLView();
+    // #HLP_END
+    
     void setOpenGLView(CCEGLView *pobOpenGLView);
 
     inline bool isNextDeltaTimeZero(void) { return m_bNextDeltaTimeZero; }
@@ -226,6 +238,26 @@ public:
      */
     void popScene(void);
 
+    // #HLP_BEGIN
+    template <typename T>
+    void popSceneWithTransition(float t) {
+        CCAssert(m_pRunningScene != NULL, "running scene should not null");
+        m_pobScenesStack->removeLastObject();
+        unsigned int c = m_pobScenesStack->count();
+        if (c == 0) {
+            end();
+        }
+        else {
+            m_bSendCleanupToScene = true;
+            m_pNextScene = (CCScene*)m_pobScenesStack->objectAtIndex(c - 1);
+            CCScene* trans = T::create(t, m_pNextScene);
+            m_pobScenesStack->replaceObjectAtIndex(c-1, trans);
+            m_pNextScene = trans;
+        }
+    }
+    // #HLP_END
+    
+    
     /**Pops out all scenes from the queue until the root scene in the queue.
      * This scene will replace the running one.
      * The running scene will be deleted. If there are no more scenes in the stack the execution is terminated.
@@ -237,6 +269,10 @@ public:
      * ONLY call it if there is a running scene.
      */
     void replaceScene(CCScene *pScene);
+    
+    // #HLP_BEGIN
+    void replaceSceneAtIndex(CCScene *pScene, unsigned int index);
+    // #HLP_END
 
     /** Ends the execution, releases the running scene.
      It doesn't remove the OpenGL view from its parent. You have to do it manually.

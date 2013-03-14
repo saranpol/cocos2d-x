@@ -24,7 +24,9 @@ files
 	
 	["CCBReader"]
 	("../CCBReader")
-    CCBReader.h
+	"*.h"
+	"*.cpp"
+#    CCBReader.h
 #    CCBCustomClass.h
 #    CCBCustomClass.cpp
 #    CCBReader_v1.cpp

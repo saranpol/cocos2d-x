@@ -298,6 +298,26 @@ float CCDirector::getDeltaTime()
 {
 	return m_fDeltaTime;
 }
+
+
+
+// #HLP_BEGIN
+void CCDirector::updateOpenGLView() {
+    m_obWinSizeInPoints = m_pobOpenGLView->getDesignResolutionSize();
+    
+    //createStatsLabel();
+    
+    if (m_pobOpenGLView)
+    {
+        setGLDefaultValues();
+    }
+    
+    m_pobOpenGLView->setTouchDelegate(m_pTouchDispatcher);
+}
+// #HLP_END
+
+
+
 void CCDirector::setOpenGLView(CCEGLView *pobOpenGLView)
 {
     CCAssert(pobOpenGLView, "opengl view should not be null");
@@ -548,6 +568,14 @@ void CCDirector::replaceScene(CCScene *pScene)
 
     m_pNextScene = pScene;
 }
+
+// #HLP_BEGIN
+void CCDirector::replaceSceneAtIndex(CCScene *pScene, unsigned int index) {
+    m_bSendCleanupToScene = true;
+    m_pobScenesStack->replaceObjectAtIndex(index, pScene);
+    m_pNextScene = pScene;
+}
+// #HLP_END
 
 void CCDirector::pushScene(CCScene *pScene)
 {

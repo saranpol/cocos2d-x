@@ -80,6 +80,14 @@ public:
                         const CCSize& dimensions, CCTextAlignment hAlignment, 
                         CCVerticalTextAlignment vAlignment);
     
+    // #HLP_BEGIN
+    // Shadow
+    static CCLabelTTF * createShadowWithString(const char *string, CCPoint pos, const CCSize& offset ,
+                                               ccColor3B col ,ccColor3B shadowCol, const CCSize& dimensions ,
+                                               CCTextAlignment uiTextAlignment, float fontSize);
+    // #HLP_END
+    
+    
     /** initializes the CCLabelTTF */
     bool init();
 

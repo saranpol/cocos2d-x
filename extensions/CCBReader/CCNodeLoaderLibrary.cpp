@@ -15,6 +15,9 @@
 #include "CCParticleSystemQuadLoader.h"
 #include "CCScrollViewLoader.h"
 
+// #HLP_BEGIN
+#include "CCTableViewLoader.h"
+// #HLP_END
 
 
 NS_CC_EXT_BEGIN
@@ -37,6 +40,9 @@ void CCNodeLoaderLibrary::registerDefaultCCNodeLoaders() {
     this->registerCCNodeLoader("CCLabelTTF", CCLabelTTFLoader::loader());
     this->registerCCNodeLoader("CCScale9Sprite", CCScale9SpriteLoader::loader());
     this->registerCCNodeLoader("CCScrollView", CCScrollViewLoader::loader());
+    // #HLP_BEGIN
+    this->registerCCNodeLoader("CCTableView", CCTableViewLoader::loader());
+    // #HLP_END
     this->registerCCNodeLoader("CCBFile", CCBFileLoader::loader());
     this->registerCCNodeLoader("CCMenu", CCMenuLoader::loader());
     this->registerCCNodeLoader("CCMenuItemImage", CCMenuItemImageLoader::loader());

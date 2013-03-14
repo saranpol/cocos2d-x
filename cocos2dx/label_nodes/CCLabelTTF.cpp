@@ -133,6 +133,35 @@ bool CCLabelTTF::initWithString(const char *string, const char *fontName, float 
     return false;
 }
 
+
+
+
+// #HLP_BEGIN
+// Shadow
+CCLabelTTF * CCLabelTTF::createShadowWithString(const char *string, CCPoint pos, const CCSize& offset ,
+                                                ccColor3B col ,ccColor3B shadowCol, const CCSize& dimensions ,
+                                                CCTextAlignment uiTextAlignment, float fontSize) {
+    float offsetX = offset.width;
+    float offsetY = offset.height;
+    
+    CCLabelTTF *shadow = CCLabelTTF::create(string, "ccbResources/Thonburi.ttf", fontSize, dimensions ,uiTextAlignment, kCCVerticalTextAlignmentCenter);
+    shadow->setPosition(CCPointMake(pos.x + offsetX, pos.y + offsetY));
+    shadow->setColor(shadowCol);
+    shadow->setOpacity(255/100*83);
+    
+    CCLabelTTF *label = CCLabelTTF::create(string, "ccbResources/Thonburi.ttf", fontSize,  dimensions ,uiTextAlignment, kCCVerticalTextAlignmentCenter);
+    label->setPosition(CCPointMake(-offsetX, -offsetY));
+    label->setAnchorPoint(CCPointZero);
+    label->setColor(col);
+    shadow->addChild(label);
+    
+    return shadow;
+}
+// #HLP_END
+
+
+
+
 void CCLabelTTF::setString(const char *string)
 {
     CCAssert(string != NULL, "Invalid string");
@@ -142,6 +171,18 @@ void CCLabelTTF::setString(const char *string)
         m_string = string;
         
         this->updateTexture();
+        
+        
+        // #HLP_BEGIN
+        // Update shadow lebel
+        CCArray *a = this->getChildren();
+        if(a){
+            for(unsigned int i=0; i<a->count(); i++){
+                CCLabelTTF *shadow = (CCLabelTTF*)a->objectAtIndex(i);
+                shadow->setString(string);
+            }
+        }
+        // #HLP_END
     }
 }
 

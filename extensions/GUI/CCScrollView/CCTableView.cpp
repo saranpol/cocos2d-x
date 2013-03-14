@@ -33,6 +33,16 @@
 
 NS_CC_EXT_BEGIN
 
+// #HLP_BEGIN
+CCTableView* CCTableView::create() {
+    CCTableView *table = new CCTableView();
+    table->initWithViewSize(CCSizeMake(200, 200), NULL);
+    table->autorelease();
+    return table;
+}
+// #HLP_END
+
+
 CCTableView* CCTableView::create(CCTableViewDataSource* dataSource, CCSize size)
 {
     return CCTableView::create(dataSource, size, NULL);

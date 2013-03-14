@@ -127,6 +127,10 @@ public:
     CCTableView();
     virtual ~CCTableView();
 
+    // #HLP_BEGIN
+    static CCTableView* create();
+    // #HLP_END
+    
     /**
      * An intialized table view object
      *
