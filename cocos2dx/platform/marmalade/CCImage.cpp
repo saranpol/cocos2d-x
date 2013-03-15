@@ -766,10 +766,12 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
                     next_index = 0;
                 glyph_index = thaiAdjust(current_index, prev_index, next_index);
                 prev_index = glyph_index;
+                
+                
+				//int iError = FT_Load_Glyph(m_face, FT_Get_Char_Index(m_face, *pText), FT_LOAD_RENDER);
+                int iError = FT_Load_Glyph(m_face, glyph_index, FT_LOAD_RENDER);
                 // #HLP_END
-                
-                
-				int iError = FT_Load_Glyph(m_face, FT_Get_Char_Index(m_face, *pText), FT_LOAD_RENDER);
+
 				if (iError) {
 					break;
 				}
