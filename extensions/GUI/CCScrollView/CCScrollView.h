@@ -201,7 +201,35 @@ public:
     virtual void addChild(CCNode * child, int zOrder);
     virtual void addChild(CCNode * child);
     void setTouchEnabled(bool e);
+    
+    
+    // #HLP_BEGIN
+    void moveToPage(int page);
+    void setPagingEnabled(bool usePagination);
+    void setAllAvailableScene();
+    // #HLP_END
+    
 private:
+    
+    
+    // #HLP_BEGIN
+    bool mIsPagingEnabled;
+    
+    float scrollHeight;
+	float scrollWidth;
+	
+	// Holds the current page being displayed
+	int currentScreen;
+	
+	// A count of the total screens available
+	int totalScreens;
+    
+	void moveToNextPage();
+	void moveToPreviousPage();
+    // #HLP_END
+    
+    
+    
     /**
      * Relocates the container at the proper offset, in bounds of max/min offsets.
      *
