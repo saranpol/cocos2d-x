@@ -55,6 +55,9 @@ CCScrollView::CCScrollView()
 , m_pTouches(NULL)
 , m_fMinScale(0.0f)
 , m_fMaxScale(0.0f)
+// #HLP_BEGIN
+, mIsPagingEnabled(false)
+// #HLP_END
 {
 
 }
