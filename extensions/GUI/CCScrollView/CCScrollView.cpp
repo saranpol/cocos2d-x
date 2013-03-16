@@ -28,8 +28,12 @@
 NS_CC_EXT_BEGIN
 
 #define SCROLL_DEACCEL_RATE  0.95f
-#define SCROLL_DEACCEL_DIST  1.0f
-#define BOUNCE_DURATION      0.15f
+//#define SCROLL_DEACCEL_DIST  1.0f
+//#define BOUNCE_DURATION      0.15f
+// #HLP_BEGIN
+#define SCROLL_DEACCEL_DIST  0.1f
+#define BOUNCE_DURATION      0.5f
+// #HLP_END
 #define INSET_RATIO          0.2f
 #define MOVE_INCH            7.0f/160.0f
 
@@ -225,6 +229,12 @@ void CCScrollView::setContentOffsetInDuration(CCPoint offset, float dt)
     CCFiniteTimeAction *scroll, *expire;
     
     scroll = CCMoveTo::create(dt, offset);
+    // #HLP_BEGIN
+    //scroll = CCEaseOut::create((CCActionInterval*)scroll, 10);
+    //scroll = CCEaseElasticOut::create((CCActionInterval*)scroll);
+    //scroll = CCEaseInOut::create((CCActionInterval*)scroll,3);
+    scroll = CCEaseSineOut::create((CCActionInterval*)scroll);
+    // #HLP_END
     expire = CCCallFuncN::create(this, callfuncN_selector(CCScrollView::stoppedAnimatedScroll));
     m_pContainer->runAction(CCSequence::create(scroll, expire, NULL));
     this->schedule(schedule_selector(CCScrollView::performedAnimatedScroll));
