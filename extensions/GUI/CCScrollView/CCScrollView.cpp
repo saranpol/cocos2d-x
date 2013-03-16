@@ -61,7 +61,6 @@ CCScrollView::CCScrollView()
 , m_bDisableHorizontal(false)
 , m_bDidVertical(false)
 , m_bDidHorizontal(false)
-, m_bZoomEnabled(false)
 // #HLP_END
 {
 
@@ -620,10 +619,7 @@ bool CCScrollView::ccTouchBegan(CCTouch* touch, CCEvent* event)
         m_pTouches->addObject(touch);
     }
 
-    //if (m_pTouches->count() == 1)
-    // #HLP_BEGIN
-    if (m_pTouches->count() >= 1)
-    // #HLP_END
+    if (m_pTouches->count() == 1)
     { // scrolling
         m_tTouchPoint     = this->convertTouchToNodeSpace(touch);
         m_bTouchMoved     = false;
@@ -631,10 +627,7 @@ bool CCScrollView::ccTouchBegan(CCTouch* touch, CCEvent* event)
         m_tScrollDistance = ccp(0.0f, 0.0f);
         m_fTouchLength    = 0.0f;
     }
-    //else if (m_pTouches->count() == 2)
-    // #HLP_BEGIN
-    if (m_pTouches->count() == 2 && m_bZoomEnabled)
-    // #HLP_END
+    else if (m_pTouches->count() == 2)
     {
         m_tTouchPoint  = ccpMidpoint(this->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(0)),
                                    this->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(1)));
@@ -654,10 +647,7 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
 
     if (m_pTouches->containsObject(touch))
     {
-        //if (m_pTouches->count() == 1 && m_bDragging)
-        // #HLP_BEGIN
-        if (m_pTouches->count() >= 1 && m_bDragging)
-        // #HLP_END
+        if (m_pTouches->count() == 1 && m_bDragging)
         { // scrolling
             CCPoint moveDistance, newPoint, maxInset, minInset;
             CCRect  frame;
@@ -734,10 +724,7 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
                 this->setContentOffset(ccp(newX, newY));
             }
         }
-        //else if (m_pTouches->count() == 2 && !m_bDragging)
-        // #HLP_BEGIN
-        if (m_pTouches->count() == 2 && !m_bDragging && m_bZoomEnabled)
-        // #HLP_END
+        else if (m_pTouches->count() == 2 && !m_bDragging)
         {
             const float len = ccpDistance(m_pContainer->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(0)),
                                             m_pContainer->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(1)));
@@ -760,10 +747,7 @@ void CCScrollView::ccTouchEnded(CCTouch* touch, CCEvent* event)
     }
     if (m_pTouches->containsObject(touch))
     {
-        //if (m_pTouches->count() == 1 && m_bTouchMoved)
-        // #HLP_BEGIN
-        if (m_pTouches->count() >= 1 && m_bTouchMoved)
-        // #HLP_END
+        if (m_pTouches->count() == 1 && m_bTouchMoved)
         {
             this->schedule(schedule_selector(CCScrollView::deaccelerateScrolling));
         }
@@ -785,23 +769,7 @@ void CCScrollView::ccTouchEnded(CCTouch* touch, CCEvent* event)
     
     
     // #HLP_BEGIN
-    if (mIsPagingEnabled) {
-        float sectionPerScreenWidthToScroll = scrollWidth / SECTION_PER_SCREEN_WIDTH_TO_SCROLL;
-        float contentOffset = this->getContentOffset().x;
-        //        int index = this->__indexFromOffset(this->getContentOffset());
-        
-        float currentOffSet  = contentOffset - (float)(scrollWidth * - (currentScreen - 1));
-        
-        CCLog("offset = %f", currentOffSet);
-        
-        if ( currentOffSet < -sectionPerScreenWidthToScroll && (currentScreen+1) <= totalScreens ) {
-            this->moveToNextPage();
-        } else if (currentOffSet > sectionPerScreenWidthToScroll && (currentScreen-1) > 0 ) {
-            this->moveToPreviousPage();
-        } else {
-            this->moveToPage(currentScreen);
-        }
-    }
+    pageScroll();
     // #HLP_END
     
     
@@ -867,10 +835,6 @@ void CCScrollView::setPagingEnabled(bool pagingEnabled) {
     currentScreen = 1;
 }
 
-void CCScrollView::setZoomEnabled(bool zoomEnable) {
-    m_bZoomEnabled = zoomEnable;
-}
-
 void CCScrollView::setupPagingData() {
     // offset added to show preview of next/previous screens
     CCSize s = CCDirector::sharedDirector()->getWinSize();
@@ -882,6 +846,26 @@ void CCScrollView::setupPagingData() {
     totalScreens = ceil((float)tableWidthContent / scrollWidth);
     
     //CCLOG(" table's cell content width %d, all screen = %d", tableWidthContent, totalScreens);
+}
+
+void CCScrollView::pageScroll() {
+    if (mIsPagingEnabled) {
+        float sectionPerScreenWidthToScroll = scrollWidth / SECTION_PER_SCREEN_WIDTH_TO_SCROLL;
+        float contentOffset = this->getContentOffset().x;
+        //        int index = this->__indexFromOffset(this->getContentOffset());
+        
+        float currentOffSet  = contentOffset - (float)(scrollWidth * - (currentScreen - 1));
+        
+        //CCLog("offset = %f", currentOffSet);
+        
+        if ( currentOffSet < -sectionPerScreenWidthToScroll && (currentScreen+1) <= totalScreens ) {
+            this->moveToNextPage();
+        } else if (currentOffSet > sectionPerScreenWidthToScroll && (currentScreen-1) > 0 ) {
+            this->moveToPreviousPage();
+        } else {
+            this->moveToPage(currentScreen);
+        }
+    }
 }
 
 // #HLP_END

@@ -206,8 +206,8 @@ public:
     // #HLP_BEGIN
     void moveToPage(int page);
     void setPagingEnabled(bool usePagination);
-    void setZoomEnabled(bool zoomEnable);
     void setupPagingData();
+    void pageScroll();
     // #HLP_END
     
 private:
@@ -297,7 +297,6 @@ protected:
     bool m_bDisableHorizontal;
     bool m_bDidVertical;
     bool m_bDidHorizontal;
-    bool m_bZoomEnabled;
     // #HLP_END
 
     /**
