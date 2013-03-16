@@ -51,6 +51,9 @@ public:
     virtual ~CCScrollViewDelegate() {}
     virtual void scrollViewDidScroll(CCScrollView* view) = 0;
     virtual void scrollViewDidZoom(CCScrollView* view) = 0;
+    // #HLP_BEGIN
+    virtual void scrollViewDidStoppedAnimatedScroll(CCScrollView *view) {}
+    // #HLP_END
 };
 
 

@@ -440,6 +440,9 @@ void CCScrollView::stoppedAnimatedScroll(CCNode * node)
     if (m_pDelegate != NULL)
     {
         m_pDelegate->scrollViewDidScroll(this);
+        // #HLP_BEGIN
+        m_pDelegate->scrollViewDidStoppedAnimatedScroll(this);
+        // #HLP_END
     }
 }
 
