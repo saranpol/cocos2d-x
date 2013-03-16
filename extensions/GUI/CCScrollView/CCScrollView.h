@@ -206,7 +206,8 @@ public:
     // #HLP_BEGIN
     void moveToPage(int page);
     void setPagingEnabled(bool usePagination);
-    void setAllAvailableScene();
+    void setZoomEnabled(bool zoomEnable);
+    void setupPagingData();
     // #HLP_END
     
 private:
@@ -290,6 +291,14 @@ protected:
      * If YES, the view is being dragged.
      */
     bool m_bDragging;
+
+    // #HLP_BEGIN
+    bool m_bDisableVertical;
+    bool m_bDisableHorizontal;
+    bool m_bDidVertical;
+    bool m_bDidHorizontal;
+    bool m_bZoomEnabled;
+    // #HLP_END
 
     /**
      * Content offset. Note that left-bottom point is the origin

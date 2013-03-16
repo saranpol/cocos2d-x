@@ -57,6 +57,11 @@ CCScrollView::CCScrollView()
 , m_fMaxScale(0.0f)
 // #HLP_BEGIN
 , mIsPagingEnabled(false)
+, m_bDisableVertical(false)
+, m_bDisableHorizontal(false)
+, m_bDidVertical(false)
+, m_bDidHorizontal(false)
+, m_bZoomEnabled(false)
 // #HLP_END
 {
 
@@ -458,7 +463,7 @@ void CCScrollView::setContentSize(const CCSize & size)
         
         // #HLP_BEGIN
         if (mIsPagingEnabled) {
-            setAllAvailableScene();
+            setupPagingData();
         }
         // #HLP_END
         
@@ -615,7 +620,10 @@ bool CCScrollView::ccTouchBegan(CCTouch* touch, CCEvent* event)
         m_pTouches->addObject(touch);
     }
 
-    if (m_pTouches->count() == 1)
+    //if (m_pTouches->count() == 1)
+    // #HLP_BEGIN
+    if (m_pTouches->count() >= 1)
+    // #HLP_END
     { // scrolling
         m_tTouchPoint     = this->convertTouchToNodeSpace(touch);
         m_bTouchMoved     = false;
@@ -623,7 +631,10 @@ bool CCScrollView::ccTouchBegan(CCTouch* touch, CCEvent* event)
         m_tScrollDistance = ccp(0.0f, 0.0f);
         m_fTouchLength    = 0.0f;
     }
-    else if (m_pTouches->count() == 2)
+    //else if (m_pTouches->count() == 2)
+    // #HLP_BEGIN
+    if (m_pTouches->count() == 2 && m_bZoomEnabled)
+    // #HLP_END
     {
         m_tTouchPoint  = ccpMidpoint(this->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(0)),
                                    this->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(1)));
@@ -643,7 +654,10 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
 
     if (m_pTouches->containsObject(touch))
     {
-        if (m_pTouches->count() == 1 && m_bDragging)
+        //if (m_pTouches->count() == 1 && m_bDragging)
+        // #HLP_BEGIN
+        if (m_pTouches->count() >= 1 && m_bDragging)
+        // #HLP_END
         { // scrolling
             CCPoint moveDistance, newPoint, maxInset, minInset;
             CCRect  frame;
@@ -657,10 +671,24 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
             float dis = 0.0f;
             if (m_eDirection == kCCScrollViewDirectionVertical)
             {
+                // #HLP_BEGIN
+                if(!m_bDidVertical && (m_bDisableVertical || fabsf(moveDistance.x) > fabsf(moveDistance.y))){
+                    m_bDisableVertical = true;
+                    return;
+                }
+                m_bDidVertical = true;
+                // #HLP_END
                 dis = moveDistance.y;
             }
             else if (m_eDirection == kCCScrollViewDirectionHorizontal)
             {
+                // #HLP_BEGIN
+                if(!m_bDidHorizontal && (m_bDisableHorizontal || fabsf(moveDistance.y) > fabsf(moveDistance.x))){
+                    m_bDisableHorizontal = true;
+                    return;
+                }
+                m_bDidHorizontal = true;
+                // #HLP_END
                 dis = moveDistance.x;
             }
             else
@@ -706,7 +734,10 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
                 this->setContentOffset(ccp(newX, newY));
             }
         }
-        else if (m_pTouches->count() == 2 && !m_bDragging)
+        //else if (m_pTouches->count() == 2 && !m_bDragging)
+        // #HLP_BEGIN
+        if (m_pTouches->count() == 2 && !m_bDragging && m_bZoomEnabled)
+        // #HLP_END
         {
             const float len = ccpDistance(m_pContainer->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(0)),
                                             m_pContainer->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(1)));
@@ -729,7 +760,10 @@ void CCScrollView::ccTouchEnded(CCTouch* touch, CCEvent* event)
     }
     if (m_pTouches->containsObject(touch))
     {
-        if (m_pTouches->count() == 1 && m_bTouchMoved)
+        //if (m_pTouches->count() == 1 && m_bTouchMoved)
+        // #HLP_BEGIN
+        if (m_pTouches->count() >= 1 && m_bTouchMoved)
+        // #HLP_END
         {
             this->schedule(schedule_selector(CCScrollView::deaccelerateScrolling));
         }
@@ -738,8 +772,15 @@ void CCScrollView::ccTouchEnded(CCTouch* touch, CCEvent* event)
 
     if (m_pTouches->count() == 0)
     {
-        m_bDragging = false;    
+        m_bDragging = false;
         m_bTouchMoved = false;
+        
+        // #HLP_BEGIN
+        m_bDisableVertical = false;
+        m_bDisableHorizontal = false;
+        m_bDidVertical = false;
+        m_bDidHorizontal = false;
+        // #HLP_END
     }
     
     
@@ -826,7 +867,11 @@ void CCScrollView::setPagingEnabled(bool pagingEnabled) {
     currentScreen = 1;
 }
 
-void CCScrollView::setAllAvailableScene() {
+void CCScrollView::setZoomEnabled(bool zoomEnable) {
+    m_bZoomEnabled = zoomEnable;
+}
+
+void CCScrollView::setupPagingData() {
     // offset added to show preview of next/previous screens
     CCSize s = CCDirector::sharedDirector()->getWinSize();
     
@@ -834,9 +879,9 @@ void CCScrollView::setAllAvailableScene() {
     scrollHeight = s.height;
     
     int tableWidthContent = this->getContentSize().width;
-    totalScreens = ceil((float)tableWidthContent / (float)scrollWidth);
+    totalScreens = ceil((float)tableWidthContent / scrollWidth);
     
-    CCLOG(" table's cell content width %d, all screen = %d", tableWidthContent, totalScreens);
+    //CCLOG(" table's cell content width %d, all screen = %d", tableWidthContent, totalScreens);
 }
 
 // #HLP_END
