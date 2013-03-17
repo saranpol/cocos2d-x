@@ -208,6 +208,10 @@ public:
 
     virtual void scrollViewDidScroll(CCScrollView* view);
     virtual void scrollViewDidZoom(CCScrollView* view) {}
+    // #HLP_BEGIN
+    virtual void scrollViewDidStoppedAnimatedScroll(CCScrollView *view);
+    // #HLP_END
+
     
     virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);

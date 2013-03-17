@@ -507,6 +507,17 @@ void CCTableView::scrollViewDidScroll(CCScrollView* view)
     }
 }
 
+
+// #HLP_BEGIN
+void CCTableView::scrollViewDidStoppedAnimatedScroll(CCScrollView *view) {
+    if(m_pTableViewDelegate){
+        m_pTableViewDelegate->scrollViewDidStoppedAnimatedScroll(view);
+    }
+}
+// #HLP_END
+
+
+
 void CCTableView::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 {
     if (!this->isVisible()) {

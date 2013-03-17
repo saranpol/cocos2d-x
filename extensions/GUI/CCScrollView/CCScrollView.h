@@ -207,29 +207,18 @@ public:
     
     
     // #HLP_BEGIN
-    void moveToPage(int page);
+    void moveToPage(int page, bool animated);
+	void moveToNextPage(bool animated);
+	void moveToPreviousPage(bool animated);
     void setPagingEnabled(bool usePagination);
     void setupPagingData();
     void pageScroll();
-    // #HLP_END
-    
-private:
-    
-    
-    // #HLP_BEGIN
+
     bool mIsPagingEnabled;
-    
-    float scrollHeight;
-	float scrollWidth;
-	
-	// Holds the current page being displayed
-	int currentScreen;
-	
-	// A count of the total screens available
-	int totalScreens;
-    
-	void moveToNextPage();
-	void moveToPreviousPage();
+    float mScrollHeight;
+	float mScrollWidth;
+	int mCurrentPage;
+	int mTotalPage;
     // #HLP_END
     
     

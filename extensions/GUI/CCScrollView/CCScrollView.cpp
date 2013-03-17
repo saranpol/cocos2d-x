@@ -822,22 +822,22 @@ CCRect CCScrollView::getViewRect()
 
 
 // #HLP_BEGIN
-void CCScrollView::moveToPage(int page)
+void CCScrollView::moveToPage(int page, bool animated)
 {
-    this->setContentOffset(ccp(-((page-1)*scrollWidth),0), true);
-    currentScreen = page;
+    this->setContentOffset(ccp(-(page*mScrollWidth),0), animated);
+    mCurrentPage = page;
 }
 
-void CCScrollView::moveToNextPage()
+void CCScrollView::moveToNextPage(bool animated)
 {
-    this->setContentOffset(ccp(-(((currentScreen+1)-1)*scrollWidth),0), true);
-	currentScreen = currentScreen+1;
+    this->setContentOffset(ccp(-((mCurrentPage+1)*mScrollWidth),0), animated);
+	mCurrentPage = mCurrentPage+1;
 }
 
-void CCScrollView::moveToPreviousPage()
+void CCScrollView::moveToPreviousPage(bool animated)
 {
-    this->setContentOffset(ccp(-(((currentScreen-1)-1)*scrollWidth),0), true);
-	currentScreen = currentScreen-1;
+    this->setContentOffset(ccp(-((mCurrentPage-1)*mScrollWidth),0), animated);
+	mCurrentPage = mCurrentPage-1;
 }
 
 void CCScrollView::setPagingEnabled(bool pagingEnabled) {
@@ -845,38 +845,38 @@ void CCScrollView::setPagingEnabled(bool pagingEnabled) {
     mIsPagingEnabled = pagingEnabled;
     
     // Set up the starting variables
-    currentScreen = 1;
+    mCurrentPage = 0;
 }
 
 void CCScrollView::setupPagingData() {
     // offset added to show preview of next/previous screens
     CCSize s = CCDirector::sharedDirector()->getWinSize();
     
-    scrollWidth  = s.width;
-    scrollHeight = s.height;
+    mScrollWidth  = s.width;
+    mScrollHeight = s.height;
     
     int tableWidthContent = this->getContentSize().width;
-    totalScreens = ceil((float)tableWidthContent / scrollWidth);
+    mTotalPage = ceil((float)tableWidthContent / mScrollWidth);
     
-    //CCLOG(" table's cell content width %d, all screen = %d", tableWidthContent, totalScreens);
+    //CCLOG(" table's cell content width %d, all screen = %d", tableWidthContent, mTotalPage);
 }
 
 void CCScrollView::pageScroll() {
     if (mIsPagingEnabled) {
-        float sectionPerScreenWidthToScroll = scrollWidth / SECTION_PER_SCREEN_WIDTH_TO_SCROLL;
+        float sectionPerScreenWidthToScroll = mScrollWidth / SECTION_PER_SCREEN_WIDTH_TO_SCROLL;
         float contentOffset = this->getContentOffset().x;
         //        int index = this->__indexFromOffset(this->getContentOffset());
         
-        float currentOffSet  = contentOffset - (float)(scrollWidth * - (currentScreen - 1));
+        float currentOffSet  = contentOffset - (float)(mScrollWidth * - mCurrentPage);
         
         //CCLog("offset = %f", currentOffSet);
         
-        if ( currentOffSet < -sectionPerScreenWidthToScroll && (currentScreen+1) <= totalScreens ) {
-            this->moveToNextPage();
-        } else if (currentOffSet > sectionPerScreenWidthToScroll && (currentScreen-1) > 0 ) {
-            this->moveToPreviousPage();
+        if ( currentOffSet < -sectionPerScreenWidthToScroll && (mCurrentPage+1) < mTotalPage ) {
+            this->moveToNextPage(true);
+        } else if (currentOffSet > sectionPerScreenWidthToScroll && (mCurrentPage-1) >= 0 ) {
+            this->moveToPreviousPage(true);
         } else {
-            this->moveToPage(currentScreen);
+            this->moveToPage(mCurrentPage, true);
         }
     }
 }
