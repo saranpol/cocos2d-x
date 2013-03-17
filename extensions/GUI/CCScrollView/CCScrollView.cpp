@@ -32,7 +32,8 @@ NS_CC_EXT_BEGIN
 //#define BOUNCE_DURATION      0.15f
 // #HLP_BEGIN
 #define SCROLL_DEACCEL_DIST  0.1f
-#define BOUNCE_DURATION      0.5f
+#define BOUNCE_DURATION      0.8f
+#define PAGE_DURATION        0.25f
 // #HLP_END
 #define INSET_RATIO          0.2f
 #define MOVE_INCH            7.0f/160.0f
@@ -202,7 +203,13 @@ void CCScrollView::setContentOffset(CCPoint offset, bool animated/* = false*/)
 {
     if (animated)
     { //animate scrolling
-        this->setContentOffsetInDuration(offset, BOUNCE_DURATION);
+        //this->setContentOffsetInDuration(offset, BOUNCE_DURATION);
+        // #HLP_BEGIN
+        if(mIsPagingEnabled)
+            this->setContentOffsetInDuration(offset, PAGE_DURATION);
+        else
+            this->setContentOffsetInDuration(offset, BOUNCE_DURATION);
+        // #HLP_END
     } 
     else
     { //set the container position directly
@@ -230,10 +237,14 @@ void CCScrollView::setContentOffsetInDuration(CCPoint offset, float dt)
     
     scroll = CCMoveTo::create(dt, offset);
     // #HLP_BEGIN
+    m_pContainer->stopAllActions();
     //scroll = CCEaseOut::create((CCActionInterval*)scroll, 10);
     //scroll = CCEaseElasticOut::create((CCActionInterval*)scroll);
     //scroll = CCEaseInOut::create((CCActionInterval*)scroll,3);
-    scroll = CCEaseSineOut::create((CCActionInterval*)scroll);
+    if(mIsPagingEnabled)
+        scroll = CCEaseSineOut::create((CCActionInterval*)scroll);
+    else
+        scroll = CCEaseExponentialOut::create((CCActionInterval*)scroll);
     // #HLP_END
     expire = CCCallFuncN::create(this, callfuncN_selector(CCScrollView::stoppedAnimatedScroll));
     m_pContainer->runAction(CCSequence::create(scroll, expire, NULL));
