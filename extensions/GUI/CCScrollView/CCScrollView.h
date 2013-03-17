@@ -213,6 +213,7 @@ public:
     void setPagingEnabled(bool usePagination);
     void setupPagingData();
     void pageScroll();
+    void removeAllTouch();
 
     bool mIsPagingEnabled;
     float mScrollHeight;
