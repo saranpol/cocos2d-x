@@ -216,10 +216,13 @@ public:
     void removeAllTouch();
 
     bool mIsPagingEnabled;
-    float mScrollHeight;
 	float mScrollWidth;
-	int mCurrentPage;
-	int mTotalPage;
+    float mScrollHeight;
+    float mForcePageWidth;
+    float mForcePageHeight;
+    float mPageMarginX;
+    int mCurrentPage;
+    int mTotalPage;
     // #HLP_END
     
     

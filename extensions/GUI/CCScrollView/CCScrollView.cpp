@@ -66,6 +66,9 @@ CCScrollView::CCScrollView()
 , m_bDisableHorizontal(false)
 , m_bDidVertical(false)
 , m_bDidHorizontal(false)
+, mForcePageWidth(0)
+, mForcePageHeight(0)
+, mPageMarginX(0)
 // #HLP_END
 {
 
@@ -842,7 +845,7 @@ CCRect CCScrollView::getViewRect()
 // #HLP_BEGIN
 void CCScrollView::moveToPage(int page, bool animated)
 {
-    setContentOffset(ccp(-(page*mScrollWidth),0), animated);
+    setContentOffset(ccp(-(page*mScrollWidth)+mPageMarginX,0), animated);
     mCurrentPage = page;
     //removeAllTouch();
 }
@@ -866,16 +869,20 @@ void CCScrollView::setPagingEnabled(bool pagingEnabled) {
 }
 
 void CCScrollView::setupPagingData() {
-    // offset added to show preview of next/previous screens
-    CCSize s = CCDirector::sharedDirector()->getWinSize();
+    CCSize s = getViewSize();
     
-    mScrollWidth  = s.width;
-    mScrollHeight = s.height;
+    if(mForcePageWidth)
+        mScrollWidth = mForcePageWidth;
+    else
+        mScrollWidth  = s.width;
+    
+    if(mForcePageHeight)
+        mScrollHeight = mForcePageHeight;
+    else
+        mScrollHeight = s.height;
     
     int tableWidthContent = getContentSize().width;
     mTotalPage = ceil((float)tableWidthContent / mScrollWidth);
-    
-    //CCLOG(" table's cell content width %d, all screen = %d", tableWidthContent, mTotalPage);
 }
 
 void CCScrollView::pageScroll() {
@@ -884,7 +891,7 @@ void CCScrollView::pageScroll() {
         float contentOffset = getContentOffset().x;
         //        int index = this->__indexFromOffset(this->getContentOffset());
         
-        float currentOffSet  = contentOffset - (float)(mScrollWidth * - mCurrentPage);
+        float currentOffSet  = contentOffset - (float)(mScrollWidth * - mCurrentPage) - mPageMarginX;
         
         //CCLog("offset = %f", currentOffSet);
         
