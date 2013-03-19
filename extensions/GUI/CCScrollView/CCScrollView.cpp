@@ -61,7 +61,8 @@ CCScrollView::CCScrollView()
 , m_fMinScale(0.0f)
 , m_fMaxScale(0.0f)
 // #HLP_BEGIN
-, mIsPagingEnabled(false)
+, mPagingEnabled(false)
+, mRefreshEnabled(false)
 , m_bDisableVertical(false)
 , m_bDisableHorizontal(false)
 , m_bDidVertical(false)
@@ -208,7 +209,7 @@ void CCScrollView::setContentOffset(CCPoint offset, bool animated/* = false*/)
     { //animate scrolling
         //this->setContentOffsetInDuration(offset, BOUNCE_DURATION);
         // #HLP_BEGIN
-        if(mIsPagingEnabled)
+        if(mPagingEnabled)
             this->setContentOffsetInDuration(offset, PAGE_DURATION);
         else
             this->setContentOffsetInDuration(offset, BOUNCE_DURATION);
@@ -231,6 +232,12 @@ void CCScrollView::setContentOffset(CCPoint offset, bool animated/* = false*/)
         {
             m_pDelegate->scrollViewDidScroll(this);   
         }
+        
+        // #HLP_BEGIN
+        if(mRefreshEnabled){
+            updateRefreshUI();
+        }
+        // #HLP_END
     }
 }
 
@@ -244,7 +251,7 @@ void CCScrollView::setContentOffsetInDuration(CCPoint offset, float dt)
     //scroll = CCEaseOut::create((CCActionInterval*)scroll, 10);
     //scroll = CCEaseElasticOut::create((CCActionInterval*)scroll);
     //scroll = CCEaseInOut::create((CCActionInterval*)scroll,3);
-    if(mIsPagingEnabled)
+    if(mPagingEnabled)
         scroll = CCEaseSineOut::create((CCActionInterval*)scroll);
     else
         scroll = CCEaseExponentialOut::create((CCActionInterval*)scroll);
@@ -394,7 +401,7 @@ CCPoint CCScrollView::minContainerOffset()
 void CCScrollView::deaccelerateScrolling(float dt)
 {
     // #HLP_BEGIN
-    if (mIsPagingEnabled)
+    if (mPagingEnabled)
         return;
     // #HLP_END
     
@@ -488,8 +495,12 @@ void CCScrollView::setContentSize(const CCSize & size)
 		this->updateInset();
         
         // #HLP_BEGIN
-        if (mIsPagingEnabled) {
+        if(mPagingEnabled){
             setupPagingData();
+        }
+        
+        if(mRefreshEnabled){
+            updateRefreshUI();
         }
         // #HLP_END
         
@@ -862,10 +873,54 @@ void CCScrollView::moveToPreviousPage(bool animated)
 
 void CCScrollView::setPagingEnabled(bool pagingEnabled) {
     
-    mIsPagingEnabled = pagingEnabled;
+    mPagingEnabled = pagingEnabled;
     
     // Set up the starting variables
     mCurrentPage = 0;
+}
+
+#define REFRESH_LABEL_Y 30
+#define REFRESH_LABEL_MAX_Y 350
+#define REFRESH_START_Y 320
+
+void CCScrollView::updateRefreshUI() {
+    CCSize scrollSize = getContentSize();
+    if(scrollSize.height < REFRESH_LABEL_Y)
+        return;
+    float y = scrollSize.height+REFRESH_LABEL_Y;
+    float diff = getContentOffset().y + y;
+    CCLog("diff %f", diff);
+    if(diff < REFRESH_LABEL_MAX_Y){
+        //y += 340 - (getContentOffset().y + y);
+        y -= (diff-REFRESH_LABEL_MAX_Y)/2.0;
+    }
+    if(diff < REFRESH_START_Y){
+        if(m_pDelegate){
+            m_pDelegate->scrollViewDidRefresh(this);
+        }
+    }
+    mLabelRefresh->setPosition(CCPointMake(scrollSize.width/2.0, y));
+}
+
+void CCScrollView::setRefreshStart(){
+    mLabelRefresh->setString("Refreshing...");
+}
+
+void CCScrollView::setRefreshDone(){
+    mLabelRefresh->setString("Pull to refresh");
+}
+
+void CCScrollView::setRefreshEnabled(bool refresh) {
+    mRefreshEnabled = refresh;
+    
+    if(mRefreshEnabled){
+        mLabelRefresh = CCLabelTTF::create("Pull to refresh", "ccbResources/Thonburi.ttf", 20);
+        mLabelRefresh->setColor(ccBLACK);
+        CCSize scrollSize = getContentSize();
+        mLabelRefresh->setPosition(CCPointMake(scrollSize.width/2.0, scrollSize.height+REFRESH_LABEL_Y));
+        addChild(mLabelRefresh);
+        mLabelRefresh->setAnchorPoint(ccp(0.5f, 0.5f));
+    }
 }
 
 void CCScrollView::setupPagingData() {
@@ -886,7 +941,7 @@ void CCScrollView::setupPagingData() {
 }
 
 void CCScrollView::pageScroll() {
-    if (mIsPagingEnabled) {
+    if (mPagingEnabled) {
         float sectionPerScreenWidthToScroll = mScrollWidth / SECTION_PER_SCREEN_WIDTH_TO_SCROLL;
         float contentOffset = getContentOffset().x;
         //        int index = this->__indexFromOffset(this->getContentOffset());

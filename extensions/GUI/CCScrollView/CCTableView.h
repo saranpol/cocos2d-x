@@ -210,6 +210,7 @@ public:
     virtual void scrollViewDidZoom(CCScrollView* view) {}
     // #HLP_BEGIN
     virtual void scrollViewDidStoppedAnimatedScroll(CCScrollView *view);
+    virtual void scrollViewDidRefresh(CCScrollView *view);
     // #HLP_END
 
     

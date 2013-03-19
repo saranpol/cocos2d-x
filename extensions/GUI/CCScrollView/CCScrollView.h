@@ -53,6 +53,7 @@ public:
     virtual void scrollViewDidZoom(CCScrollView* view) = 0;
     // #HLP_BEGIN
     virtual void scrollViewDidStoppedAnimatedScroll(CCScrollView *view) {}
+    virtual void scrollViewDidRefresh(CCScrollView *view) {}
     // #HLP_END
 };
 
@@ -215,7 +216,7 @@ public:
     void pageScroll();
     void removeAllTouch();
 
-    bool mIsPagingEnabled;
+    bool mPagingEnabled;
 	float mScrollWidth;
     float mScrollHeight;
     float mForcePageWidth;
@@ -223,6 +224,16 @@ public:
     float mPageMarginX;
     int mCurrentPage;
     int mTotalPage;
+
+    // Refresh
+    bool mRefreshEnabled;
+    CCLabelTTF *mLabelRefresh;
+    void updateRefreshUI();
+    void setRefreshStart();
+    void setRefreshDone();
+    void setRefreshEnabled(bool refresh);
+
+    
     // #HLP_END
     
     
