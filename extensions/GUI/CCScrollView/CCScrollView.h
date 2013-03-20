@@ -231,6 +231,7 @@ public:
     void updateRefreshUI();
     void setRefreshStart();
     void setRefreshDone();
+    void setRefreshText(const char *text);
     void setRefreshEnabled(bool refresh);
 
     
