@@ -138,6 +138,10 @@ public:
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent);
 
+    // #HLP_BEGIN
+    bool mIsInScrollView;
+    // #HLP_END
+    
     /**
     * Returns the title used for a state.
     *

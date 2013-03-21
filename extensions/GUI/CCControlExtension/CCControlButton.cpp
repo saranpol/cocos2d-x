@@ -57,6 +57,9 @@ CCControlButton::CCControlButton()
 , m_backgroundSpriteDispatchTable(NULL)
 , m_marginV(CCControlButtonMarginTB)
 , m_marginH(CCControlButtonMarginLR)
+// #HLP_BEGIN
+, mIsInScrollView(false)
+// #HLP_END
 {
 
 }
@@ -655,7 +658,18 @@ void CCControlButton::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
         return;
     }
     
-    bool isTouchMoveInside = isTouchInside(pTouch);
+    //bool isTouchMoveInside = isTouchInside(pTouch);
+    // #HLP_BEGIN
+    bool isTouchMoveInside;
+    if(mIsInScrollView){
+        CCPoint start = pTouch->getStartLocation();
+        CCPoint end = pTouch->getLocation();
+        isTouchMoveInside = ccpDistance(start, end) < 10;
+    }else{
+        isTouchMoveInside = isTouchInside(pTouch);
+    }
+    // #HLP_END
+    
     if (isTouchMoveInside && !isHighlighted())
     {
         setHighlighted(true);
