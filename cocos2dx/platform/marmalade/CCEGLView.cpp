@@ -69,9 +69,11 @@ CCEGLView::CCEGLView()
         s3ePointerRegister(S3E_POINTER_MOTION_EVENT, &MotionEventHandler, this);
     }
     
+    // #HLP_BEGIN
     // Register keyboard event handler
-//	s3eKeyboardRegister(S3E_KEYBOARD_KEY_EVENT, &KeyEventHandler, this);
-//	s3eKeyboardRegister(S3E_KEYBOARD_CHAR_EVENT, &CharEventHandler, this);
+	s3eKeyboardRegister(S3E_KEYBOARD_KEY_EVENT, &KeyEventHandler, this);
+	s3eKeyboardRegister(S3E_KEYBOARD_CHAR_EVENT, &CharEventHandler, this);
+    // #HLP_END
 }
 
 CCEGLView::~CCEGLView()
@@ -148,27 +150,31 @@ void CCEGLView::setMultiMotionTouch(void* systemData)
 
 void CCEGLView::setKeyTouch(void* systemData)
 {
-// 	s3eKeyboardEvent* event = (s3eKeyboardEvent*)systemData;
-// 	if (event->m_Pressed)
-// 	{
-// 		if (event->m_Key!=m_Key)
-// 		{
+    // #HLP_BEGIN
+ 	s3eKeyboardEvent* event = (s3eKeyboardEvent*)systemData;
+ 	if (event->m_Pressed)
+ 	{
+ 		if (event->m_Key!=m_Key)
+ 		{
 // 			CCKeypadDispatcher::sharedDispatcher()->dispatchKeypadMSG(kTypeMenuClicked);
-// 		}
-// 		else
-// 		{
+ 		}
+ 		else
+ 		{
 // 			CCKeypadDispatcher::sharedDispatcher()->dispatchKeypadMSG(kTypeBackClicked);
-// 
-// 		}
-// 		m_Key =event->m_Key;
-// 	}
+ 
+ 		}
+ 		m_Key =event->m_Key;
+ 	}
+    // #HLP_END
 }
 
 void CCEGLView::setCharTouch( void* systemData )
 {
-//     s3eKeyboardCharEvent* event = (s3eKeyboardCharEvent*)systemData;
-// 	s3eWChar c = event->m_Char ;
-// 	CCIMEDispatcher::sharedDispatcher()->dispatchInsertText((const char *)&c, 1);
+    // #HLP_BEGIN
+     s3eKeyboardCharEvent* event = (s3eKeyboardCharEvent*)systemData;
+ 	s3eWChar c = event->m_Char ;
+ 	CCIMEDispatcher::sharedDispatcher()->dispatchInsertText((const char *)&c, 1);
+    // #HLP_END
 }
 
 bool CCEGLView::isOpenGLReady()
@@ -191,8 +197,10 @@ void CCEGLView::end()
         s3ePointerUnRegister(S3E_POINTER_MOTION_EVENT, &MotionEventHandler);
     }
     
-//	s3eKeyboardUnRegister(S3E_KEYBOARD_KEY_EVENT, &KeyEventHandler);
-//	s3eKeyboardUnRegister(S3E_KEYBOARD_KEY_EVENT, &CharEventHandler);
+    // #HLP_BEGIN
+	s3eKeyboardUnRegister(S3E_KEYBOARD_KEY_EVENT, &KeyEventHandler);
+	s3eKeyboardUnRegister(S3E_KEYBOARD_KEY_EVENT, &CharEventHandler);
+    // #HLP_END
 
 	if (IwGLIsInitialised())
   		IwGLTerminate();
@@ -210,12 +218,25 @@ void CCEGLView::swapBuffers()
 
 void CCEGLView::setIMEKeyboardState(bool bOpen)
 {
-	if(bOpen && s3eOSReadStringAvailable() == S3E_TRUE) {
-		const char* inputText = s3eOSReadStringUTF8("") ;
-		if( inputText!=0 ) {
-			CCIMEDispatcher::sharedDispatcher()->dispatchInsertText(inputText, strlen(inputText));
-		}
-	}
+//	if(bOpen && s3eOSReadStringAvailable() == S3E_TRUE) {
+//		const char* inputText = s3eOSReadStringUTF8("") ;
+//        //const char* inputText = s3eOSReadStringUTF8WithDefault("","") ;
+//        //const char* inputText = s3eExtOSReadUserStringUTF8("") ;
+//
+//		if( inputText!=0 ) {
+//			CCIMEDispatcher::sharedDispatcher()->dispatchInsertText(inputText, strlen(inputText));
+//		}
+//	}
+    
+    // #HLP_BEGIN
+    if(bOpen){
+        int newCharState = s3eKeyboardGetInt(S3E_KEYBOARD_GET_CHAR);
+        newCharState = !newCharState;
+        s3eKeyboardSetInt(S3E_KEYBOARD_GET_CHAR, newCharState);
+    }
+    
+    // #HLP_END
+    
 }
 
 CCEGLView* CCEGLView::sharedOpenGLView()		// MH: Cocos2D now uses pointer instead of ref
