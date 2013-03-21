@@ -59,6 +59,17 @@ enum
 //CCMenu
 //
 
+
+// #HLP_BEGIN
+CCMenu::CCMenu()
+: m_pSelectedItem(NULL)
+, mIsInScrollView(false)
+{
+    
+}
+// #HLP_END
+
+
 CCMenu* CCMenu::create()
 {
     return CCMenu::create(NULL, NULL);
@@ -220,7 +231,10 @@ void CCMenu::setHandlerPriority(int newPriority)
 void CCMenu::registerWithTouchDispatcher()
 {
     CCDirector* pDirector = CCDirector::sharedDirector();
-    pDirector->getTouchDispatcher()->addTargetedDelegate(this, this->getTouchPriority(), true);
+    //pDirector->getTouchDispatcher()->addTargetedDelegate(this, this->getTouchPriority(), true);
+    // #HLP_BEGIN
+    pDirector->getTouchDispatcher()->addTargetedDelegate(this, this->getTouchPriority(), false);
+    // #HLP_END
 }
 
 bool CCMenu::ccTouchBegan(CCTouch* touch, CCEvent* event)
@@ -278,6 +292,23 @@ void CCMenu::ccTouchMoved(CCTouch* touch, CCEvent* event)
 {
     CC_UNUSED_PARAM(event);
     CCAssert(m_eState == kCCMenuStateTrackingTouch, "[Menu ccTouchMoved] -- invalid state");
+
+    // #HLP_BEGIN
+    if(mIsInScrollView){
+        CCPoint start = touch->getStartLocation();
+        CCPoint end = touch->getLocation();
+        if(ccpDistance(start, end) > 10){
+            if (m_pSelectedItem)
+            {
+                m_pSelectedItem->unselected();
+                m_pSelectedItem = NULL;
+            }
+            return;
+        }
+    }
+    // #HLP_END
+    
+    
     CCMenuItem *currentItem = this->itemForTouch(touch);
     if (currentItem != m_pSelectedItem) 
     {
