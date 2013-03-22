@@ -175,7 +175,7 @@ void CCEGLView::setCharTouch( void* systemData )
  	s3eWChar c = event->m_Char ;
     //CCLog("s3eWChar %d", c);
     
-    if(c == 127){
+    if(c == 127 || c == 8){
         CCIMEDispatcher::sharedDispatcher()->dispatchDeleteBackward();
     }else{
         CCIMEDispatcher::sharedDispatcher()->dispatchInsertText((const char *)&c, 1);
