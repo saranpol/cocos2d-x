@@ -171,10 +171,15 @@ void CCEGLView::setKeyTouch(void* systemData)
 void CCEGLView::setCharTouch( void* systemData )
 {
     // #HLP_BEGIN
-     s3eKeyboardCharEvent* event = (s3eKeyboardCharEvent*)systemData;
+    s3eKeyboardCharEvent* event = (s3eKeyboardCharEvent*)systemData;
  	s3eWChar c = event->m_Char ;
- 	//CCIMEDispatcher::sharedDispatcher()->dispatchInsertText((const char *)&c, 1);
-    CCIMEDispatcher::sharedDispatcher()->dispatchInsertText((const char *)&c, 2);
+    //CCLog("s3eWChar %d", c);
+    
+    if(c == 127){
+        CCIMEDispatcher::sharedDispatcher()->dispatchDeleteBackward();
+    }else{
+        CCIMEDispatcher::sharedDispatcher()->dispatchInsertText((const char *)&c, 1);
+    }
     // #HLP_END
 }
 

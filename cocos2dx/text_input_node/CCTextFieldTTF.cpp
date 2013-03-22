@@ -168,9 +168,18 @@ bool CCTextFieldTTF::canDetachWithIME()
     return (m_pDelegate) ? (! m_pDelegate->onTextFieldDetachWithIME(this)) : true;
 }
 
+
 void CCTextFieldTTF::insertText(const char * text, int len)
 {
-    std::string sInsert(text, len);
+    //std::string sInsert(text, len);
+    // #HLP_BEGIN
+    char buffer[4] = {0, 0, 0, 0};
+    UCS2ToUTF8((ucs2char*)text, 1, buffer, 4);
+    text = buffer;
+
+    
+    std::string sInsert(text);
+    // #HLP_END
 
     // insert \n means input end
     int nPos = sInsert.find('\n');

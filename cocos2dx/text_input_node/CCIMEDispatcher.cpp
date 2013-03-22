@@ -215,7 +215,7 @@ void CCIMEDispatcher::removeDelegate(CCIMEDelegate* pDelegate)
 
 void CCIMEDispatcher::dispatchInsertText(const char * pText, int nLen)
 {
-    do 
+    do
     {
         CC_BREAK_IF(! m_pImpl || ! pText || nLen <= 0);
 
