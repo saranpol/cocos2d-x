@@ -59,7 +59,11 @@ class CC_DLL CCMenu : public CCLayerRGBA
     bool m_bEnabled;
     
 public:
-    CCMenu() : m_pSelectedItem(NULL) {}
+    //CCMenu() : m_pSelectedItem(NULL) {}
+    // #HLP_BEGIN
+    CCMenu();
+    // #HLP_END
+    
     virtual ~CCMenu(){}
 
     /** creates an empty CCMenu */
@@ -140,6 +144,11 @@ public:
     virtual bool isEnabled() { return m_bEnabled; }
     virtual void setEnabled(bool value) { m_bEnabled = value; };
 
+    // #HLP_BEGIN
+    bool mIsInScrollView;
+    // #HLP_END
+    
+    
 protected:
     CCMenuItem* itemForTouch(CCTouch * touch);
     tCCMenuState m_eState;
