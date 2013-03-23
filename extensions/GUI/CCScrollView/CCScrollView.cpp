@@ -62,6 +62,7 @@ CCScrollView::CCScrollView()
 , m_fMaxScale(0.0f)
 // #HLP_BEGIN
 , mPagingEnabled(false)
+, mIsRefreshing(false)
 , mRefreshEnabled(false)
 , m_bDisableVertical(false)
 , m_bDisableHorizontal(false)
@@ -889,13 +890,8 @@ void CCScrollView::updateRefreshUI() {
         return;
     float y = scrollSize.height+REFRESH_LABEL_Y;
     float diff = getContentOffset().y + y;
-//    CCLog("diff %f", diff);
-    if(diff < REFRESH_LABEL_MAX_Y){
-        //y += 340 - (getContentOffset().y + y);
-        y -= (diff-REFRESH_LABEL_MAX_Y)/2.0;
-    }
     if(diff < REFRESH_START_Y){
-        if(m_pDelegate){
+        if(m_pDelegate && !mIsRefreshing){
             m_pDelegate->scrollViewDidRefresh(this);
         }
     }
@@ -903,10 +899,12 @@ void CCScrollView::updateRefreshUI() {
 }
 
 void CCScrollView::setRefreshStart(){
+    mIsRefreshing = true;
     mLabelRefresh->setString("Refreshing...");
 }
 
 void CCScrollView::setRefreshDone(){
+    mIsRefreshing = false;
     mLabelRefresh->setString("Pull to refresh");
 }
 

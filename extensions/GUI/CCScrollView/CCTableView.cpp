@@ -287,6 +287,11 @@ void CCTableView::_updateContentSize()
             size = CCSizeMake(cellSize.width, cellCount * cellSize.height);
             break;
     }
+    // #HLP_BEGIN
+    if(cellCount == 0){
+        size = getViewSize();
+    }
+    // #HLP_END
     this->setContentSize(size);
 
 	if (m_eOldDirection != m_eDirection)

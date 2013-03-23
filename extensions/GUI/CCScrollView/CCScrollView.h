@@ -227,13 +227,13 @@ public:
 
     // Refresh
     bool mRefreshEnabled;
+    bool mIsRefreshing;
     CCLabelTTF *mLabelRefresh;
     void updateRefreshUI();
     void setRefreshStart();
     void setRefreshDone();
     void setRefreshText(const char *text);
     void setRefreshEnabled(bool refresh);
-
     
     // #HLP_END
     

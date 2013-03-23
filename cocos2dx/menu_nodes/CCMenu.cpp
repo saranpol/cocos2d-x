@@ -635,6 +635,26 @@ CCMenuItem* CCMenu::itemForTouch(CCTouch *touch)
 {
     CCPoint touchLocation = touch->getLocation();
 
+    // #HLP_BEGIN
+    // if touch outside parent return NULL
+    if(mIsInScrollView) {
+        CCNode *parent = (CCNode*)this;
+        while(true){
+            parent = parent->getParent();
+            if(!parent)
+                break;
+            CCPoint local = parent->convertToNodeSpace(touchLocation);
+            CCRect r = parent->boundingBox();
+            // special case get parent = CCTableViewCell size 0 we ignore it
+            if(r.size.width == 0 || r.size.height == 0)
+                continue;
+            r.origin = CCPointZero;
+            if(!r.containsPoint(local))
+                return NULL;
+        }
+    }
+    // #HLP_END
+    
     if (m_pChildren && m_pChildren->count() > 0)
     {
         CCObject* pObject = NULL;
