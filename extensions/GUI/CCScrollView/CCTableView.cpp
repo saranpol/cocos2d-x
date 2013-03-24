@@ -34,6 +34,15 @@
 NS_CC_EXT_BEGIN
 
 // #HLP_BEGIN
+bool CCTableViewDataSource::hasFixedCellSize() {
+    return true;
+}
+
+CCSize CCTableViewDataSource::cellSizeForIndex(CCTableView *table, unsigned int idx) {
+    return cellSizeForTable(table);
+}
+
+
 CCTableView* CCTableView::create() {
     CCTableView *table = new CCTableView();
     table->initWithViewSize(CCSizeMake(200, 200), NULL);
@@ -278,16 +287,48 @@ void CCTableView::_updateContentSize()
     cellSize  = m_pDataSource->cellSizeForTable(this);
     cellCount = m_pDataSource->numberOfCellsInTableView(this);
     
-    switch (this->getDirection())
-    {
-        case kCCScrollViewDirectionHorizontal:
-            size = CCSizeMake(cellCount * cellSize.width, cellSize.height);
-            break;
-        default:
-            size = CCSizeMake(cellSize.width, cellCount * cellSize.height);
-            break;
-    }
+//    switch (this->getDirection())
+//    {
+//        case kCCScrollViewDirectionHorizontal:
+//            size = CCSizeMake(cellCount * cellSize.width, cellSize.height);
+//            break;
+//        default:
+//            size = CCSizeMake(cellSize.width, cellCount * cellSize.height);
+//            break;
+//    }
+    
     // #HLP_BEGIN
+    if (m_pDataSource->hasFixedCellSize()) {
+        switch (this->getDirection())
+        {
+            case kCCScrollViewDirectionHorizontal:
+                size = CCSizeMake(cellCount * cellSize.width, cellSize.height);
+                break;
+            default:
+                size = CCSizeMake(cellSize.width, cellCount * cellSize.height);
+                break;
+        }        
+    }else{
+        float w = 0, h = 0;
+        for (size_t i = 0; i != cellCount; ++i) {
+            CCSize cellSize = m_pDataSource->cellSizeForIndex(this, i);
+            
+            switch (this->getDirection())
+            {
+                case kCCScrollViewDirectionHorizontal:
+                    h = MAX(h, cellSize.height);
+                    w += cellSize.width;
+                    break;
+                default:
+                    h += cellSize.height;
+                    w = MAX(w, cellSize.width);
+                    break;
+            }
+            
+        }
+        size = CCSizeMake(w, h);
+    }
+    
     if(cellCount == 0){
         size = getViewSize();
     }
@@ -325,15 +366,45 @@ CCPoint CCTableView::__offsetFromIndex(unsigned int index)
     CCPoint offset;
     CCSize  cellSize;
     
-    cellSize = m_pDataSource->cellSizeForTable(this);
-    switch (this->getDirection()) {
-        case kCCScrollViewDirectionHorizontal:
-            offset = ccp(cellSize.width * index, 0.0f);
-            break;
-        default:
-            offset = ccp(0.0f, cellSize.height * index);
-            break;
+//    cellSize = m_pDataSource->cellSizeForTable(this);
+//    switch (this->getDirection()) {
+//        case kCCScrollViewDirectionHorizontal:
+//            offset = ccp(cellSize.width * index, 0.0f);
+//            break;
+//        default:
+//            offset = ccp(0.0f, cellSize.height * index);
+//            break;
+//    }
+
+    // #HLP_BEGIN
+    if(m_pDataSource->hasFixedCellSize()){
+        cellSize = m_pDataSource->cellSizeForTable(this);
+        switch (this->getDirection()) {
+            case kCCScrollViewDirectionHorizontal:
+                offset = ccp(cellSize.width * index, 0.0f);
+                break;
+            default:
+                offset = ccp(0.0f, cellSize.height * index);
+                break;
+        }
+    }else{
+        float w = 0, h = 0;
+        for (size_t i = 0; i  != index; ++i) {
+            CCSize cellSize = m_pDataSource->cellSizeForIndex(this, i);
+            w += cellSize.width;
+            h += cellSize.height;
+        }
+        
+        switch (this->getDirection()) {
+            case kCCScrollViewDirectionHorizontal:
+                offset = ccp(w, 0.0f);
+                break;
+            default:
+                offset = ccp(0.0f, h);
+                break;
+        }
     }
+    // #HLP_END
     
     return offset;
 }
@@ -341,38 +412,105 @@ CCPoint CCTableView::__offsetFromIndex(unsigned int index)
 unsigned int CCTableView::_indexFromOffset(CCPoint offset)
 {
     int index = 0;
-    const int maxIdx = m_pDataSource->numberOfCellsInTableView(this)-1;
 
-    const CCSize cellSize = m_pDataSource->cellSizeForTable(this);
-    if (m_eVordering == kCCTableViewFillTopDown) {
-        offset.y = this->getContainer()->getContentSize().height - offset.y - cellSize.height;
+//    const int maxIdx = m_pDataSource->numberOfCellsInTableView(this)-1;
+//
+//    const CCSize cellSize = m_pDataSource->cellSizeForTable(this);
+//    if (m_eVordering == kCCTableViewFillTopDown) {
+//        offset.y = this->getContainer()->getContentSize().height - offset.y - cellSize.height;
+//    }
+//    index = MAX(0, this->__indexFromOffset(offset));
+//    if (index >maxIdx)
+//	{
+//		index = CC_INVALID_INDEX;
+//	}
+    
+    // #HLP_BEGIN
+    if(m_pDataSource->hasFixedCellSize()){
+        const int maxIdx = m_pDataSource->numberOfCellsInTableView(this)-1;
+        
+        const CCSize cellSize = m_pDataSource->cellSizeForTable(this);
+        if (m_eVordering == kCCTableViewFillTopDown) {
+            offset.y = this->getContainer()->getContentSize().height - offset.y - cellSize.height;
+        }
+        index = MAX(0, this->__indexFromOffset(offset));
+        if (index >maxIdx)
+        {
+            index = CC_INVALID_INDEX;
+        }
+    }else{
+        int maxIdx = m_pDataSource->numberOfCellsInTableView(this) - 1;
+        if (m_eVordering == kCCTableViewFillTopDown) {
+            float extra = maxIdx > 0 ? m_pDataSource->cellSizeForIndex(this, maxIdx).height : 0;
+            offset.y = this->getContainer()->getContentSize().height - offset.y - extra;
+        }
+        index = MAX(0, __indexFromOffset(offset));
+        index = MIN(index, maxIdx);
     }
-    index = MAX(0, this->__indexFromOffset(offset));
-    if (index >maxIdx)
-	{
-		index = CC_INVALID_INDEX;
-	}
-
+    // #HLP_END
+    
     return index;
 }
 
 int CCTableView::__indexFromOffset(CCPoint offset)
 {
-    int  index = 0;
-    CCSize     cellSize;
-    
-    cellSize = m_pDataSource->cellSizeForTable(this);
-    
-    switch (this->getDirection()) {
-        case kCCScrollViewDirectionHorizontal:
-            index = offset.x/cellSize.width;
-            break;
-        default:
-            index = offset.y/cellSize.height;
-            break;
+//    int  index = 0;
+//    CCSize     cellSize;
+//    
+//    cellSize = m_pDataSource->cellSizeForTable(this);
+//    
+//    switch (this->getDirection()) {
+//        case kCCScrollViewDirectionHorizontal:
+//            index = offset.x/cellSize.width;
+//            break;
+//        default:
+//            index = offset.y/cellSize.height;
+//            break;
+//    }
+//    
+//    return index;
+
+    // #HLP_BEGIN
+    if(m_pDataSource->hasFixedCellSize()){
+        int  index = 0;
+        CCSize     cellSize;
+
+        cellSize = m_pDataSource->cellSizeForTable(this);
+
+        switch (this->getDirection()) {
+            case kCCScrollViewDirectionHorizontal:
+                index = offset.x/cellSize.width;
+                break;
+            default:
+                index = offset.y/cellSize.height;
+                break;
+        }
+        
+        return index;
+    }else{
+        float target = getDirection() == kCCScrollViewDirectionHorizontal ? offset.x : offset.y;
+        float off = 0;
+        for (size_t i = 0; i != m_pDataSource->numberOfCellsInTableView(this); ++i) {
+            
+            if (off > target) {
+                CCAssert(i >= 0, "weird index");
+                return MAX(i - 1, 0);
+            }
+            
+            switch(this->getDirection()) {
+                case kCCScrollViewDirectionHorizontal:
+                    off += m_pDataSource->cellSizeForIndex(this, i).width;
+                    break;
+                default:
+                    off += m_pDataSource->cellSizeForIndex(this, i).height;
+                    break;
+                    
+            }
+        }
+        return m_pDataSource->numberOfCellsInTableView(this)-1;
     }
     
-    return index;
+    // #HLP_END
 }
 
 void CCTableView::_moveCellOutOfSight(CCTableViewCell *cell)
@@ -566,8 +704,20 @@ bool CCTableView::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
         point = this->getContainer()->convertTouchToNodeSpace(pTouch);
         
         if (m_eVordering == kCCTableViewFillTopDown) {
-            CCSize cellSize = m_pDataSource->cellSizeForTable(this);
-            point.y -= cellSize.height;
+//            CCSize cellSize = m_pDataSource->cellSizeForTable(this);
+//            point.y -= cellSize.height;
+            // #HLP_BEGIN
+            float extra = m_pDataSource->cellSizeForTable(this).height;
+            unsigned cell_ct = m_pDataSource->numberOfCellsInTableView(this);
+            if (! m_pDataSource->hasFixedCellSize()) {
+                if (cell_ct < 1) {
+                    extra = 0;
+                } else {
+                    extra = m_pDataSource->cellSizeForIndex(this, cell_ct-1).height;
+                }
+            }
+            point.y -= extra;
+            // #HLP_END
         }
         
         index = this->_indexFromOffset(point);

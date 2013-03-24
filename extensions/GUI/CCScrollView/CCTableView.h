@@ -112,6 +112,11 @@ public:
      */
     virtual unsigned int numberOfCellsInTableView(CCTableView *table) = 0;
 
+    // #HLP_BEGIN
+    virtual bool hasFixedCellSize();
+    virtual CCSize cellSizeForIndex(CCTableView *table, unsigned int idx);
+    // #HLP_END
+    
 };
 
 
