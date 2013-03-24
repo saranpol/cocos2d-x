@@ -335,6 +335,10 @@ public:
     */
     void setContentScaleFactor(float scaleFactor);
     float getContentScaleFactor(void);
+    // #HLP_BEGIN
+    void setResourceScaleFactor(float scaleFactor);
+    float getResourceScaleFactor(void);
+    // #HLP_END
 
 public:
     /** CCScheduler associated with this director
@@ -435,6 +439,9 @@ protected:
     
     /* content scale factor */
     float    m_fContentScaleFactor;
+    // #HLP_BEGIN
+    float    m_fResourceScaleFactor;
+    // #HLP_END
 
     /* store the fps string */
     char *m_pszFPS;

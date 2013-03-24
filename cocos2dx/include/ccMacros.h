@@ -120,6 +120,10 @@ On iPhone it returns 2 if RetinaDisplay is On. Otherwise it returns 1
 */
 #define CC_CONTENT_SCALE_FACTOR() CCDirector::sharedDirector()->getContentScaleFactor()
 
+// #HLP_BEGIN
+#define CC_RESOURCE_SCALE_FACTOR() CCDirector::sharedDirector()->getResourceScaleFactor()
+// #HLP_END
+
 /****************************/
 /** RETINA DISPLAY ENABLED **/
 /****************************/

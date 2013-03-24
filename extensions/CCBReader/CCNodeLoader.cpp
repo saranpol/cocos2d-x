@@ -542,6 +542,11 @@ CCSpriteFrame * CCNodeLoader::parsePropTypeSpriteFrame(CCNode * pNode, CCNode * 
         {
             spriteFile = pCCBReader->getCCBRootPath() + spriteFile;
             CCTexture2D * texture = CCTextureCache::sharedTextureCache()->addImage(spriteFile.c_str());
+            // #HLP_BEGIN
+            // CCLog("file = %s", spriteFile.c_str());
+            // It will be good to resize CCImage when addImage from resource to acctual scale
+            // setScale in sprite is not save memory anyways there is no one can resize CCImage yet
+            // #HLP_END
             CCRect bounds = CCRectMake(0, 0, texture->getContentSize().width, texture->getContentSize().height);
             spriteFrame = CCSpriteFrame::createWithTexture(texture, bounds);
         }

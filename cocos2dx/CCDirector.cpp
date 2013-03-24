@@ -868,6 +868,22 @@ void CCDirector::setContentScaleFactor(float scaleFactor)
     }
 }
 
+// #HLP_BEGIN
+float CCDirector::getResourceScaleFactor(void)
+{
+    return m_fResourceScaleFactor;
+}
+
+void CCDirector::setResourceScaleFactor(float scaleFactor)
+{
+    if (scaleFactor != m_fResourceScaleFactor)
+    {
+        m_fResourceScaleFactor = scaleFactor;
+    }
+}
+// #HLP_END
+
+
 CCNode* CCDirector::getNotificationNode() 
 { 
     return m_pNotificationNode; 
