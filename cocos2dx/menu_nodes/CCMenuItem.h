@@ -298,6 +298,13 @@ public:
     /** sets the sprite frame for the disabled image */
     void setDisabledSpriteFrame(CCSpriteFrame* frame);
 
+    // #HLP_BEGIN
+    CCSpriteFrame* createSpriteFrame(const char *fileName);
+    void setNormalSpriteFrame(const char *fileName);
+    void setSelectedSpriteFrame(const char *fileName);
+    void setDisabledSpriteFrame(const char *fileName);
+    // #HLP_END
+    
     /** Creates an CCMenuItemImage.
      */
     static CCMenuItemImage* create();

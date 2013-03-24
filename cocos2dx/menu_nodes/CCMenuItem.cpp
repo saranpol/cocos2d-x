@@ -34,6 +34,10 @@ THE SOFTWARE.
 #include <stdarg.h>
 #include <cstring>
 
+// #HLP_BEGIN
+#include "textures/CCTextureCache.h"
+// #HLP_END
+
 NS_CC_BEGIN
     
 static unsigned int _globalFontSize = kCCItemSize;
@@ -697,6 +701,30 @@ void CCMenuItemImage::setDisabledSpriteFrame(CCSpriteFrame * frame)
 {
     setDisabledImage(CCSprite::createWithSpriteFrame(frame));
 }
+
+// #HLP_BEGIN
+CCSpriteFrame* CCMenuItemImage::createSpriteFrame(const char *fileName) {
+    CCTexture2D * texture = CCTextureCache::sharedTextureCache()->addImage(fileName);
+    CCRect bounds = CCRectMake(0, 0, texture->getContentSize().width, texture->getContentSize().height);
+    CCSpriteFrame* spriteFrame = CCSpriteFrame::createWithTexture(texture, bounds);
+    return spriteFrame;
+}
+
+void CCMenuItemImage::setNormalSpriteFrame(const char *fileName)
+{
+    setNormalSpriteFrame(createSpriteFrame(fileName));
+}
+
+void CCMenuItemImage::setSelectedSpriteFrame(const char *fileName)
+{
+    setSelectedSpriteFrame(createSpriteFrame(fileName));
+}
+
+void CCMenuItemImage::setDisabledSpriteFrame(const char *fileName)
+{
+    setDisabledSpriteFrame(createSpriteFrame(fileName));
+}
+// #HLP_END
 
 //
 // MenuItemToggle
