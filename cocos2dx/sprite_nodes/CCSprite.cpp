@@ -47,6 +47,10 @@ THE SOFTWARE.
 #include "kazmath/GL/matrix.h"
 #include <string.h>
 
+// #HLP_BEGIN
+#include "HttpRequest.h"
+// #HLP_END
+
 using namespace std;
 
 NS_CC_BEGIN
@@ -299,13 +303,138 @@ CCSprite* CCSprite::initWithCGImage(CGImageRef pImage, const char *pszKey)
 CCSprite::CCSprite(void)
 : m_bShouldBeHidden(false),
 m_pobTexture(NULL)
+// #HLP_BEGIN
+,mRequest(NULL)
+,mOriginalPosSet(false)
+// #HLP_END
 {
 }
 
 CCSprite::~CCSprite(void)
 {
+    // #HLP_BEGIN
+    if(mRequest)
+        delete mRequest;
+    // #HLP_END
+    
     CC_SAFE_RELEASE(m_pobTexture);
 }
+
+
+
+
+
+// #HLP_BEGIN
+
+void CCSprite::setTextureAndSize(CCTexture2D *texture){
+    
+    CCSize size = getContentSize();
+    CCPoint anchor = getAnchorPoint();
+    
+    // if broken image
+    if(texture->getContentSize().width == 0)
+        return;
+    
+    initWithTexture(texture); // content size may change here
+    setContentSize(size); // restore content size
+    setAnchorPoint(anchor);
+    
+    
+    float frame_w = size.width;
+    float frame_h = size.height;
+    float image_w = texture->getContentSize().width;
+    float image_h = texture->getContentSize().height;
+    float final_w, final_h;
+    
+    
+    // Fix width
+    final_w = frame_w;
+    final_h = final_w*image_h/image_w;
+    if(final_h <= frame_h){
+        // y center
+        float y = frame_h/2.0 - final_h/2.0;
+        setPositionY(mOriginalY + y);
+        setScale(final_w/image_w);
+    }else{
+        // Fix height
+        final_h = frame_h;
+        final_w = final_h*image_w/image_h;
+        // x center
+        float x = frame_w/2.0 - final_w/2.0;
+        setPositionX(mOriginalX + x);
+        setScale(final_h/image_h);
+    }
+}
+
+void CCSprite::setUrl(const char *url) {
+    if(!mOriginalPosSet){
+        mOriginalX = getPositionX();
+        mOriginalY = getPositionY();
+        mOriginalPosSet = true;
+    }
+    
+    if(mRequest){
+        delete mRequest;
+        mRequest = NULL;
+    }
+    
+    // TODO: implement disk cache too
+    
+    CCTextureCache *cache = CCTextureCache::sharedTextureCache();
+    CCTexture2D* texture = cache->textureForKey(url);
+    if(texture){
+        setTextureAndSize(texture);
+        return;
+    }
+    
+    mRequest = new HttpRequest;
+    mRequest->delegate = this;
+    mRequest->callURL(url);
+    mRequest->mType = HTTP_REQUEST_FILE;
+}
+
+void CCSprite::deleteRequest() {
+    delete mRequest;
+    mRequest = NULL;
+}
+
+void CCSprite::didReceivedFile(HttpRequest* r, char *data, uint32 len) {
+    if(r == mRequest){
+        CCImage* img = new CCImage;
+        img->initWithImageData(data, len);
+        
+        // TODO: implement disk cache too
+        
+        CCTextureCache *cache = CCTextureCache::sharedTextureCache();
+        CCTexture2D* texture = cache->addUIImage(img, r->mURL->getCString());
+        //CCTexture2D* texture = new CCTexture2D;
+        //texture->initWithImage(img);
+        
+        
+        setTextureAndSize(texture);
+        
+        
+        scheduleOnce(schedule_selector(CCSprite::deleteRequest), 0.0);
+    }
+}
+
+void CCSprite::didReceivedError(HttpRequest* r, const char *message) {
+    if(r == mRequest){
+        scheduleOnce(schedule_selector(CCSprite::deleteRequest), 0.0);
+    }
+}
+
+// #HLP_END
+
+
+
+
+
+
+
+
+
+
 
 void CCSprite::setTextureRect(const CCRect& rect)
 {

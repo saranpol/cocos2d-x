@@ -34,6 +34,10 @@ THE SOFTWARE.
 #include "cocoa/CCDictionary.h"
 #include <string>
 
+// #HLP_BEGIN
+#include "HttpRequestDelegate.h"
+// #HLP_BEGIN
+
 NS_CC_BEGIN
 
 class CCSpriteBatchNode;
@@ -77,6 +81,9 @@ struct transformValues_;
  * The default anchorPoint in CCSprite is (0.5, 0.5).
  */
 class CC_DLL CCSprite : public CCNodeRGBA, public CCTextureProtocol
+// #HLP_BEGIN
+, public HttpRequestDelegate
+// #HLP_END
 {
 public:
     /// @{
@@ -480,6 +487,22 @@ public:
     void setFlipY(bool bFlipY);
     
     /// @} End of Sprite properties getter/setters
+    
+    
+    // #HLP_BEGIN
+    // internet
+    void setUrl(const char *url);
+    void setTextureAndSize(CCTexture2D *texture);
+    HttpRequest *mRequest;
+    void deleteRequest();
+    void didReceivedFile(HttpRequest* r, char *data, uint32 len);
+    void didReceivedError(HttpRequest* r, const char *message);
+
+    bool mOriginalPosSet;
+    float mOriginalX;
+    float mOriginalY;
+    // #HLP_END
+    
     
 protected:
     void updateColor(void);
