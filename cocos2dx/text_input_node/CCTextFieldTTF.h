@@ -95,6 +95,9 @@ public:
 @brief    A simple text input field with TTF font.
 */
 class CC_DLL CCTextFieldTTF : public CCLabelTTF, public CCIMEDelegate
+// #HLP_BEGIN
+, public CCTouchDelegate
+// #HLP_END
 {
 public:
     CCTextFieldTTF();
@@ -102,6 +105,10 @@ public:
 
     // #HLP_BEGIN
     static CCTextFieldTTF* create();
+    virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
+    bool mIsTouchBegan;
     // #HLP_END
     
     //char * description();

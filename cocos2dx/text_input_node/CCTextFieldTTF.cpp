@@ -26,6 +26,10 @@ THE SOFTWARE.
 
 #include "CCDirector.h"
 #include "CCEGLView.h"
+// #HLP_BEGIN
+#include "touch_dispatcher/CCTouchDispatcher.h"
+#include "support/CCPointExtension.h"
+// #HLP_END
 
 NS_CC_BEGIN
 
@@ -55,8 +59,15 @@ CCTextFieldTTF::CCTextFieldTTF()
 , m_nCharCount(0)
 , m_pInputText(new std::string)
 , m_pPlaceHolder(new std::string)   // prevent CCLabelTTF initWithString assertion
+// #HLP_BEGIN
+, mIsTouchBegan(false)
+// #HLP_END
 {
     m_ColorSpaceHolder.r = m_ColorSpaceHolder.g = m_ColorSpaceHolder.b = 127;
+    
+    // #HLP_BEGIN
+    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, false);
+    // #HLP_END
 }
 
 CCTextFieldTTF::~CCTextFieldTTF()
@@ -79,6 +90,37 @@ CCTextFieldTTF * CCTextFieldTTF::create()
     }
     return pRet;
 }
+
+bool CCTextFieldTTF::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
+    if (!this->isVisible())
+    {
+        return false;
+    }
+    
+    CCPoint touchLocation = pTouch->getLocation(); // Get the touch position
+    touchLocation = this->getParent()->convertToNodeSpace(touchLocation);
+    CCRect bBox = boundingBox();
+    bool inSide = bBox.containsPoint(touchLocation);
+    mIsTouchBegan = inSide;
+    return inSide;
+}
+
+void CCTextFieldTTF::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) {
+    CCPoint start = pTouch->getStartLocation();
+    CCPoint end = pTouch->getLocation();
+    if(ccpDistance(start, end) > 10)
+        mIsTouchBegan = false;
+}
+
+void CCTextFieldTTF::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) {
+    if(mIsTouchBegan){
+        attachWithIME();
+    }
+    mIsTouchBegan = false;
+}
+
+
+
 // #HLP_END
 
 //////////////////////////////////////////////////////////////////////////

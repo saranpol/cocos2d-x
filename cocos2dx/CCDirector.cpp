@@ -92,6 +92,13 @@ CCDirector* CCDirector::sharedDirector(void)
     return s_SharedDirector;
 }
 
+// #HLP_BEGIN
+void CCDirector::hideKeyboard(){
+    CCEGLView * pGlView = CCDirector::sharedDirector()->getOpenGLView();
+    pGlView->setIMEKeyboardState(false);
+}
+// #HLP_END
+
 CCDirector::CCDirector(void)
 {
 

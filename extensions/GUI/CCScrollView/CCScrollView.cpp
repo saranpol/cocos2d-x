@@ -761,6 +761,12 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
 
                 m_tScrollDistance = moveDistance;
                 this->setContentOffset(ccp(newX, newY));
+                // #HLP_BEGIN
+                if(dis > 10.0f){
+                    if (m_pDelegate != NULL)
+                        m_pDelegate->scrollViewDidScrollMove(this);
+                }
+                // #HLP_END
             }
         }
         else if (m_pTouches->count() == 2 && !m_bDragging)

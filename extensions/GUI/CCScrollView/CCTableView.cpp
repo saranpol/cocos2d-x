@@ -652,6 +652,12 @@ void CCTableView::scrollViewDidScroll(CCScrollView* view)
 
 
 // #HLP_BEGIN
+void CCTableView::scrollViewDidScrollMove(CCScrollView* view) {
+    if(m_pTableViewDelegate){
+        m_pTableViewDelegate->scrollViewDidScrollMove(view);
+    }
+}
+
 void CCTableView::scrollViewDidStoppedAnimatedScroll(CCScrollView *view) {
     if(m_pTableViewDelegate){
         m_pTableViewDelegate->scrollViewDidStoppedAnimatedScroll(view);

@@ -371,6 +371,9 @@ public:
 	
     /** returns a shared instance of the director */
     static CCDirector* sharedDirector(void);
+    // #HLP_BEGIN
+    static void hideKeyboard();
+    // #HLP_END
 
 protected:
 

@@ -235,11 +235,9 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
 //	}
     
     // #HLP_BEGIN
-    if(bOpen){
-        int newCharState = s3eKeyboardGetInt(S3E_KEYBOARD_GET_CHAR);
-        newCharState = !newCharState;
-        s3eKeyboardSetInt(S3E_KEYBOARD_GET_CHAR, newCharState);
-    }
+    s3eKeyboardSetInt(S3E_KEYBOARD_GET_CHAR, bOpen);
+//        int newCharState = s3eKeyboardGetInt(S3E_KEYBOARD_GET_CHAR);
+//        newCharState = !newCharState;
     
     // #HLP_END
     
