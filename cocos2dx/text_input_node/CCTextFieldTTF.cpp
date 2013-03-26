@@ -65,6 +65,22 @@ CCTextFieldTTF::~CCTextFieldTTF()
     CC_SAFE_DELETE(m_pPlaceHolder);
 }
 
+// #HLP_BEGIN
+CCTextFieldTTF * CCTextFieldTTF::create()
+{
+    CCTextFieldTTF * pRet = new CCTextFieldTTF();
+    if (pRet && pRet->init())
+    {
+        pRet->autorelease();
+    }
+    else
+    {
+        CC_SAFE_DELETE(pRet);
+    }
+    return pRet;
+}
+// #HLP_END
+
 //////////////////////////////////////////////////////////////////////////
 // static constructor
 //////////////////////////////////////////////////////////////////////////

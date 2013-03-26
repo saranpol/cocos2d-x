@@ -100,6 +100,10 @@ public:
     CCTextFieldTTF();
     virtual ~CCTextFieldTTF();
 
+    // #HLP_BEGIN
+    static CCTextFieldTTF* create();
+    // #HLP_END
+    
     //char * description();
 
     /** creates a CCTextFieldTTF from a fontname, alignment, dimension and font size */

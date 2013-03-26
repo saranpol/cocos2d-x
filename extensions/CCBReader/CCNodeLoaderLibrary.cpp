@@ -17,6 +17,7 @@
 
 // #HLP_BEGIN
 #include "CCTableViewLoader.h"
+#include "CCTextFieldTTFLoader.h"
 // #HLP_END
 
 
@@ -42,6 +43,7 @@ void CCNodeLoaderLibrary::registerDefaultCCNodeLoaders() {
     this->registerCCNodeLoader("CCScrollView", CCScrollViewLoader::loader());
     // #HLP_BEGIN
     this->registerCCNodeLoader("CCTableView", CCTableViewLoader::loader());
+    this->registerCCNodeLoader("CCTextFieldTTF", CCTextFieldTTFLoader::loader());
     // #HLP_END
     this->registerCCNodeLoader("CCBFile", CCBFileLoader::loader());
     this->registerCCNodeLoader("CCMenu", CCMenuLoader::loader());
