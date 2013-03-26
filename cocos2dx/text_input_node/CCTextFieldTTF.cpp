@@ -63,11 +63,7 @@ CCTextFieldTTF::CCTextFieldTTF()
 , mIsTouchBegan(false)
 // #HLP_END
 {
-    m_ColorSpaceHolder.r = m_ColorSpaceHolder.g = m_ColorSpaceHolder.b = 127;
-    
-    // #HLP_BEGIN
-    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, false);
-    // #HLP_END
+    m_ColorSpaceHolder.r = m_ColorSpaceHolder.g = m_ColorSpaceHolder.b = 127;    
 }
 
 CCTextFieldTTF::~CCTextFieldTTF()
@@ -77,6 +73,7 @@ CCTextFieldTTF::~CCTextFieldTTF()
 }
 
 // #HLP_BEGIN
+
 CCTextFieldTTF * CCTextFieldTTF::create()
 {
     CCTextFieldTTF * pRet = new CCTextFieldTTF();
@@ -91,18 +88,83 @@ CCTextFieldTTF * CCTextFieldTTF::create()
     return pRet;
 }
 
-bool CCTextFieldTTF::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
-    if (!this->isVisible())
-    {
-        return false;
-    }
+
+void CCTextFieldTTF::onEnter()
+{
+    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, false);
     
-    CCPoint touchLocation = pTouch->getLocation(); // Get the touch position
-    touchLocation = this->getParent()->convertToNodeSpace(touchLocation);
-    CCRect bBox = boundingBox();
-    bool inSide = bBox.containsPoint(touchLocation);
-    mIsTouchBegan = inSide;
-    return inSide;
+    CCNode::onEnter();
+    
+//    // add this layer to concern the Accelerometer Sensor
+//    if (m_bAccelerometerEnabled)
+//    {
+//        pDirector->getAccelerometer()->setDelegate(this);
+//    }
+//    
+//    // add this layer to concern the keypad msg
+//    if (m_bKeypadEnabled)
+//    {
+//        pDirector->getKeypadDispatcher()->addDelegate(this);
+//    }
+}
+
+void CCTextFieldTTF::onExit()
+{
+    CCDirector* pDirector = CCDirector::sharedDirector();
+    pDirector->getTouchDispatcher()->removeDelegate(this);
+    
+//    // remove this layer from the delegates who concern Accelerometer Sensor
+//    if (m_bAccelerometerEnabled)
+//    {
+//        pDirector->getAccelerometer()->setDelegate(NULL);
+//    }
+//    
+//    // remove this layer from the delegates who concern the keypad msg
+//    if (m_bKeypadEnabled)
+//    {
+//        pDirector->getKeypadDispatcher()->removeDelegate(this);
+//    }
+    
+    CCNode::onExit();
+}
+
+bool CCTextFieldTTF::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
+    
+    CCPoint touchLocation = pTouch->getLocation();
+
+    CCLog("beeeee");
+    
+    CCNode *parent = (CCNode*)this;
+    while(parent){
+        if(!parent->isVisible()){
+            mIsTouchBegan = false;
+            return false;
+        }
+        
+        CCPoint local = parent->convertToNodeSpace(touchLocation);
+        CCRect r = parent->boundingBox();
+        CCLog("local %f %f", local.x, local.y);
+        CCLog("r = %f %f %f %f", r.origin.x, r.origin.y, r.size.width, r.size.height);
+        // special case get parent = CCTableViewCell size 0 we ignore it
+        if(r.size.width == 0 || r.size.height == 0){
+            parent = parent->getParent();
+            continue;
+        }
+        r.origin = CCPointZero;
+        if(!r.containsPoint(local)){
+            mIsTouchBegan = false;
+            return false;
+        }
+        parent = parent->getParent();
+    }
+
+    
+
+            
+    
+    mIsTouchBegan = true;
+    CCLog("FFFFFFFFFFFFFFF");
+    return true;
 }
 
 void CCTextFieldTTF::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) {
