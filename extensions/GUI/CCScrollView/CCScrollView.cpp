@@ -684,6 +684,15 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
         return;
     }
 
+    // #HLP_BEGIN
+    CCPoint start = touch->getStartLocation();
+    CCPoint end = touch->getLocation();
+    if(ccpDistance(start, end) > 10.0f){
+        if (m_pDelegate != NULL)
+            m_pDelegate->scrollViewDidScrollMove(this);
+    }
+    // #HLP_END
+    
     if (m_pTouches->containsObject(touch))
     {
         if (m_pTouches->count() == 1 && m_bDragging)
@@ -761,12 +770,6 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
 
                 m_tScrollDistance = moveDistance;
                 this->setContentOffset(ccp(newX, newY));
-                // #HLP_BEGIN
-                if(dis > 10.0f){
-                    if (m_pDelegate != NULL)
-                        m_pDelegate->scrollViewDidScrollMove(this);
-                }
-                // #HLP_END
             }
         }
         else if (m_pTouches->count() == 2 && !m_bDragging)

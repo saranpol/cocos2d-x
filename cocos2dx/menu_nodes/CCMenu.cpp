@@ -297,7 +297,7 @@ void CCMenu::ccTouchMoved(CCTouch* touch, CCEvent* event)
     if(mIsInScrollView){
         CCPoint start = touch->getStartLocation();
         CCPoint end = touch->getLocation();
-        if(ccpDistance(start, end) > 10){
+        if(ccpDistance(start, end) > 10.0f){
             if (m_pSelectedItem)
             {
                 m_pSelectedItem->unselected();

@@ -108,7 +108,7 @@ bool CCTextFieldTTF::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
 void CCTextFieldTTF::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) {
     CCPoint start = pTouch->getStartLocation();
     CCPoint end = pTouch->getLocation();
-    if(ccpDistance(start, end) > 10)
+    if(ccpDistance(start, end) > 10.0f)
         mIsTouchBegan = false;
 }
 
