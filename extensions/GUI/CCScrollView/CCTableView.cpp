@@ -354,11 +354,28 @@ CCPoint CCTableView::_offsetFromIndex(unsigned int index)
 {
     CCPoint offset = this->__offsetFromIndex(index);
     
-    const CCSize cellSize = m_pDataSource->cellSizeForTable(this);
-    if (m_eVordering == kCCTableViewFillTopDown) {
-        offset.y = this->getContainer()->getContentSize().height - offset.y - cellSize.height;
+//    const CCSize cellSize = m_pDataSource->cellSizeForTable(this);
+//    if (m_eVordering == kCCTableViewFillTopDown) {
+//        offset.y = this->getContainer()->getContentSize().height - offset.y - cellSize.height;
+//    }
+//    return offset;
+
+    // #HLP_BEGIN
+    if(m_pDataSource->hasFixedCellSize()){
+        const CCSize cellSize = m_pDataSource->cellSizeForTable(this);
+        if (m_eVordering == kCCTableViewFillTopDown) {
+            offset.y = this->getContainer()->getContentSize().height - offset.y - cellSize.height;
+        }
+        return offset;
+    }else{
+        if (m_eVordering == kCCTableViewFillTopDown) {
+            float extra = m_pDataSource->cellSizeForIndex(this, index).height;
+            offset.y = this->getContainer()->getContentSize().height - offset.y - extra;
+        }
+        return offset;
     }
-    return offset;
+    // #HLP_END
+    
 }
 
 CCPoint CCTableView::__offsetFromIndex(unsigned int index)
@@ -551,12 +568,28 @@ void CCTableView::scrollViewDidScroll(CCScrollView* view)
     unsigned int startIdx = 0, endIdx = 0, idx = 0, maxIdx = 0;
     CCPoint offset = ccpMult(this->getContentOffset(), -1);
     maxIdx = MAX(uCountOfItems-1, 0);
-    const CCSize cellSize = m_pDataSource->cellSizeForTable(this);
-    
-    if (m_eVordering == kCCTableViewFillTopDown)
-    {
-        offset.y = offset.y + m_tViewSize.height/this->getContainer()->getScaleY() - cellSize.height;
+//    const CCSize cellSize = m_pDataSource->cellSizeForTable(this);
+//    
+//    if (m_eVordering == kCCTableViewFillTopDown)
+//    {
+//        offset.y = offset.y + m_tViewSize.height/this->getContainer()->getScaleY() - cellSize.height;
+//    }
+    // #HLP_BEGIN
+    if(m_pDataSource->hasFixedCellSize()){
+        const CCSize cellSize = m_pDataSource->cellSizeForTable(this);
+        if (m_eVordering == kCCTableViewFillTopDown) {
+            offset.y = offset.y + m_tViewSize.height/this->getContainer()->getScaleY() - cellSize.height;
+        }
+    }else{
+        int maxIdx = m_pDataSource->numberOfCellsInTableView(this) - 1;
+        if (m_eVordering == kCCTableViewFillTopDown) {
+            float extra = maxIdx > 0 ? m_pDataSource->cellSizeForIndex(this, maxIdx).height : 0;
+            offset.y = offset.y + m_tViewSize.height/this->getContainer()->getScaleY() - extra;
+        }
     }
+    // #HLP_END
+    
+    
     startIdx = this->_indexFromOffset(offset);
 	if (startIdx == CC_INVALID_INDEX)
 	{
