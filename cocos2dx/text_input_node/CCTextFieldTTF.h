@@ -89,6 +89,10 @@ public:
         CC_UNUSED_PARAM(sender);
         return false;
     }
+    
+    // #HLP_BEGIN
+    virtual void textChanged(CCTextFieldTTF * sender) {}
+    // #HLP_END
 };
 
 /**

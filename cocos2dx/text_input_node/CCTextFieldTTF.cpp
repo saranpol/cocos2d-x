@@ -132,8 +132,6 @@ bool CCTextFieldTTF::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
     
     CCPoint touchLocation = pTouch->getLocation();
 
-    CCLog("beeeee");
-    
     CCNode *parent = (CCNode*)this;
     while(parent){
         if(!parent->isVisible()){
@@ -143,8 +141,6 @@ bool CCTextFieldTTF::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
         
         CCPoint local = parent->convertToNodeSpace(touchLocation);
         CCRect r = parent->boundingBox();
-        CCLog("local %f %f", local.x, local.y);
-        CCLog("r = %f %f %f %f", r.origin.x, r.origin.y, r.size.width, r.size.height);
         // special case get parent = CCTableViewCell size 0 we ignore it
         if(r.size.width == 0 || r.size.height == 0){
             parent = parent->getParent();
@@ -157,13 +153,8 @@ bool CCTextFieldTTF::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
         }
         parent = parent->getParent();
     }
-
-    
-
-            
     
     mIsTouchBegan = true;
-    CCLog("FFFFFFFFFFFFFFF");
     return true;
 }
 
@@ -375,6 +366,11 @@ void CCTextFieldTTF::deleteBackward()
         m_pInputText = new std::string;
         m_nCharCount = 0;
         CCLabelTTF::setString(m_pPlaceHolder->c_str());
+        // #HLP_BEGIN
+        if(m_pDelegate){
+            m_pDelegate->textChanged(this);
+        }
+        // #HLP_END
         return;
     }
 
@@ -445,6 +441,13 @@ void CCTextFieldTTF::setString(const char *text)
         CCLabelTTF::setString(m_pInputText->c_str());
     }
     m_nCharCount = _calcCharCount(m_pInputText->c_str());
+    
+    
+    // #HLP_BEGIN
+    if(m_pDelegate){
+        m_pDelegate->textChanged(this);
+    }
+    // #HLP_END
 }
 
 const char* CCTextFieldTTF::getString(void)
