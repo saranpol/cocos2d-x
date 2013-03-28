@@ -61,6 +61,7 @@ CCTextFieldTTF::CCTextFieldTTF()
 , m_pPlaceHolder(new std::string)   // prevent CCLabelTTF initWithString assertion
 // #HLP_BEGIN
 , mIsTouchBegan(false)
+, mIsPassword(false)
 // #HLP_END
 {
     m_ColorSpaceHolder.r = m_ColorSpaceHolder.g = m_ColorSpaceHolder.b = 127;    
