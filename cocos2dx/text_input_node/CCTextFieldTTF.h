@@ -115,6 +115,7 @@ public:
     virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
     bool mIsTouchBegan;
+    bool mIsPassword;
     // #HLP_END
     
     //char * description();

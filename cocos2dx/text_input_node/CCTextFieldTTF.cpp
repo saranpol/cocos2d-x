@@ -438,7 +438,34 @@ void CCTextFieldTTF::setString(const char *text)
     }
     else
     {
-        CCLabelTTF::setString(m_pInputText->c_str());
+        //CCLabelTTF::setString(m_pInputText->c_str());
+        
+        // #HLP_BEGIN
+        if (mIsPassword)
+        {
+            int length = _calcCharCount(m_pInputText->c_str());
+            CCLOG("Password length %d",length);
+            CCLOG("m_pInputText %s",m_pInputText->c_str());
+            std::string passwordText;
+            char str[length+1];
+            for (int i = 0; i<length; i++) {
+                if (i == 0) 
+                    strcpy (str, "C"); //•
+                else
+                    strcat (str, "C");
+            }
+            //str[length] = '\0';
+            puts (str);
+            
+            passwordText = str;
+            CCLOG("passwordText %s",passwordText.c_str());
+            CCLabelTTF::setString(passwordText.c_str());
+        }
+        else
+        {
+            CCLabelTTF::setString(m_pInputText->c_str());
+        }
+        // #HLP_END
     }
     m_nCharCount = _calcCharCount(m_pInputText->c_str());
     
