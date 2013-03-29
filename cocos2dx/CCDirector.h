@@ -373,6 +373,7 @@ public:
     static CCDirector* sharedDirector(void);
     // #HLP_BEGIN
     static void hideKeyboard();
+    CCScene* getNextScene() { return m_pNextScene; }
     // #HLP_END
 
 protected:

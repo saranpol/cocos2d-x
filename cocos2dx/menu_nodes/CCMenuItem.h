@@ -66,9 +66,22 @@ public:
     , m_pListener(NULL)            
     , m_pfnSelector(NULL)
     , m_nScriptTapHandler(0)
+    // #HLP_BEGIN
+    , mIsMoveDownWhenSelected(false)
+    , mIsParentOriginalPosSet(false)
+    // #HLP_END
     {}
     virtual ~CCMenuItem();
 
+    // #HLP_BEGIN
+    CCNode* getParent2();
+    bool mIsMoveDownWhenSelected;
+    CCPoint mParentOriginalPos;
+    bool mIsParentOriginalPosSet;
+    ccColor3B mNormalTint;
+    ccColor3B mSelectTint;
+    // #HLP_END
+    
     /** Creates a CCMenuItem with no target/selector */
     static CCMenuItem* create();
     /** Creates a CCMenuItem with a target/selector */

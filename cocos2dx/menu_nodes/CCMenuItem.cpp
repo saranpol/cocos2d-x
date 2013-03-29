@@ -36,6 +36,7 @@ THE SOFTWARE.
 
 // #HLP_BEGIN
 #include "textures/CCTextureCache.h"
+#include "actions/CCActionEase.h"
 // #HLP_END
 
 NS_CC_BEGIN
@@ -82,14 +83,61 @@ CCMenuItem::~CCMenuItem()
     unregisterScriptTapHandler();
 }
 
+
+// #HLP_BEGIN
+// CCLayerColor > CCMenu > this
+// return CCLayerColor
+CCNode* CCMenuItem::getParent2() {
+    CCNode *p1 = getParent();
+    if(p1)
+        return p1->getParent();
+    return NULL;
+}
+// #HLP_END
+
+
 void CCMenuItem::selected()
 {
     m_bSelected = true;
+    // #HLP_BEGIN
+    if(mIsMoveDownWhenSelected){
+        CCNode *p = getParent2();
+        CCPoint pos = p->getPosition();
+        if(!mIsParentOriginalPosSet){
+            mParentOriginalPos = pos;
+            mIsParentOriginalPosSet = true;
+        }
+        pos.y = pos.y - 2.0f;
+        CCFiniteTimeAction *move = CCMoveTo::create(0.3f, pos);
+        p->stopAllActions();
+        move = CCEaseExponentialOut::create((CCActionInterval*)move);
+        p->runAction(CCSequence::create(move, NULL));
+        
+        CCFiniteTimeAction *tint = CCTintTo::create(0.3f, mSelectTint.r, mSelectTint.g, mSelectTint.b);
+        tint = CCEaseExponentialOut::create((CCActionInterval*)tint);
+        p->runAction(CCSequence::create(tint, NULL));
+        
+    }
+    // #HLP_END
 }
 
 void CCMenuItem::unselected()
 {
     m_bSelected = false;
+    // #HLP_BEGIN
+    if(mIsMoveDownWhenSelected){
+        CCNode *p = getParent2();
+        CCFiniteTimeAction *move = CCMoveTo::create(0.5f, mParentOriginalPos);
+        p->stopAllActions();
+        move = CCEaseExponentialOut::create((CCActionInterval*)move);
+        p->runAction(CCSequence::create(move, NULL));
+        
+        CCFiniteTimeAction *tint = CCTintTo::create(0.5f, mNormalTint.r, mNormalTint.g, mNormalTint.b);
+        tint = CCEaseExponentialOut::create((CCActionInterval*)tint);
+        p->runAction(CCSequence::create(tint, NULL));
+
+    }
+    // #HLP_END
 }
 
 void CCMenuItem::registerScriptTapHandler(int nHandler)
