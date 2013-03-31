@@ -400,7 +400,9 @@ bool CCLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 
     CC_UNUSED_PARAM(pTouch);
     CC_UNUSED_PARAM(pEvent);
-    CCAssert(false, "Layer#ccTouchBegan override me");
+    // #HLP_BEGIN
+    //CCAssert(false, "Layer#ccTouchBegan override me");
+    // #HLP_END
     return true;
 }
 
