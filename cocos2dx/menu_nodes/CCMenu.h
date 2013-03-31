@@ -44,7 +44,11 @@ typedef enum
 
 enum {
     //* priority used by the menu for the event handler
-    kCCMenuHandlerPriority = -128,
+    //kCCMenuHandlerPriority = -128,
+    // #HLP_BEGIN
+    // let priority sort by layer
+    kCCMenuHandlerPriority = 0,
+    // #HLP_END
 };
 
 /** @brief A CCMenu
