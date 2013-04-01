@@ -202,6 +202,24 @@ public:
      */
     CCTableViewCell *dequeueCell();
 
+    // #HLP_BEGIN
+    template <class T>
+    T *dequeueCellType()
+    {
+        T *cell;
+        int count = m_pCellsFreed->count();
+        for(int i=0; i<count; i++){
+            if(cell = dynamic_cast<T*>(m_pCellsFreed->objectAtIndex(i))){
+                cell->retain();
+                m_pCellsFreed->removeObjectAtIndex(i);
+                cell->autorelease();
+                return cell;
+            }
+        }
+        return NULL;
+    }
+    // #HLP_END
+    
     /**
      * Returns an existing cell at a given index. Returns nil if a cell is nonexistent at the moment of query.
      *
