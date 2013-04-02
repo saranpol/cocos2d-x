@@ -69,6 +69,7 @@ public:
     // #HLP_BEGIN
     , mIsMoveDownWhenSelected(false)
     , mIsParentOriginalPosSet(false)
+    , mFadeAnim(false)
     // #HLP_END
     {}
     virtual ~CCMenuItem();
@@ -80,6 +81,7 @@ public:
     bool mIsParentOriginalPosSet;
     ccColor3B mNormalTint;
     ccColor3B mSelectTint;
+    bool mFadeAnim;
     // #HLP_END
     
     /** Creates a CCMenuItem with no target/selector */

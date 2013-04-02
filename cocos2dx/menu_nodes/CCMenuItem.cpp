@@ -100,6 +100,7 @@ void CCMenuItem::selected()
 {
     m_bSelected = true;
     // #HLP_BEGIN
+    #define LAYER_FADE_TAG 1002
     if(mIsMoveDownWhenSelected){
         CCNode *p = getParent2();
         CCPoint pos = p->getPosition();
@@ -117,6 +118,14 @@ void CCMenuItem::selected()
         tint = CCEaseExponentialOut::create((CCActionInterval*)tint);
         p->runAction(CCSequence::create(tint, NULL));
         
+        if(mFadeAnim){
+            CCNode *n = p->getChildByTag(LAYER_FADE_TAG);
+            if(n){
+                CCFiniteTimeAction *fade = CCFadeTo::create(0.5f, 80);
+                fade = CCEaseExponentialOut::create((CCActionInterval*)fade);
+                n->runAction(CCSequence::create(fade, NULL));
+            }
+        }
     }
     // #HLP_END
 }
@@ -135,7 +144,15 @@ void CCMenuItem::unselected()
         CCFiniteTimeAction *tint = CCTintTo::create(0.5f, mNormalTint.r, mNormalTint.g, mNormalTint.b);
         tint = CCEaseExponentialOut::create((CCActionInterval*)tint);
         p->runAction(CCSequence::create(tint, NULL));
-
+        
+        if(mFadeAnim){
+            CCNode *n = p->getChildByTag(LAYER_FADE_TAG);
+            if(n){
+                CCFiniteTimeAction *fade = CCFadeTo::create(0.5f, 0);
+                fade = CCEaseExponentialOut::create((CCActionInterval*)fade);
+                n->runAction(CCSequence::create(fade, NULL));
+            }
+        }
     }
     // #HLP_END
 }
