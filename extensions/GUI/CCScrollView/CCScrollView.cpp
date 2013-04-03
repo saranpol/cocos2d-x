@@ -549,13 +549,50 @@ void CCScrollView::addChild(CCNode * child)
 /**
  * clip this view so that outside of the visible bounds can be hidden.
  */
+// #HLP_BEGIN
+#define MAX_SCROLL_VIEW_IN_SCROLL_VIEW 8
+static int sScissorTestCount = 0;
+static CCRect sScissorRect[MAX_SCROLL_VIEW_IN_SCROLL_VIEW];
+// #HLP_END
 void CCScrollView::beforeDraw()
 {
     if (m_bClippingToBounds)
     {
 		CCRect frame = getViewRect();
-        
+
         glEnable(GL_SCISSOR_TEST);
+
+        // #HLP_BEGIN
+        sScissorRect[sScissorTestCount] = frame;
+        sScissorTestCount++;
+        // Clip by parent rect
+        for(int i=0; i<sScissorTestCount-1; i++){
+            CCRect parent = sScissorRect[i];
+            if(parent.origin.x > frame.origin.x){
+                float diff = parent.origin.x - frame.origin.x;
+                frame.origin.x = parent.origin.x;
+                frame.size.width -= diff;
+            }
+            if(parent.origin.y > frame.origin.y){
+                float diff = parent.origin.y - frame.origin.y;
+                frame.origin.y = parent.origin.y;
+                frame.size.height -= diff;
+            }
+            float frame_max_x = frame.origin.x+frame.size.width;
+            float parent_max_x = parent.origin.x+parent.size.width;
+            if(frame_max_x > parent_max_x){
+                float diff = frame_max_x - parent_max_x;
+                frame.size.width -= diff;
+            }
+
+            float frame_max_y = frame.origin.y+frame.size.height;
+            float parent_max_y = parent.origin.y+parent.size.height;
+            if(frame_max_y > parent_max_y){
+                float diff = frame_max_y - parent_max_y;
+                frame.size.height -= diff;
+            }
+        }
+        // #HLP_END
         
         CCEGLView::sharedOpenGLView()->setScissorInPoints(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
     }
@@ -569,7 +606,17 @@ void CCScrollView::afterDraw()
 {
     if (m_bClippingToBounds)
     {
-        glDisable(GL_SCISSOR_TEST);
+        //glDisable(GL_SCISSOR_TEST);
+        
+        // #HLP_BEGIN
+        sScissorTestCount--;
+        if(sScissorTestCount == 0)
+            glDisable(GL_SCISSOR_TEST);
+        else{
+            CCRect frame = sScissorRect[sScissorTestCount-1];
+            CCEGLView::sharedOpenGLView()->setScissorInPoints(frame.origin.x, frame.origin.y, frame.size.width, frame.size.height);
+        }
+        // #HLP_END
     }
 }
 

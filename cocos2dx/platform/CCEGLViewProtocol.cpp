@@ -148,10 +148,16 @@ void CCEGLViewProtocol::setViewPortInPoints(float x , float y , float w , float 
 
 void CCEGLViewProtocol::setScissorInPoints(float x , float y , float w , float h)
 {
-    glScissor((GLint)(x * m_fScaleX + m_obViewPortRect.origin.x),
-              (GLint)(y * m_fScaleY + m_obViewPortRect.origin.y),
-              (GLsizei)(w * m_fScaleX),
-              (GLsizei)(h * m_fScaleY));
+//    glScissor((GLint)(x * m_fScaleX + m_obViewPortRect.origin.x),
+//              (GLint)(y * m_fScaleY + m_obViewPortRect.origin.y),
+//              (GLsizei)(w * m_fScaleX),
+//              (GLsizei)(h * m_fScaleY));
+    // #HLP_BEGIN
+    glScissor((GLint)roundf(x * m_fScaleX + m_obViewPortRect.origin.x),
+              (GLint)roundf(y * m_fScaleY + m_obViewPortRect.origin.y),
+              (GLsizei)roundf(w * m_fScaleX),
+              (GLsizei)roundf(h * m_fScaleY));
+    // #HLP_END
 }
 
 void CCEGLViewProtocol::setViewName(const char* pszViewName)
