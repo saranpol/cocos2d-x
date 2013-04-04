@@ -313,7 +313,7 @@ bool CCLabelTTF::updateTexture()
                         m_fFontSize * CC_CONTENT_SCALE_FACTOR(),
                         CC_SIZE_POINTS_TO_PIXELS(m_tDimensions), 
                         m_hAlignment,
-//                        m_vAlignment);
+                        //m_vAlignment);
                         // #HLP_BEGIN
                         m_vAlignment,
                         mFixLineHeight * CC_CONTENT_SCALE_FACTOR());

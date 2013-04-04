@@ -508,16 +508,29 @@ int BitmapDC::computeLineStart( FT_Face face, CCImage::ETextAlign eAlignMask, wc
 		return -1;
 	}
 
-	if (eAlignMask == CCImage::kAlignCenter) {
-		iRet = (m_iMaxLineWidth - m_vLines[iLineIndex].iLineWidth) / 2 - RSHIFT6(face->glyph->metrics.horiBearingX );
+//	if (eAlignMask == CCImage::kAlignCenter) {
+//		iRet = (m_iMaxLineWidth - m_vLines[iLineIndex].iLineWidth) / 2 - RSHIFT6(face->glyph->metrics.horiBearingX );
+//
+//	} else if (eAlignMask == CCImage::kAlignRight) {
+//		iRet = (m_iMaxLineWidth - m_vLines[iLineIndex].iLineWidth) - RSHIFT6(face->glyph->metrics.horiBearingX );
+//	} else {
+//		// left or other situation
+//		iRet = -RSHIFT6(face->glyph->metrics.horiBearingX );
+//	}
 
-	} else if (eAlignMask == CCImage::kAlignRight) {
+    // #HLP_BEGIN
+    if (eAlignMask == CCImage::kAlignCenter || eAlignMask == CCImage::kAlignBottom || eAlignMask == CCImage::kAlignTop){
+		iRet = (m_iMaxLineWidth - m_vLines[iLineIndex].iLineWidth) / 2 - RSHIFT6(face->glyph->metrics.horiBearingX );
+	} else if (eAlignMask == CCImage::kAlignRight || eAlignMask == CCImage::kAlignBottomRight || eAlignMask == CCImage::kAlignTopRight) {
 		iRet = (m_iMaxLineWidth - m_vLines[iLineIndex].iLineWidth) - RSHIFT6(face->glyph->metrics.horiBearingX );
 	} else {
 		// left or other situation
 		iRet = -RSHIFT6(face->glyph->metrics.horiBearingX );
 	}
-	return iRet;
+    // #HLP_END
+    
+    
+    return iRet;
 }
 
 int BitmapDC::openFont(const std::string& fontName, uint fontSize)
@@ -746,9 +759,7 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 		//const char* pText = text;
 		iCurYCursor = ascenderPixels;
         // #HLP_BEGIN
-        if(fixLineHeight && ((eAlignMask & CCImage::kAlignBottomRight)
-           || (eAlignMask & CCImage::kAlignBottom)
-           || (eAlignMask & CCImage::kAlignBottomLeft))){
+        if(fixLineHeight && (eAlignMask == CCImage::kAlignBottom || eAlignMask == CCImage::kAlignBottomLeft || eAlignMask == CCImage::kAlignBottomRight)){
             int numLine = m_vLines.size();
             int diff = ascenderPixels - descenderPixels - fixLineHeight;
             iCurYCursor += (numLine - 1)*diff;
