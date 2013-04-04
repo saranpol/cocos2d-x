@@ -135,7 +135,10 @@ public:
     bool initWithImage(CCImage * uiImage);
 
     /** Initializes a texture from a string with dimensions, alignment, font name and font size */
-    bool initWithString(const char *text,  const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment);
+//    bool initWithString(const char *text,  const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment);
+    // #HLP_BEGIN
+    bool initWithString(const char *text,  const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment, int fixLineHeight = 0);
+    // #HLP_END
     /** Initializes a texture from a string with font name and font size */
     bool initWithString(const char *text, const char *fontName, float fontSize);
 

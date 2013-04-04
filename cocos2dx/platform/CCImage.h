@@ -111,7 +111,11 @@ public:
         int             nHeight = 0,
         ETextAlign      eAlignMask = kAlignCenter,
         const char *    pFontName = 0,
-        int             nSize = 0);
+//        int             nSize = 0);
+// #HLP_BEGIN
+        int             nSize = 0,
+        int             fixLineHeight = 0);
+// #HLP_END
 
     unsigned char *   getData()               { return m_pData; }
     int         getDataLen()            { return m_nWidth * m_nHeight; }

@@ -85,6 +85,7 @@ public:
     static CCLabelTTF * createShadowWithString(const char *string, CCPoint pos, const CCSize& offset ,
                                                ccColor3B col ,ccColor3B shadowCol, const CCSize& dimensions ,
                                                CCTextAlignment uiTextAlignment, float fontSize);
+    int mFixLineHeight;
     // #HLP_END
     
     

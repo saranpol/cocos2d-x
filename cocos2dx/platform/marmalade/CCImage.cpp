@@ -115,7 +115,10 @@ public:
     // #HLP_END
 
     
-	bool getBitmap(const char *text, int nWidth, int nHeight, CCImage::ETextAlign eAlignMask, const char * pFontName, uint fontSize);
+	//bool getBitmap(const char *text, int nWidth, int nHeight, CCImage::ETextAlign eAlignMask, const char * pFontName, uint fontSize);
+    // #HLP_BEGIN
+    bool getBitmap(const char *text, int nWidth, int nHeight, CCImage::ETextAlign eAlignMask, const char * pFontName, uint fontSize, int fixLineHeight = 0);
+    // #HLP_END
 
 public:
 	unsigned char*		m_pData;
@@ -647,7 +650,10 @@ FT_UInt BitmapDC::thaiAdjust(FT_UInt current_index, FT_UInt prev_index, FT_UInt 
 // #HLP_END
 
 
-bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ETextAlign eAlignMask, const char * pFontName, uint fontSize )
+//bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ETextAlign eAlignMask, const char * pFontName, uint fontSize )
+// #HLP_BEGIN
+bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ETextAlign eAlignMask, const char * pFontName, uint fontSize, int fixLineHeight)
+// #HLP_END
 {
 	FT_Error iError;
 
@@ -725,6 +731,8 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 		m_iMaxLineHeight = MAX(m_iMaxLineHeight, nHeight);
 
         // #HLP_BEGIN
+//        descenderPixels += 5;
+//        ascenderPixels +=5;
         // Hack for prevent too big image cause crash memory
         if(m_iMaxLineHeight > 1024)
             m_iMaxLineHeight = 1024;
@@ -736,9 +744,16 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 		memset(m_pData,0, bitmapSize);
 
 		//const char* pText = text;
-        // #HLP_BEGIN
-        // #HLP_END
 		iCurYCursor = ascenderPixels;
+        // #HLP_BEGIN
+        if(fixLineHeight && ((eAlignMask & CCImage::kAlignBottomRight)
+           || (eAlignMask & CCImage::kAlignBottom)
+           || (eAlignMask & CCImage::kAlignBottomLeft))){
+            int numLine = m_vLines.size();
+            int diff = ascenderPixels - descenderPixels - fixLineHeight;
+            iCurYCursor += (numLine - 1)*diff;
+        }
+        // #HLP_END
 
 		for (size_t i = 0; i < m_vLines.size(); i++) {
 			pText = m_vLines[i].sLineStr.c_str();
@@ -803,7 +818,11 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 
 							offset = (rowOffset + iX) * 4 ;
 
-							IwAssert( GAME, ((offset + 3) < bitmapSize) ) ;
+							//IwAssert( GAME, ((offset + 3) < bitmapSize) ) ;
+                            // #HLP_BEGIN
+                            if((offset + 3) >= bitmapSize)
+                                break;
+                            // #HLP_END
 
 							iTemp = cTemp << 24 | cTemp << 16 | cTemp << 8 | cTemp;
  							*(int*) &m_pData[ offset ] = iTemp ;	// ARGB
@@ -815,7 +834,13 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 				iCurXCursor += horiAdvancePixels + m_iInterval;
 				pText++;
 			}
-			iCurYCursor += ascenderPixels - descenderPixels ;
+			//iCurYCursor += ascenderPixels - descenderPixels ;
+            // #HLP_BEGIN
+            if(fixLineHeight)
+                iCurYCursor += fixLineHeight;
+            else
+                iCurYCursor += ascenderPixels - descenderPixels ;
+            // #HLP_END
 		}
 
 		//clear all lines
@@ -1205,7 +1230,11 @@ bool CCImage::initWithString(
 							 int             nHeight/* = 0*/,
 							 ETextAlign      eAlignMask/* = kAlignCenter*/,
 							 const char *    pFontName/* = nil*/,
-							 int             nSize/* = 0*/)
+//							 int             nSize/* = 0*/)
+                             // #HLP_BEGIN
+                             int             nSize/* = 0*/,
+                             int             fixLineHeight/* = 0*/)
+                             // #HLP_END
 {
 	bool bRet = false;
 	do
@@ -1222,7 +1251,10 @@ bool CCImage::initWithString(
     		fullFontName = CCFileUtils::sharedFileUtils()->fullPathForFilename(pFontName);
     	}
 
-		CC_BREAK_IF(! dc.getBitmap(pText, nWidth, nHeight, eAlignMask, fullFontName.c_str(), nSize));
+		//CC_BREAK_IF(! dc.getBitmap(pText, nWidth, nHeight, eAlignMask, fullFontName.c_str(), nSize));
+        // #HLP_BEGIN
+        CC_BREAK_IF(! dc.getBitmap(pText, nWidth, nHeight, eAlignMask, fullFontName.c_str(), nSize, fixLineHeight));
+        // #HLP_END
 
 		// assign the dc.m_pData to m_pData in order to save time
 		m_pData = dc.m_pData;
