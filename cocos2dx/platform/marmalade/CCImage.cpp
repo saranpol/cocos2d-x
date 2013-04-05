@@ -254,9 +254,11 @@ void BitmapDC::buildLine(wstringstream& ss, FT_Face face, int iCurXCursor, wchar
     // #HLP_BEGIN
     oTempLine.iLineWidth =
     iCurXCursor -
-    RSHIFT6( face->glyph->metrics.horiAdvance +
+    RSHIFT6( face->glyph->metrics.horiAdvance -
             face->glyph->metrics.horiBearingX
-            - face->glyph->metrics.width)+m_fontSize/5;	//TODO interval m_fontSize/10 is hack not real fix
+            - face->glyph->metrics.width);
+    //http://www.freetype.org/freetype2/docs/tutorial/step2.html
+    // it should be advance - bearingx - width
     // #HLP_END    
 
 	m_iMaxLineWidth = MAX(m_iMaxLineWidth, oTempLine.iLineWidth);
