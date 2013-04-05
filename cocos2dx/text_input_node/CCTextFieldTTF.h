@@ -116,6 +116,8 @@ public:
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
     bool mIsTouchBegan;
     bool mIsPassword;
+    //TODO CHAT
+    //float getTextDimensions();
     // #HLP_END
     
     //char * description();

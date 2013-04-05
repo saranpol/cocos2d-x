@@ -788,7 +788,12 @@ void CCTableView::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
 {
     CCScrollView::ccTouchMoved(pTouch, pEvent);
 
-    if (m_pTouchedCell && isTouchMoved()) {
+    // if (m_pTouchedCell && isTouchMoved()) {
+    // #HLP_BEGIN
+    CCPoint start = pTouch->getStartLocation();
+    CCPoint end = pTouch->getLocation();
+    if (m_pTouchedCell && ccpDistance(start, end) > 10.0f) {
+    // #HLP_END
         if(m_pTableViewDelegate != NULL) {
             m_pTableViewDelegate->tableCellUnhighlight(this, m_pTouchedCell);
         }

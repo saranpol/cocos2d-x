@@ -86,6 +86,7 @@ CCTextFieldTTF * CCTextFieldTTF::create()
     {
         CC_SAFE_DELETE(pRet);
     }
+    
     return pRet;
 }
 
@@ -173,7 +174,11 @@ void CCTextFieldTTF::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) {
     mIsTouchBegan = false;
 }
 
-
+// TODO CHAT
+//float CCTextFieldTTF::getTextDimensions()
+//{
+//    return CCLabelTTF::getContentSize().width;
+//}
 
 // #HLP_END
 
@@ -487,6 +492,8 @@ void CCTextFieldTTF::setPlaceHolder(const char * text)
     {
         CCLabelTTF::setString(m_pPlaceHolder->c_str());
     }
+    
+    
 }
 
 const char * CCTextFieldTTF::getPlaceHolder(void)
