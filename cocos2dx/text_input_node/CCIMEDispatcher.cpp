@@ -128,6 +128,17 @@ void CCIMEDispatcher::addDelegate(CCIMEDelegate* pDelegate)
     m_pImpl->m_DelegateList.push_front(pDelegate);
 }
 
+// #HLP_BEGIN
+void CCIMEDispatcher::removeCurrentDelegate() {
+    if(m_pImpl && m_pImpl->m_DelegateWithIme && m_pImpl->m_DelegateWithIme->canDetachWithIME()) {
+        CCIMEDelegate * pOldDelegate = m_pImpl->m_DelegateWithIme;
+        m_pImpl->m_DelegateWithIme = 0;
+        pOldDelegate->didDetachWithIME();
+    }
+}
+// #HLP_END
+
+
 bool CCIMEDispatcher::attachDelegateWithIME(CCIMEDelegate * pDelegate)
 {
     bool bRet = false;

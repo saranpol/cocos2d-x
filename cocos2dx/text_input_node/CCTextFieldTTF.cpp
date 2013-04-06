@@ -437,6 +437,7 @@ void CCTextFieldTTF::deleteBackward()
         if(m_pDelegate){
             m_pDelegate->textChanged(this);
         }
+        updateCursor();
         // #HLP_END
         return;
     }

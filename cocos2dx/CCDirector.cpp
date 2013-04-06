@@ -59,6 +59,10 @@ THE SOFTWARE.
 #include "CCEGLView.h"
 #include <string>
 
+// #HLP_BEGIN
+#include "CCIMEDispatcher.h"
+// #HLP_END
+
 /**
  Position of the FPS
  
@@ -94,8 +98,11 @@ CCDirector* CCDirector::sharedDirector(void)
 
 // #HLP_BEGIN
 void CCDirector::hideKeyboard(){
-    CCEGLView * pGlView = CCDirector::sharedDirector()->getOpenGLView();
+    CCEGLView * pGlView = s_SharedDirector->getOpenGLView();
     pGlView->setIMEKeyboardState(false);
+
+    CCIMEDispatcher *d = CCIMEDispatcher::sharedDispatcher();
+    d->removeCurrentDelegate();
 }
 // #HLP_END
 

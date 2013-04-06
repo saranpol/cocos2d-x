@@ -47,6 +47,10 @@ public:
     */
     static CCIMEDispatcher* sharedDispatcher();
 
+    // #HLP_BEGIN
+    void removeCurrentDelegate();
+    // #HLP_END
+    
 //     /**
 //     @brief Releases all CCIMEDelegates from the shared dispatcher.
 //     */
