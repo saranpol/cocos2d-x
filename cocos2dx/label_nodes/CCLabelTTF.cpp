@@ -177,12 +177,13 @@ void CCLabelTTF::setString(const char *string)
         
         
         // #HLP_BEGIN
-        // Update shadow lebel
+        // Update shadow label
         CCArray *a = this->getChildren();
         if(a){
             for(unsigned int i=0; i<a->count(); i++){
-                CCLabelTTF *shadow = (CCLabelTTF*)a->objectAtIndex(i);
-                shadow->setString(string);
+                CCLabelTTF *shadow = dynamic_cast<CCLabelTTF*>(a->objectAtIndex(i));
+                if(shadow)
+                    shadow->setString(string);
             }
         }
         // #HLP_END

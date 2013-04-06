@@ -29,6 +29,10 @@ THE SOFTWARE.
 // #HLP_BEGIN
 #include "touch_dispatcher/CCTouchDispatcher.h"
 #include "support/CCPointExtension.h"
+#include "CCAction.h"
+#include "CCActionInterval.h"
+#include "CCActionEase.h"
+#include "CCActionInstant.h"
 // #HLP_END
 
 NS_CC_BEGIN
@@ -62,6 +66,7 @@ CCTextFieldTTF::CCTextFieldTTF()
 // #HLP_BEGIN
 , mIsTouchBegan(false)
 , mIsPassword(false)
+, mLayerCursor(NULL)
 // #HLP_END
 {
     m_ColorSpaceHolder.r = m_ColorSpaceHolder.g = m_ColorSpaceHolder.b = 127;    
@@ -245,6 +250,51 @@ bool CCTextFieldTTF::initWithPlaceHolder(const char *placeholder, const char *fo
 // CCIMEDelegate
 //////////////////////////////////////////////////////////////////////////
 
+// #HLP_BEGIN
+
+float CCTextFieldTTF::getCursorHeight() {
+    return getFontSize()*1.10f;
+}
+
+void CCTextFieldTTF::updateCursor() {
+    if(mLayerCursor){
+        float x = getTexture()->mCursorX/CC_CONTENT_SCALE_FACTOR();
+        float y = getTexture()->mCursorY/CC_CONTENT_SCALE_FACTOR();
+        mLayerCursor->setPosition(CCPointMake(x, getContentSize().height - y + getFontSize()*0.90f));
+    }
+}
+
+void CCTextFieldTTF::animateCursor() {
+    if(mLayerCursor){
+        CCFiniteTimeAction *fade;
+        if(mLayerCursor->getOpacity() == 255)
+            fade = CCFadeTo::create(0.5f, 0);
+        else
+            fade = CCFadeTo::create(0.5f, 255);
+        fade = CCEaseSineInOut::create((CCActionInterval*)fade);
+        CCFiniteTimeAction *expire = CCCallFuncN::create(this, callfuncN_selector(CCTextFieldTTF::animateCursor));
+        mLayerCursor->runAction(CCSequence::create(fade, expire, NULL));
+    }
+}
+
+void CCTextFieldTTF::addCursor() {
+    if(!mLayerCursor){
+        mLayerCursor = CCLayerColor::create(ccc4(0, 0, 0, 255), 2.0f, getCursorHeight());
+        addChild(mLayerCursor);
+        updateCursor();
+        animateCursor();
+    }
+}
+
+void CCTextFieldTTF::removeCursor() {
+    if(mLayerCursor){
+        CCNode::removeChild(mLayerCursor);
+        mLayerCursor = NULL;
+    }
+}
+
+// #HLP_END
+
 bool CCTextFieldTTF::attachWithIME()
 {
     bool bRet = CCIMEDelegate::attachWithIME();
@@ -256,6 +306,10 @@ bool CCTextFieldTTF::attachWithIME()
         {
             pGlView->setIMEKeyboardState(true);
         }
+        
+        // #HLP_BEGIN
+        addCursor();
+        // #HLP_END
     }
     return bRet;
 }
@@ -274,6 +328,13 @@ bool CCTextFieldTTF::detachWithIME()
     }
     return bRet;
 }
+
+// #HLP_BEGIN
+void CCTextFieldTTF::didDetachWithIME() {
+    removeCursor();
+}
+// #HLP_END
+
 
 bool CCTextFieldTTF::canAttachWithIME()
 {
@@ -475,6 +536,8 @@ void CCTextFieldTTF::setString(const char *text)
     if(m_pDelegate){
         m_pDelegate->textChanged(this);
     }
+    
+    updateCursor();
     // #HLP_END
 }
 

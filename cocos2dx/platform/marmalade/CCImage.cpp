@@ -112,6 +112,8 @@ public:
     // #HLP_BEGIN
     FT_UInt thaiAdjust(FT_UInt current_index, FT_UInt prev_index, FT_UInt next_index);
     bool canBreakThai(const wchar_t* pText);
+    int mCursorX;
+    int mCursorY;
     // #HLP_END
 
     
@@ -866,6 +868,11 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 			bRet = true;
 	}while(0);
 
+    // #HLP_BEGIN
+    mCursorX = iCurXCursor;
+    mCursorY = iCurYCursor;
+    // #HLP_END
+    
 	return bRet;
 }
 
@@ -1267,6 +1274,8 @@ bool CCImage::initWithString(
 		//CC_BREAK_IF(! dc.getBitmap(pText, nWidth, nHeight, eAlignMask, fullFontName.c_str(), nSize));
         // #HLP_BEGIN
         CC_BREAK_IF(! dc.getBitmap(pText, nWidth, nHeight, eAlignMask, fullFontName.c_str(), nSize, fixLineHeight));
+        mCursorX = dc.mCursorX;
+        mCursorY = dc.mCursorY;
         // #HLP_END
 
 		// assign the dc.m_pData to m_pData in order to save time

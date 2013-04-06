@@ -70,6 +70,10 @@ CCTexture2D::CCTexture2D()
 , m_bHasPremultipliedAlpha(false)
 , m_bHasMipmaps(false)
 , m_pShaderProgram(NULL)
+// #HLP_BEGIN
+, mCursorX(0)
+, mCursorY(0)
+// #HLP_END
 {
 }
 
@@ -458,6 +462,8 @@ bool CCTexture2D::initWithString(const char *text, const char *fontName, float f
         //bRet = pImage->initWithString(text, (int)dimensions.width, (int)dimensions.height, eAlign, fontName, (int)fontSize);
         // #HLP_BEGIN
         bRet = pImage->initWithString(text, (int)dimensions.width, (int)dimensions.height, eAlign, fontName, (int)fontSize, fixLineHeight);
+        mCursorX = pImage->mCursorX;
+        mCursorY = pImage->mCursorY;
         // #HLP_END
         CC_BREAK_IF(!bRet);
         bRet = initWithImage(pImage);

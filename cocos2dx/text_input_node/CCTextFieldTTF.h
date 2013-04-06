@@ -29,6 +29,10 @@ THE SOFTWARE.
 #include "text_input_node/CCIMEDelegate.h"
 #include "touch_dispatcher/CCTouchDelegateProtocol.h"
 
+// #HLP_BEGIN
+#include "CCLayer.h"
+// #HLP_END
+
 NS_CC_BEGIN
 
 class CCTextFieldTTF;
@@ -116,8 +120,16 @@ public:
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
     bool mIsTouchBegan;
     bool mIsPassword;
+    CCLayerColor *mLayerCursor;
     //TODO CHAT
     //float getTextDimensions();
+
+    // Cursor
+    float getCursorHeight();
+    void updateCursor();
+    void animateCursor();
+    void addCursor();
+    void removeCursor();
     // #HLP_END
     
     //char * description();
@@ -140,6 +152,9 @@ public:
     @brief    End text input and close keyboard.
     */
     virtual bool detachWithIME();
+    // #HLP_BEGIN
+    virtual void didDetachWithIME();
+    // #HLP_END
 
     //////////////////////////////////////////////////////////////////////////
     // properties

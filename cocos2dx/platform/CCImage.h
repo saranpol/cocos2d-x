@@ -115,6 +115,9 @@ public:
 // #HLP_BEGIN
         int             nSize = 0,
         int             fixLineHeight = 0);
+    
+    int mCursorX;
+    int mCursorY;
 // #HLP_END
 
     unsigned char *   getData()               { return m_pData; }
