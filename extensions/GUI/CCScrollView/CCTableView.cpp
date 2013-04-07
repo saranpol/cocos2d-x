@@ -779,6 +779,9 @@ bool CCTableView::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
         }
         
         m_pTouchedCell = NULL;
+        // #HLP_BEGIN
+        removeAllTouch();
+        // #HLP_END
     }
 
     return touchResult;
