@@ -773,17 +773,28 @@ bool CCTableView::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
             m_pTableViewDelegate->tableCellHighlight(this, m_pTouchedCell);
         }
     }
-    else if(m_pTouchedCell) {
-        if(m_pTableViewDelegate != NULL) {
-            m_pTableViewDelegate->tableCellUnhighlight(this, m_pTouchedCell);
-        }
-        
-        m_pTouchedCell = NULL;
-        // #HLP_BEGIN
+//    else if(m_pTouchedCell) {
+//        if(m_pTableViewDelegate != NULL) {
+//            m_pTableViewDelegate->tableCellUnhighlight(this, m_pTouchedCell);
+//        }
+//        
+//        m_pTouchedCell = NULL;
+//    }
+    // #HLP_BEGIN
+    else {
         removeAllTouch();
-        // #HLP_END
+        
+        if(m_pTouchedCell) {
+            if(m_pTableViewDelegate != NULL) {
+                m_pTableViewDelegate->tableCellUnhighlight(this, m_pTouchedCell);
+            }
+            
+            m_pTouchedCell = NULL;
+        }
     }
+    // #HLP_END
 
+    
     return touchResult;
 }
 
