@@ -86,6 +86,7 @@ public:
                                                ccColor3B col ,ccColor3B shadowCol, const CCSize& dimensions ,
                                                CCTextAlignment uiTextAlignment, float fontSize);
     int mFixLineHeight;
+    int mMaxLine;
     // #HLP_END
     
     

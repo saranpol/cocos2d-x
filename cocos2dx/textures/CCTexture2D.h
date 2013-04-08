@@ -137,7 +137,7 @@ public:
     /** Initializes a texture from a string with dimensions, alignment, font name and font size */
 //    bool initWithString(const char *text,  const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment);
     // #HLP_BEGIN
-    bool initWithString(const char *text,  const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment, int fixLineHeight = 0);
+    bool initWithString(const char *text,  const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment, int fixLineHeight = 0, unsigned int maxLine = 0);
     int mCursorX;
     int mCursorY;
     // #HLP_END

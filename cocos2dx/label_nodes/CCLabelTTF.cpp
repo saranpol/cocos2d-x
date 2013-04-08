@@ -47,6 +47,7 @@ CCLabelTTF::CCLabelTTF()
 , m_string("")
 // #HLP_BEGIN
 , mFixLineHeight(0)
+, mMaxLine(0)
 // #HLP_END
 {
 }
@@ -317,7 +318,9 @@ bool CCLabelTTF::updateTexture()
                         //m_vAlignment);
                         // #HLP_BEGIN
                         m_vAlignment,
-                        mFixLineHeight * CC_CONTENT_SCALE_FACTOR());
+                        mFixLineHeight * CC_CONTENT_SCALE_FACTOR(),
+                        mMaxLine
+                        );
                         // #HLP_END
 	
     this->setTexture(tex);

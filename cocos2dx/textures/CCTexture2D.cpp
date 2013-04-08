@@ -423,7 +423,7 @@ bool CCTexture2D::initWithString(const char *text, const char *fontName, float f
 
 //bool CCTexture2D::initWithString(const char *text, const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment)
 // #HLP_BEGIN
-bool CCTexture2D::initWithString(const char *text, const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment, int fixLineHeight)
+bool CCTexture2D::initWithString(const char *text, const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment, int fixLineHeight, unsigned int maxLine)
 // #HLP_END
 {
 #if CC_ENABLE_CACHE_TEXTURE_DATA
@@ -461,7 +461,7 @@ bool CCTexture2D::initWithString(const char *text, const char *fontName, float f
         CC_BREAK_IF(NULL == pImage);
         //bRet = pImage->initWithString(text, (int)dimensions.width, (int)dimensions.height, eAlign, fontName, (int)fontSize);
         // #HLP_BEGIN
-        bRet = pImage->initWithString(text, (int)dimensions.width, (int)dimensions.height, eAlign, fontName, (int)fontSize, fixLineHeight);
+        bRet = pImage->initWithString(text, (int)dimensions.width, (int)dimensions.height, eAlign, fontName, (int)fontSize, fixLineHeight, maxLine);
         mCursorX = pImage->mCursorX;
         mCursorY = pImage->mCursorY;
         // #HLP_END
