@@ -461,8 +461,8 @@ bool BitmapDC::divideString(FT_Face face, const wchar_t* sText, int iMaxWidth, i
             if(canWrap)
                 ss.seekp(ss.str().length()-backCount);
             
-            
-			buildLine(ss, face , iCurXCursor, cLastCh);
+
+            buildLine(ss, face , iCurXCursor, cLastCh);
             pTextBegin = pText + 1;
             
 			iCurXCursor = -RSHIFT6(face->glyph->metrics.horiBearingX);
@@ -507,19 +507,23 @@ bool BitmapDC::divideString(FT_Face face, const wchar_t* sText, int iMaxWidth, i
 
 	//buildLine(ss,face, iCurXCursor, cLastCh);
     // #HLP_BEGIN
+    unsigned int numLine = m_vLines.size();
+    if(mMaxLine == 0 || numLine <= mMaxLine-1)
+        buildLine(ss,face, iCurXCursor, cLastCh);
+    
+    if(numLine > mMaxLine-1)
+        isHitMaxLine = true;
+    
     if(isHitMaxLine){
-        int numLine = m_vLines.size();
         if(numLine > 0){
             wstring *s = &m_vLines[numLine-1].sLineStr;
-            int len = s->size();
+            int len = wcslen(s->c_str());//s->size();
             if(len >= 3){
                 (*s)[len-1] = L'.';
                 (*s)[len-2] = L'.';
                 (*s)[len-3] = L'.';
             }
         }
-    }else{
-        buildLine(ss,face, iCurXCursor, cLastCh);
     }
     // #HLP_END
 
