@@ -286,50 +286,48 @@ bool isThaiEqual(const wchar_t* pText, const wchar_t* s){
 }
 
 bool BitmapDC::canBreakThai(const wchar_t* pText){
-    /*
-     const wchar_t* thaiPreSara[] = {
-     L"ไ",
-     L"ฯ",
-     L"โ",
-     L"เ",
-     L"แ",
-     L"ใ",
-     L"ั"
-     };
-     for(unsigned int i=0; i<sizeof(thaiPreSara)/sizeof(wchar_t*); i++){
-     if(isThaiEqual(pText, thaiPreSara[i]))
-     return false;
-     }
+    const wchar_t* thaiPreSara[] = {
+        L"ไ",
+        L"ฯ",
+        L"โ",
+        L"เ",
+        L"แ",
+        L"ใ",
+        L"ั"
+    };
+    for(unsigned int i=0; i<sizeof(thaiPreSara)/sizeof(wchar_t*); i++){
+        if(isThaiEqual(pText, thaiPreSara[i]))
+            return false;
+    }
+    
+    
+    const wchar_t *after = pText+1;
+    
+    const wchar_t* thaiAfterSara[] = {
+        L"่",
+        L"้",
+        L"๊",
+        L"๋",
+        L"ะ",
+        L"า",
+        L"ู",
+        L"ุ",
+        L"ึ",
+        L"ๆ",
+        L"ำ",
+        L"ั",
+        L"ี",
+        L"ฯ",
+        L"็",
+        L"ิ",
+        L"ื",
+        L"์"
+    };
+    for(unsigned int i=0; i<sizeof(thaiAfterSara)/sizeof(wchar_t*); i++){
+        if(isThaiEqual(after, thaiAfterSara[i]))
+            return false;
+    }
      
-     
-     const wchar_t *after = pText+1;
-     
-     const wchar_t* thaiAfterSara[] = {
-     L"่",
-     L"้",
-     L"๊",
-     L"๋",
-     L"ะ",
-     L"า",
-     L"ู",
-     L"ุ",
-     L"ึ",
-     L"ๆ",
-     L"ำ",
-     L"ั",
-     L"ี",
-     L"ฯ",
-     L"็",
-     L"ิ",
-     L"ื",
-     L"์"
-     };
-     for(unsigned int i=0; i<sizeof(thaiAfterSara)/sizeof(wchar_t*); i++){
-     if(isThaiEqual(after, thaiAfterSara[i]))
-     return false;
-     }
-     return true;
-     */
     
     
     THAI_DICT
