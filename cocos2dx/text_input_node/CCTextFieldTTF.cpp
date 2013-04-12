@@ -67,6 +67,7 @@ CCTextFieldTTF::CCTextFieldTTF()
 , mIsTouchBegan(false)
 , mIsPassword(false)
 , mLayerCursor(NULL)
+, mLengthMaxFont(0)
 // #HLP_END
 {
     m_ColorSpaceHolder.r = m_ColorSpaceHolder.g = m_ColorSpaceHolder.b = 127;    
@@ -179,11 +180,6 @@ void CCTextFieldTTF::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) {
     mIsTouchBegan = false;
 }
 
-// TODO CHAT
-//float CCTextFieldTTF::getTextDimensions()
-//{
-//    return CCLabelTTF::getContentSize().width;
-//}
 
 // #HLP_END
 
@@ -506,9 +502,27 @@ void CCTextFieldTTF::setString(const char *text)
     }
     else
     {
-        //CCLabelTTF::setString(m_pInputText->c_str());
         
+        //CCLabelTTF::setString(m_pInputText->c_str());
+
         // #HLP_BEGIN
+        
+        // TODO 
+        // check LengthMaxFont
+        int length = _calcCharCount(m_pInputText->c_str());
+        CCLOG("length : %d  mLengthMaxFont: %d",length ,mLengthMaxFont);
+        bool isMax = false;
+        
+        if (length > mLengthMaxFont) {
+            isMax = true;
+            CCLOG("มากกว่าละ");
+            //return;
+        }else
+            CCLOG("ยังไม่มาก");
+        // end LengthMaxFont
+        
+        
+        
         if (mIsPassword)
         {
             int length = _calcCharCount(m_pInputText->c_str());
@@ -527,6 +541,11 @@ void CCTextFieldTTF::setString(const char *text)
         else
         {
             CCLabelTTF::setString(m_pInputText->c_str());
+
+//            if (!isMax)
+//                CCLabelTTF::setString(m_pInputText->c_str());
+//            else
+//                return;
         }
         // #HLP_END
     }

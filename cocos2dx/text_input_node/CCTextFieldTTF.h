@@ -120,9 +120,8 @@ public:
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
     bool mIsTouchBegan;
     bool mIsPassword;
+    int mLengthMaxFont;
     CCLayerColor *mLayerCursor;
-    //TODO CHAT
-    //float getTextDimensions();
 
     // Cursor
     float getCursorHeight();
