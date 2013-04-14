@@ -569,7 +569,10 @@ int BitmapDC::openFont(const std::string& fontName, uint fontSize)
 	FT_Face aFace ;
 
 	int iError = 0 ;
-	if( m_fontName != basename(fontName) || m_fontSize != fontSize ) {
+	//if( m_fontName != basename(fontName) || m_fontSize != fontSize ) {
+    // #HLP_BEGIN
+    if( m_fontName != basename(fontName) ) {
+    // #HLP_END
 		iError = FT_New_Face( m_library, fontName.c_str(), 0, &aFace );
 		if( !iError ) {
 			if(m_face) {
@@ -748,6 +751,10 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 
 			iError = FT_Set_Pixel_Sizes(m_face, fontSize,fontSize);
 			CC_BREAK_IF(iError);
+            
+            // #HLP_BEGIN
+            m_fontSize = fontSize;
+            // #HLP_END
 		}
 
 		//iError = divideString(m_face, text, nWidth, nHeight) ? 0 : 1 ;
