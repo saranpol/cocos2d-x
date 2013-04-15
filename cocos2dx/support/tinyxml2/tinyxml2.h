@@ -1381,7 +1381,10 @@ public:
     	specified, TinyXML will assume 'xml' points to a
     	null terminated string.
     */
-    XMLError Parse( const char* xml, size_t nBytes=(size_t)(-1) );
+    //XMLError Parse( const char* xml, size_t nBytes=(size_t)(-1) );
+    // #HLP_BEGIN
+    XMLError Parse( const char* xml, unsigned long nBytes=-1 );
+    // #HLP_END
 
     /**
     	Load an XML file from disk.

@@ -1665,7 +1665,10 @@ XMLError XMLDocument::SaveFile( FILE* fp, bool compact )
 }
 
 
-XMLError XMLDocument::Parse( const char* p, size_t len )
+//XMLError XMLDocument::Parse( const char* p, size_t len )
+// #HLP_BEGIN
+XMLError XMLDocument::Parse( const char* p, unsigned long len )
+// #HLP_END
 {
     DeleteChildren();
     InitDocument();
