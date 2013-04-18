@@ -120,7 +120,6 @@ public:
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
     bool mIsTouchBegan;
     bool mIsPassword;
-    int mLengthMaxFont;
     CCLayerColor *mLayerCursor;
 
     // Cursor
