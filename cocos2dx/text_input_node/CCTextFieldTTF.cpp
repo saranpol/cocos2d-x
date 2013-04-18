@@ -67,6 +67,7 @@ CCTextFieldTTF::CCTextFieldTTF()
 , mIsTouchBegan(false)
 , mIsPassword(false)
 , mLayerCursor(NULL)
+, mIsTextView(false)
 // #HLP_END
 {
     m_ColorSpaceHolder.r = m_ColorSpaceHolder.g = m_ColorSpaceHolder.b = 127;    
@@ -319,6 +320,16 @@ bool CCTextFieldTTF::detachWithIME()
         if (pGlView)
         {
             pGlView->setIMEKeyboardState(false);
+            
+            
+//            // #HLP_BEGIN
+//            if (!mIsTextView) 
+//                pGlView->setIMEKeyboardState(false);
+//            else
+//                addCursor();
+//            
+//            // #HLP_END
+
         }
     }
     return bRet;
@@ -362,13 +373,26 @@ void CCTextFieldTTF::insertText(const char * text, int len)
     std::string sInsert(text);
     // #HLP_END
 
+    
+    // #HLP_BEGIN
     // insert \n means input end
     int nPos = sInsert.find('\n');
     if ((int)sInsert.npos != nPos)
     {
-        len = nPos;
-        sInsert.erase(nPos);
+        if (!mIsTextView) {
+            len = nPos;
+            sInsert.erase(nPos);
+        }
     }
+    // #HLP_END
+    
+//    // insert \n means input end
+//    int nPos = sInsert.find('\n');
+//    if ((int)sInsert.npos != nPos)
+//    {
+//        len = nPos;
+//        sInsert.erase(nPos);
+//    }
     
     if (len > 0)
     {
@@ -395,7 +419,8 @@ void CCTextFieldTTF::insertText(const char * text, int len)
     }
     
     // if delegate hasn't processed, detach from IME by default
-    detachWithIME();
+    if (!mIsTextView)
+        detachWithIME();
 }
 
 void CCTextFieldTTF::deleteBackward()
@@ -508,7 +533,6 @@ void CCTextFieldTTF::setString(const char *text)
         //CCLabelTTF::setString(m_pInputText->c_str());
 
         // #HLP_BEGIN
-
         if (mIsPassword)
         {
             int length = _calcCharCount(m_pInputText->c_str());
@@ -526,7 +550,6 @@ void CCTextFieldTTF::setString(const char *text)
         }
         else
         {
-            
             CCLabelTTF::setString(m_pInputText->c_str());
         }
         // #HLP_END

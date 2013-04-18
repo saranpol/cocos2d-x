@@ -119,7 +119,10 @@ public:
     virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
     bool mIsTouchBegan;
+    /** for use Password*/
     bool mIsPassword;
+    /** for use TextView*/
+    bool mIsTextView;
     CCLayerColor *mLayerCursor;
 
     // Cursor
