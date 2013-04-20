@@ -28,9 +28,6 @@ THE SOFTWARE.
 #define __CCSCENE_H__
 
 #include "base_nodes/CCNode.h"
-// #HLP_BEGIN
-typedef unsigned int CCControlEvent;
-// #HLP_END
 
 NS_CC_BEGIN
 
@@ -59,7 +56,7 @@ public:
     static CCScene *create(void);
     
     // #HLP_BEGIN
-    virtual void clickBack(CCObject *pSender, CCControlEvent pCCControlEvent) {}
+    virtual void clickBack(CCObject *pSender, unsigned int pCCControlEvent) {}
     // #HLP_END
 };
 
