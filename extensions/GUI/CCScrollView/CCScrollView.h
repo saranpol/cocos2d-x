@@ -55,6 +55,7 @@ public:
     virtual void scrollViewDidScrollMove(CCScrollView* view) {}
     virtual void scrollViewDidStoppedAnimatedScroll(CCScrollView *view) {}
     virtual void scrollViewDidRefresh(CCScrollView *view) {}
+    virtual void scrollViewDidCancelRefresh(CCScrollView *view) {}
     // #HLP_END
 };
 
@@ -230,10 +231,12 @@ public:
     bool mRefreshEnabled;
     bool mIsRefreshing;
     CCLabelTTF *mLabelRefresh;
+    CCMenu *mMenu;
     void updateRefreshUI();
     void setRefreshStart();
     void setRefreshDone();
     void setRefreshText(const char *text);
+    void clickCancelRefresh(CCObject *sender);
     void setRefreshEnabled(bool refresh);
     
     // #HLP_END
@@ -257,7 +260,7 @@ public:
     bool getSpringConstant(float &kX, float &kY);
     // #HLP_END
     
-        void deaccelerateScrolling(float dt);
+    void deaccelerateScrolling(float dt);
     /**
      * This method makes sure auto scrolling causes delegate to invoke its method
      */

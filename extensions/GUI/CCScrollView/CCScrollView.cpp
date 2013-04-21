@@ -34,6 +34,9 @@ NS_CC_EXT_BEGIN
 #define SCROLL_DEACCEL_DIST  0.1f
 #define BOUNCE_DURATION      0.8f
 #define PAGE_DURATION        0.25f
+#define REFRESH_LABEL_Y 30
+#define REFRESH_LABEL_MAX_Y 350
+#define REFRESH_START_Y 70
 // #HLP_END
 #define INSET_RATIO          0.2f
 #define MOVE_INCH            7.0f/160.0f
@@ -395,8 +398,16 @@ CCPoint CCScrollView::maxContainerOffset()
 
 CCPoint CCScrollView::minContainerOffset()
 {
-    return ccp(m_tViewSize.width - m_pContainer->getContentSize().width*m_pContainer->getScaleX(), 
+//    return ccp(m_tViewSize.width - m_pContainer->getContentSize().width*m_pContainer->getScaleX(), 
+//               m_tViewSize.height - m_pContainer->getContentSize().height*m_pContainer->getScaleY());
+    // #HLP_BEGIN
+    if(mIsRefreshing)
+        return ccp(m_tViewSize.width - m_pContainer->getContentSize().width*m_pContainer->getScaleX(),
+                   m_tViewSize.height - m_pContainer->getContentSize().height*m_pContainer->getScaleY() - REFRESH_START_Y);
+
+    return ccp(m_tViewSize.width - m_pContainer->getContentSize().width*m_pContainer->getScaleX(),
                m_tViewSize.height - m_pContainer->getContentSize().height*m_pContainer->getScaleY());
+    // #HLP_END
 }
 
 // #HLP_BEGIN
@@ -417,7 +428,7 @@ bool CCScrollView::getSpringConstant(float &kX, float &kY){
         hitSpring = true;
         float diff = fabsf(y - offset.y);
         if(diff > 1.0f)
-            kY = 1.0f / diff * 10.0f;
+            kY = 1.0f / diff * 30.0f;
         if(kY > 1.0f)
             kY = 1.0f;
     }
@@ -1004,10 +1015,6 @@ void CCScrollView::setPagingEnabled(bool pagingEnabled) {
     mCurrentPage = 0;
 }
 
-#define REFRESH_LABEL_Y 30
-#define REFRESH_LABEL_MAX_Y 350
-#define REFRESH_START_Y 70
-
 void CCScrollView::updateRefreshUI() {
     CCSize scrollSize = getContentSize();
     if(scrollSize.height < REFRESH_LABEL_Y)
@@ -1028,6 +1035,7 @@ void CCScrollView::updateRefreshUI() {
         }
     }
     mLabelRefresh->setPosition(CCPointMake(scrollSize.width/2.0, py));
+    mMenu->setPosition(CCPointMake(scrollSize.width - 30.0f, py));
 }
 
 void CCScrollView::setRefreshStart(){
@@ -1038,10 +1046,16 @@ void CCScrollView::setRefreshStart(){
 void CCScrollView::setRefreshDone(){
     mIsRefreshing = false;
     mLabelRefresh->setString("Pull to refresh");
+    relocateContainer(true);
 }
 
 void CCScrollView::setRefreshText(const char *text){
     mLabelRefresh->setString(text);
+}
+
+void CCScrollView::clickCancelRefresh(CCObject *sender) {
+    if(m_pDelegate)
+        m_pDelegate->scrollViewDidCancelRefresh(this);
 }
 
 void CCScrollView::setRefreshEnabled(bool refresh) {
@@ -1054,6 +1068,11 @@ void CCScrollView::setRefreshEnabled(bool refresh) {
         mLabelRefresh->setPosition(CCPointMake(scrollSize.width/2.0, scrollSize.height+REFRESH_LABEL_Y));
         addChild(mLabelRefresh);
         mLabelRefresh->setAnchorPoint(ccp(0.5f, 0.5f));
+        
+        CCMenuItem *item = CCMenuItemImage::create("checked.png", "checkedbox.png", this, menu_selector(CCScrollView::clickCancelRefresh));
+        mMenu = CCMenu::createWithItem(item);
+        addChild(mMenu);
+        mMenu->setPosition(CCPointMake(scrollSize.width - 30.0f, scrollSize.height+REFRESH_LABEL_Y));
     }
 }
 

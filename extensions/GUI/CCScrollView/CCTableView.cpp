@@ -728,6 +728,13 @@ void CCTableView::scrollViewDidRefresh(CCScrollView *view) {
         m_pTableViewDelegate->scrollViewDidRefresh(view);
     }
 }
+
+void CCTableView::scrollViewDidCancelRefresh(CCScrollView *view) {
+    if(m_pTableViewDelegate){
+        m_pTableViewDelegate->scrollViewDidCancelRefresh(view);
+        setRefreshDone();
+    }
+}
 // #HLP_END
 
 

@@ -235,6 +235,7 @@ public:
     virtual void scrollViewDidScrollMove(CCScrollView* view);
     virtual void scrollViewDidStoppedAnimatedScroll(CCScrollView *view);
     virtual void scrollViewDidRefresh(CCScrollView *view);
+    virtual void scrollViewDidCancelRefresh(CCScrollView *view);
     // #HLP_END
 
     
