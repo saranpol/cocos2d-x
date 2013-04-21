@@ -1006,20 +1006,28 @@ void CCScrollView::setPagingEnabled(bool pagingEnabled) {
 
 #define REFRESH_LABEL_Y 30
 #define REFRESH_LABEL_MAX_Y 350
-#define REFRESH_START_Y 350
+#define REFRESH_START_Y 70
 
 void CCScrollView::updateRefreshUI() {
     CCSize scrollSize = getContentSize();
     if(scrollSize.height < REFRESH_LABEL_Y)
         return;
-    float y = scrollSize.height+REFRESH_LABEL_Y;
-    float diff = getContentOffset().y + y;
-    if(diff < REFRESH_START_Y){
+    float py = scrollSize.height+REFRESH_LABEL_Y;
+
+    float y = m_pContainer->getPosition().y;
+    const CCPoint minOffset = this->minContainerOffset();
+    const CCPoint maxOffset = this->maxContainerOffset();
+    CCPoint offset;
+    offset.y = MAX(minOffset.y, MIN(maxOffset.y, y));
+    float diff = offset.y - y;
+    //CCLog("diff %f", diff);
+    
+    if(diff > REFRESH_START_Y){
         if(m_pDelegate && !mIsRefreshing){
             m_pDelegate->scrollViewDidRefresh(this);
         }
     }
-    mLabelRefresh->setPosition(CCPointMake(scrollSize.width/2.0, y));
+    mLabelRefresh->setPosition(CCPointMake(scrollSize.width/2.0, py));
 }
 
 void CCScrollView::setRefreshStart(){

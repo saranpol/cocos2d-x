@@ -120,7 +120,9 @@ CCTableViewVerticalFillOrder CCTableView::getVerticalFillOrder()
 
 void CCTableView::reloadData()
 {
-    m_eOldDirection = kCCScrollViewDirectionNone;
+    // #HLP_BEGIN
+    //m_eOldDirection = kCCScrollViewDirectionNone;
+    // #HLP_END
     CCObject* pObj = NULL;
     CCARRAY_FOREACH(m_pCellsUsed, pObj)
     {
@@ -333,21 +335,45 @@ void CCTableView::_updateContentSize()
         size = getViewSize();
     }
     // #HLP_END
-    this->setContentSize(size);
 
-	if (m_eOldDirection != m_eDirection)
-	{
-		if (m_eDirection == kCCScrollViewDirectionHorizontal)
+//    this->setContentSize(size);
+//
+//	if (m_eOldDirection != m_eDirection)
+//	{
+//		if (m_eDirection == kCCScrollViewDirectionHorizontal)
+//		{
+//			this->setContentOffset(ccp(0,0));
+//		}
+//		else
+//		{
+//			this->setContentOffset(ccp(0,this->minContainerOffset().y));
+//		}
+//		m_eOldDirection = m_eDirection;
+//	}
+
+    // #HLP_BEGIN
+    CCSize contentSize = getContentSize();
+    if (m_eOldDirection != m_eDirection){
+        setContentSize(size);
+        if (m_eDirection == kCCScrollViewDirectionHorizontal)
 		{
 			this->setContentOffset(ccp(0,0));
 		}
-		else
-		{
-			this->setContentOffset(ccp(0,this->minContainerOffset().y));
-		}
-		m_eOldDirection = m_eDirection;
-	}
-
+        else
+        {
+            this->setContentOffset(ccp(0, this->minContainerOffset().y));
+        }
+        m_eOldDirection = m_eDirection;
+    }else if(!contentSize.equals(size)){
+        float diffW = contentSize.width - size.width;
+        float diffH = contentSize.height - size.height;
+        setContentSize(size);
+        
+        CCPoint offset = getContentOffset();
+        setContentOffset(ccp(offset.x+diffW, offset.y+diffH));
+    }
+    // #HLP_END
+    
 }
 
 CCPoint CCTableView::_offsetFromIndex(unsigned int index)
