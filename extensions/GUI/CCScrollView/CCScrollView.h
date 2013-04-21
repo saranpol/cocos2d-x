@@ -252,7 +252,12 @@ public:
      *
      * @param dt delta
      */
-    void deaccelerateScrolling(float dt);
+
+    // #HLP_BEGIN
+    bool getSpringConstant(float &kX, float &kY);
+    // #HLP_END
+    
+        void deaccelerateScrolling(float dt);
     /**
      * This method makes sure auto scrolling causes delegate to invoke its method
      */

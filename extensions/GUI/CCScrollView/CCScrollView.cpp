@@ -399,6 +399,45 @@ CCPoint CCScrollView::minContainerOffset()
                m_tViewSize.height - m_pContainer->getContentSize().height*m_pContainer->getScaleY());
 }
 
+// #HLP_BEGIN
+bool CCScrollView::getSpringConstant(float &kX, float &kY){
+    float x = m_pContainer->getPosition().x;
+    float y = m_pContainer->getPosition().y;
+    
+    const CCPoint minOffset = this->minContainerOffset();
+    const CCPoint maxOffset = this->maxContainerOffset();
+    
+    CCPoint offset;
+    offset.x = MAX(minOffset.x, MIN(maxOffset.x, x));
+    offset.y = MAX(minOffset.y, MIN(maxOffset.y, y));
+    
+    bool hitSpring = false;
+    
+    if(y != offset.y){
+        hitSpring = true;
+        float diff = fabsf(y - offset.y);
+        if(diff > 1.0f)
+            kY = 1.0f / diff * 10.0f;
+        if(kY > 1.0f)
+            kY = 1.0f;
+    }
+    
+    if(x != offset.x){
+        hitSpring = true;
+        float diff = fabsf(x - offset.x);
+        if(diff > 1.0f)
+            kX = 1.0f / diff * 10.0f;
+        if(kX > 1.0f)
+            kX = 1.0f;
+    }
+    
+    return hitSpring;
+}
+
+// #HLP_END
+
+
+
 void CCScrollView::deaccelerateScrolling(float dt)
 {
     // #HLP_BEGIN
@@ -416,6 +455,22 @@ void CCScrollView::deaccelerateScrolling(float dt)
     
     float newX, newY;
     CCPoint maxInset, minInset;
+    
+    
+    
+    
+    // #HLP_BEGIN
+    // make scrollview scroll less when at the edge of deaccelerate
+    float kX = 1.0f;
+    float kY = 1.0f;
+    float deaccel_dist = SCROLL_DEACCEL_DIST;
+    if(getSpringConstant(kX, kY))
+        deaccel_dist = 1.0f;
+    
+    m_tScrollDistance.x *= kX;
+    m_tScrollDistance.y *= kY;
+    // #HLP_END
+    
     
     m_pContainer->setPosition(ccpAdd(m_pContainer->getPosition(), m_tScrollDistance));
     
@@ -443,8 +498,12 @@ void CCScrollView::deaccelerateScrolling(float dt)
     m_tScrollDistance     = ccpMult(m_tScrollDistance, SCROLL_DEACCEL_RATE);
     this->setContentOffset(ccp(newX,newY));
     
-    if ((fabsf(m_tScrollDistance.x) <= SCROLL_DEACCEL_DIST &&
-         fabsf(m_tScrollDistance.y) <= SCROLL_DEACCEL_DIST) ||
+//    if ((fabsf(m_tScrollDistance.x) <= SCROLL_DEACCEL_DIST &&
+//         fabsf(m_tScrollDistance.y) <= SCROLL_DEACCEL_DIST) ||
+    // #HLP_BEGIN
+    if ((fabsf(m_tScrollDistance.x) <= deaccel_dist &&
+         fabsf(m_tScrollDistance.y) <= deaccel_dist) ||    
+    // #HLP_END
         newY > maxInset.y || newY < minInset.y ||
         newX > maxInset.x || newX < minInset.x ||
         newX == maxInset.x || newX == minInset.x ||
@@ -812,9 +871,18 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
                 maxInset = m_fMaxInset;
                 minInset = m_fMinInset;
 
-                newX     = m_pContainer->getPosition().x + moveDistance.x;
-                newY     = m_pContainer->getPosition().y + moveDistance.y;
+//                newX     = m_pContainer->getPosition().x + moveDistance.x;
+//                newY     = m_pContainer->getPosition().y + moveDistance.y;
 
+                // #HLP_BEGIN
+                // make scrollview scroll less when at the edge when drag
+                float kX = 1.0f;
+                float kY = 1.0f;
+                getSpringConstant(kX, kY);
+                newX     = m_pContainer->getPosition().x + moveDistance.x*kX;
+                newY     = m_pContainer->getPosition().y + moveDistance.y*kY;
+                // #HLP_END
+                
                 m_tScrollDistance = moveDistance;
                 this->setContentOffset(ccp(newX, newY));
             }
@@ -938,7 +1006,7 @@ void CCScrollView::setPagingEnabled(bool pagingEnabled) {
 
 #define REFRESH_LABEL_Y 30
 #define REFRESH_LABEL_MAX_Y 350
-#define REFRESH_START_Y 250
+#define REFRESH_START_Y 350
 
 void CCScrollView::updateRefreshUI() {
     CCSize scrollSize = getContentSize();
