@@ -1069,7 +1069,7 @@ void CCScrollView::setRefreshEnabled(bool refresh) {
         addChild(mLabelRefresh);
         mLabelRefresh->setAnchorPoint(ccp(0.5f, 0.5f));
         
-        CCMenuItem *item = CCMenuItemImage::create("checked.png", "checkedbox.png", this, menu_selector(CCScrollView::clickCancelRefresh));
+        CCMenuItem *item = CCMenuItemImage::create("button_close_refresh.png", "button_close_refresh_press.png", this, menu_selector(CCScrollView::clickCancelRefresh));
         mMenu = CCMenu::createWithItem(item);
         addChild(mMenu);
         mMenu->setPosition(CCPointMake(scrollSize.width - 30.0f, scrollSize.height+REFRESH_LABEL_Y));
