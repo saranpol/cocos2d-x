@@ -428,7 +428,7 @@ bool CCScrollView::getSpringConstant(float &kX, float &kY){
         hitSpring = true;
         float diff = fabsf(y - offset.y);
         if(diff > 1.0f)
-            kY = 1.0f / diff * 30.0f;
+            kY = 1.0f / diff * 10.0f;
         if(kY > 1.0f)
             kY = 1.0f;
     }
