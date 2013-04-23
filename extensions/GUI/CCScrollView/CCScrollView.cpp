@@ -36,7 +36,8 @@ NS_CC_EXT_BEGIN
 #define PAGE_DURATION        0.25f
 #define REFRESH_LABEL_Y 30
 #define REFRESH_LABEL_MAX_Y 350
-#define REFRESH_START_Y 70
+#define REFRESH_SHOW_Y 70
+#define REFRESH_START_Y 100
 // #HLP_END
 #define INSET_RATIO          0.2f
 #define MOVE_INCH            7.0f/160.0f
@@ -403,7 +404,7 @@ CCPoint CCScrollView::minContainerOffset()
     // #HLP_BEGIN
     if(mIsRefreshing)
         return ccp(m_tViewSize.width - m_pContainer->getContentSize().width*m_pContainer->getScaleX(),
-                   m_tViewSize.height - m_pContainer->getContentSize().height*m_pContainer->getScaleY() - REFRESH_START_Y);
+                   m_tViewSize.height - m_pContainer->getContentSize().height*m_pContainer->getScaleY() - REFRESH_SHOW_Y);
 
     return ccp(m_tViewSize.width - m_pContainer->getContentSize().width*m_pContainer->getScaleX(),
                m_tViewSize.height - m_pContainer->getContentSize().height*m_pContainer->getScaleY());
@@ -428,7 +429,7 @@ bool CCScrollView::getSpringConstant(float &kX, float &kY){
         hitSpring = true;
         float diff = fabsf(y - offset.y);
         if(diff > 1.0f)
-            kY = 1.0f / diff * 10.0f;
+            kY = 1.0f / diff * 30.0f;
         if(kY > 1.0f)
             kY = 1.0f;
     }
@@ -437,7 +438,7 @@ bool CCScrollView::getSpringConstant(float &kX, float &kY){
         hitSpring = true;
         float diff = fabsf(x - offset.x);
         if(diff > 1.0f)
-            kX = 1.0f / diff * 10.0f;
+            kX = 1.0f / diff * 30.0f;
         if(kX > 1.0f)
             kX = 1.0f;
     }
