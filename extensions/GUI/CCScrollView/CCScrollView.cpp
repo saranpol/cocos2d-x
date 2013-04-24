@@ -1064,7 +1064,7 @@ void CCScrollView::setRefreshEnabled(bool refresh) {
     
     if(mRefreshEnabled){
         mLabelRefresh = CCLabelTTF::create("Pull to refresh", "ccbResources/Thonburi.ttf", 20);
-        mLabelRefresh->setColor(ccBLACK);
+        mLabelRefresh->setColor(ccc3(76, 76, 76));
         CCSize scrollSize = getContentSize();
         mLabelRefresh->setPosition(CCPointMake(scrollSize.width/2.0, scrollSize.height+REFRESH_LABEL_Y));
         addChild(mLabelRefresh);
