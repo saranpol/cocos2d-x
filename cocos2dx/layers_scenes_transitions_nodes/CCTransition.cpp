@@ -528,7 +528,12 @@ void CCTransitionSlideInL:: initScenes()
 CCActionInterval* CCTransitionSlideInL::action()
 {
     CCSize s = CCDirector::sharedDirector()->getWinSize();
-    return CCMoveBy::create(m_fDuration, ccp(s.width-ADJUST_FACTOR,0));
+//    return CCMoveBy::create(m_fDuration, ccp(s.width-ADJUST_FACTOR,0));
+    // #HLP_BEGIN
+    CCActionInterval *i = CCMoveBy::create(m_fDuration, ccp(s.width-ADJUST_FACTOR,0));
+    CCActionInterval *i_easing = CCEaseSineOut::create(i);
+    return i_easing;
+    // #HLP_END
 }
 
 CCActionInterval* CCTransitionSlideInL::easeActionWithAction(CCActionInterval* action)
@@ -585,7 +590,12 @@ void CCTransitionSlideInR::initScenes()
 CCActionInterval* CCTransitionSlideInR:: action()
 {
     CCSize s = CCDirector::sharedDirector()->getWinSize();
-    return CCMoveBy::create(m_fDuration, ccp(-(s.width-ADJUST_FACTOR),0));
+    //return CCMoveBy::create(m_fDuration, ccp(-(s.width-ADJUST_FACTOR),0));
+    // #HLP_BEGIN
+    CCActionInterval *i = CCMoveBy::create(m_fDuration, ccp(-(s.width-ADJUST_FACTOR),0));
+    CCActionInterval *i_easing = CCEaseSineOut::create(i);
+    return i_easing;
+    // #HLP_END
 }
 
 
