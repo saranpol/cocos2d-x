@@ -413,6 +413,11 @@ void CCSprite::didReceivedFile(HttpRequest* r, char *data, uint32 len) {
         
         setTextureAndSize(texture);
         
+        // Fade just got image
+        setOpacity(0);
+        CCFiniteTimeAction *fade = CCFadeTo::create(0.5f, 255);
+        fade = CCEaseSineOut::create((CCActionInterval*)fade);
+        runAction(CCSequence::create(fade, NULL));
         
         scheduleOnce(schedule_selector(CCSprite::deleteRequest), 0.0);
     }
