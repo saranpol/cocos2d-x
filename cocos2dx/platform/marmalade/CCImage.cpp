@@ -136,6 +136,7 @@ private:
     // #HLP_BEGIN
     void buildLine(wstringstream& ss, FT_Face face, int iCurXCursor, wchar_t cLastChar);
     bool divideString(FT_Face face, const wchar_t* sText, int iMaxWidth, int iMaxHeight);
+    int getCharWidth(FT_Face face, FT_ULong charcode);
     // #HLP_END
     
 	/**
@@ -342,6 +343,12 @@ bool BitmapDC::canBreakThai(const wchar_t* pText){
 // #HLP_END
 
 
+// #HLP_BEGIN
+int BitmapDC::getCharWidth(FT_Face face, FT_ULong charcode){
+    FT_Load_Glyph(face, FT_Get_Char_Index(face, charcode), FT_LOAD_DEFAULT);
+    return RSHIFT6(face->glyph->metrics.horiAdvance);
+}
+// #HLP_END
 
 
 
@@ -516,11 +523,39 @@ bool BitmapDC::divideString(FT_Face face, const wchar_t* sText, int iMaxWidth, i
         if(numLine > 0){
             wstring *s = &m_vLines[numLine-1].sLineStr;
             int len = wcslen(s->c_str());//s->size();
+
             if(len >= 3){
+                
+                int dot_width = getCharWidth(face, L'.')*3;
+                int s1 = getCharWidth(face, (*s)[len-3]);
+                int s2 = getCharWidth(face, (*s)[len-2]);
+                int s3 = getCharWidth(face, (*s)[len-1]);
+                
+                int w = m_vLines[numLine-1].iLineWidth;
+                if(w + dot_width <= iMaxWidth){
+                    s->resize(len+4);
+                    (*s)[len+3] = L'\0';
+                    len += 3;
+                    m_vLines[numLine-1].iLineWidth = w + dot_width;
+                }else if(w - s3 + dot_width <= iMaxWidth){
+                    s->resize(len+3);
+                    (*s)[len+2] = L'\0';
+                    len += 2;
+                    m_vLines[numLine-1].iLineWidth = w - s3 + dot_width;
+                }else if(w - s3 - s2 + dot_width <= iMaxWidth){
+                    s->resize(len+2);
+                    (*s)[len+1] = L'\0';
+                    len += 1;
+                    m_vLines[numLine-1].iLineWidth = w - s3 - s2 + dot_width;
+                }else if(w - s3 - s2 - s1 + dot_width <= iMaxWidth){
+                    m_vLines[numLine-1].iLineWidth = w - s3 - s2 - s1 + dot_width;
+                }
+            
                 (*s)[len-1] = L'.';
                 (*s)[len-2] = L'.';
                 (*s)[len-3] = L'.';
             }
+
         }
     }
     // #HLP_END
