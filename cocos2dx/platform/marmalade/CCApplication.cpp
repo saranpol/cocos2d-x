@@ -39,6 +39,9 @@ NS_CC_BEGIN;
 CCApplication * CCApplication::sm_pSharedApplication = 0;
 
 CCApplication::CCApplication()
+//# HLP_BEGIN
+:isAppStillRunning(true)
+//# HLP_END
 {
 	IW_CALLSTACK("CCApplication::CCApplication");
 	
@@ -81,6 +84,16 @@ int CCApplication::Run()
 
 		quitRequested = s3eDeviceCheckQuitRequest();
 		if( quitRequested) {
+            
+            
+            // #HLP_BEGIN
+            if (isAppStillRunning) {
+                isAppStillRunning = false;
+                applicationWillTerminate();
+            }
+            // #HLP_END
+            
+                
             CCDirector* pDirector = CCDirector::sharedDirector();
             // if opengl view has been released, delete the director.
             if (pDirector->getOpenGLView() == NULL)
@@ -94,7 +107,7 @@ int CCApplication::Run()
             }
 		}
 
-		if( bNeedQuit ) {
+		if( bNeedQuit ) {            
 			break;
 		}
 
