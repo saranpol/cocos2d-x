@@ -64,12 +64,6 @@ public:
 	 @param  the pointer of the application
 	 */
     virtual void applicationWillEnterForeground() = 0;
-
-    
-    //#HLP_BEGIN
-    bool isAppStillRunning;
-    virtual void applicationWillTerminate() = 0;
-    //#HLP_END
     
 	void setAnimationInterval(double interval);
 	
