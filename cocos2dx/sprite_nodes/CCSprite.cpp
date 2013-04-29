@@ -328,6 +328,8 @@ CCSprite::~CCSprite(void)
 
 void CCSprite::setTextureAndSize(CCTexture2D *texture){
     
+    bool isNew = texture != getTexture();
+    
     CCSize size = getContentSize();
     CCPoint anchor = getAnchorPoint();
     
@@ -364,6 +366,15 @@ void CCSprite::setTextureAndSize(CCTexture2D *texture){
         setPositionX(mOriginalX + x);
         setScale(final_h/image_h);
     }
+
+    if(isNew){
+        // Fade just got image
+        setOpacity(0);
+        CCFiniteTimeAction *fade = CCFadeTo::create(0.5f, 255);
+        fade = CCEaseSineOut::create((CCActionInterval*)fade);
+        runAction(CCSequence::create(fade, NULL));
+    }
+
 }
 
 void CCSprite::setUrl(const char *url) {
@@ -412,12 +423,6 @@ void CCSprite::didReceivedFile(HttpRequest* r, char *data, uint32 len) {
         
         
         setTextureAndSize(texture);
-        
-        // Fade just got image
-        setOpacity(0);
-        CCFiniteTimeAction *fade = CCFadeTo::create(0.5f, 255);
-        fade = CCEaseSineOut::create((CCActionInterval*)fade);
-        runAction(CCSequence::create(fade, NULL));
         
         scheduleOnce(schedule_selector(CCSprite::deleteRequest), 0.0);
     }
