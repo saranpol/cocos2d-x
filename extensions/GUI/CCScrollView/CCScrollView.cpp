@@ -67,6 +67,7 @@ CCScrollView::CCScrollView()
 // #HLP_BEGIN
 , mPagingEnabled(false)
 , mIsRefreshing(false)
+, mIsDone(true)
 , mRefreshEnabled(false)
 , m_bDisableVertical(false)
 , m_bDisableHorizontal(false)
@@ -1031,7 +1032,7 @@ void CCScrollView::updateRefreshUI() {
     //CCLog("diff %f", diff);
     
     if(diff > REFRESH_START_Y){
-        if(m_pDelegate && !mIsRefreshing){
+        if(m_pDelegate && !mIsRefreshing && mIsDone){
             m_pDelegate->scrollViewDidRefresh(this);
         }
     }
@@ -1041,12 +1042,18 @@ void CCScrollView::updateRefreshUI() {
 
 void CCScrollView::setRefreshStart(){
     mIsRefreshing = true;
+    mIsDone = false;
     mLabelRefresh->setString("Refreshing...");
+}
+
+void CCScrollView::setDoneFlag() {
+    mIsDone = true;
 }
 
 void CCScrollView::setRefreshDone(){
     mIsRefreshing = false;
     mLabelRefresh->setString("Pull to refresh");
+    scheduleOnce(schedule_selector(CCScrollView::setDoneFlag), 2.0f);
     relocateContainer(true);
 }
 
@@ -1122,6 +1129,7 @@ void CCScrollView::removeAllTouch() {
     m_bDisableHorizontal = false;
     m_bDidVertical = false;
     m_bDidHorizontal = false;
+    mIsDone = true;
 }
 
 // #HLP_END

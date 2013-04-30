@@ -230,10 +230,12 @@ public:
     // Refresh
     bool mRefreshEnabled;
     bool mIsRefreshing;
+    bool mIsDone;
     CCLabelTTF *mLabelRefresh;
     CCMenu *mMenu;
     void updateRefreshUI();
     void setRefreshStart();
+    void setDoneFlag();
     void setRefreshDone();
     void setRefreshText(const char *text);
     void clickCancelRefresh(CCObject *sender);
