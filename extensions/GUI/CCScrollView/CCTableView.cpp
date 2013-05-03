@@ -365,12 +365,12 @@ void CCTableView::_updateContentSize()
         }
         m_eOldDirection = m_eDirection;
     }else if(!contentSize.equals(size)){
-        float diffW = contentSize.width - size.width;
+        //float diffW = contentSize.width - size.width;
         float diffH = contentSize.height - size.height;
         setContentSize(size);
         
         CCPoint offset = getContentOffset();
-        setContentOffset(ccp(offset.x+diffW, offset.y+diffH));
+        setContentOffset(ccp(offset.x, offset.y+diffH));
     }
     // #HLP_END
     
