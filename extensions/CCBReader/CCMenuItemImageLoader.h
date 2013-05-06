@@ -3,6 +3,13 @@
 
 #include "CCMenuItemLoader.h"
 
+
+// #HLP_BEGIN
+#define TAG_INTERNET_MENU_ITEM_IMAGE 1000
+// for MenuItemImage that set image later from internet
+// #HLP_END
+
+
 NS_CC_EXT_BEGIN
 
 /* Forward declaration. */

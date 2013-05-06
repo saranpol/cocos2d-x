@@ -37,6 +37,8 @@ THE SOFTWARE.
 // #HLP_BEGIN
 #include "textures/CCTextureCache.h"
 #include "actions/CCActionEase.h"
+#include "CCDirector.h"
+#include "CCMenuItemImageLoader.h"
 // #HLP_END
 
 NS_CC_BEGIN
@@ -595,6 +597,12 @@ bool CCMenuItemSprite::initWithNormalSprite(CCNode* normalSprite, CCNode* select
     if(m_pNormalImage)
     {
         this->setContentSize(m_pNormalImage->getContentSize());
+        // #HLP_BEGIN
+        // #resource_scale_fix
+        if(getTag() != TAG_INTERNET_MENU_ITEM_IMAGE){
+            setScale(getScale() * CC_CONTENT_SCALE_FACTOR() / CC_RESOURCE_SCALE_FACTOR());
+        }
+        // #HLP_END
     }
     
     setCascadeColorEnabled(true);

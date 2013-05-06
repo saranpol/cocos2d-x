@@ -115,8 +115,9 @@ CCSprite* CCSprite::createWithSpriteFrame(CCSpriteFrame *pSpriteFrame)
     if (pSpriteFrame && pobSprite && pobSprite->initWithSpriteFrame(pSpriteFrame))
     {
         pobSprite->autorelease();
+        // #resource_scale_fix
         // #HLP_BEGIN
-        pobSprite->setScale(pobSprite->getScale() * CC_CONTENT_SCALE_FACTOR() / CC_RESOURCE_SCALE_FACTOR());
+        //pobSprite->setScale(pobSprite->getScale() * CC_CONTENT_SCALE_FACTOR() / CC_RESOURCE_SCALE_FACTOR());
         // #HLP_END
         return pobSprite;
     }
