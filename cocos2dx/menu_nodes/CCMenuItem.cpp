@@ -38,7 +38,7 @@ THE SOFTWARE.
 #include "textures/CCTextureCache.h"
 #include "actions/CCActionEase.h"
 #include "CCDirector.h"
-#include "CCMenuItemImageLoader.h"
+#include "CCBReader/CCMenuItemImageLoader.h"
 // #HLP_END
 
 NS_CC_BEGIN
