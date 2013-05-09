@@ -328,6 +328,7 @@ CCSprite::~CCSprite(void)
 // #HLP_BEGIN
 
 void CCSprite::setTextureAndSize(CCTexture2D *texture){
+    setVisible(true);
     
     bool isNew = texture != getTexture();
     
@@ -379,6 +380,8 @@ void CCSprite::setTextureAndSize(CCTexture2D *texture){
 }
 
 void CCSprite::setUrl(const char *url) {
+    setVisible(false);
+    
     if(!mOriginalPosSet){
         mOriginalX = getPositionX();
         mOriginalY = getPositionY();
