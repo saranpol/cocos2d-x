@@ -305,6 +305,9 @@ public:
     /** Draw the scene.
     This method is called every frame. Don't call it manually.
     */
+    // #HLP_BEGIN
+    void updateScene();
+    // #HLP_END
     void drawScene(void);
 
     // Memory Helper

@@ -219,6 +219,27 @@ void CCDirector::setGLDefaultValues(void)
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
+// #HLP_BEGIN
+void CCDirector::updateScene(void) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    kmGLPushMatrix();
+    
+    // draw the scene
+    if (m_pRunningScene)
+    {
+        m_pRunningScene->visit();
+    }
+    
+    kmGLPopMatrix();
+    
+    // swap buffers
+    if (m_pobOpenGLView)
+    {
+        m_pobOpenGLView->swapBuffers();
+    }
+}
+// #HLP_END
+
 // Draw the Scene
 void CCDirector::drawScene(void)
 {
