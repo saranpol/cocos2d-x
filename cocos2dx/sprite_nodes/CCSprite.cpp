@@ -357,16 +357,26 @@ void CCSprite::setTextureAndSize(CCTexture2D *texture){
     if(final_h <= frame_h){
         // y center
         float y = frame_h/2.0 - final_h/2.0;
-        setPositionY(mOriginalY + y);
-        setScale(final_w/image_w);
+        if(y<1.0f){
+            setScaleX(final_w/image_w);
+            setScaleY(frame_h/image_h);
+        }else{
+            setPositionY(mOriginalY + y);
+            setScale(final_w/image_w);
+        }
     }else{
         // Fix height
         final_h = frame_h;
         final_w = final_h*image_w/image_h;
         // x center
         float x = frame_w/2.0 - final_w/2.0;
-        setPositionX(mOriginalX + x);
-        setScale(final_h/image_h);
+        if(x<1.0f){
+            setScaleX(frame_w/image_w);
+            setScaleY(final_h/image_h);
+        }else{
+            setPositionX(mOriginalX + x);
+            setScale(final_h/image_h);
+        }
     }
 
     if(isNew){
