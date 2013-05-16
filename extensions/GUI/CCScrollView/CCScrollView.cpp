@@ -1053,7 +1053,7 @@ void CCScrollView::setDoneFlag() {
 void CCScrollView::setRefreshDone(){
     mIsRefreshing = false;
     mLabelRefresh->setString("Pull to refresh");
-    scheduleOnce(schedule_selector(CCScrollView::setDoneFlag), 2.0f);
+    scheduleOnce(schedule_selector(CCScrollView::setDoneFlag), 1.0f);
     relocateContainer(true);
 }
 
