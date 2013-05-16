@@ -546,9 +546,8 @@ void CCTextFieldTTF::setString(const char *text)
             }
             puts (str);
             passwordText = str;
-            CCLabelTTF::setString(passwordText.c_str());
-        }
-        else
+            CCLabelTTF::setString(passwordText.c_str()); 
+        } else
         {
             CCLabelTTF::setString(m_pInputText->c_str());
         }
