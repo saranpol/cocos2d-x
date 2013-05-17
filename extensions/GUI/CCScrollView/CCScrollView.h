@@ -229,9 +229,11 @@ public:
 
     // Refresh
     bool mRefreshEnabled;
+    bool mHasHeaderBG;
     bool mIsRefreshing;
     bool mIsDone;
     CCLabelTTF *mLabelRefresh;
+    CCLayerColor *mHeaderBG;
     CCMenu *mMenu;
     void updateRefreshUI();
     void setRefreshStart();

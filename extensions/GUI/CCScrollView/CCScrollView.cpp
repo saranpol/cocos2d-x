@@ -68,6 +68,9 @@ CCScrollView::CCScrollView()
 , mPagingEnabled(false)
 , mIsRefreshing(false)
 , mIsDone(true)
+, mHasHeaderBG(false)
+, mHeaderBG(NULL)
+, mLabelRefresh(NULL)
 , mRefreshEnabled(false)
 , m_bDisableVertical(false)
 , m_bDisableHorizontal(false)
@@ -240,9 +243,7 @@ void CCScrollView::setContentOffset(CCPoint offset, bool animated/* = false*/)
         }
         
         // #HLP_BEGIN
-        if(mRefreshEnabled){
-            updateRefreshUI();
-        }
+        updateRefreshUI();
         // #HLP_END
     }
 }
@@ -910,7 +911,6 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
 }
 
 // #HLP_BEGIN
-#define SCROOL_TO_TIMER 0.15f
 #define SECTION_PER_SCREEN_WIDTH_TO_SCROLL 5
 // #HLP_END
 
@@ -1019,31 +1019,37 @@ void CCScrollView::setPagingEnabled(bool pagingEnabled) {
 
 void CCScrollView::updateRefreshUI() {
     CCSize scrollSize = getContentSize();
-    if(scrollSize.height < REFRESH_LABEL_Y)
-        return;
-    float py = scrollSize.height+REFRESH_LABEL_Y;
+    if(mRefreshEnabled){
+        if(scrollSize.height < REFRESH_LABEL_Y)
+            return;
+        float py = scrollSize.height+REFRESH_LABEL_Y;
 
-    float y = m_pContainer->getPosition().y;
-    const CCPoint minOffset = this->minContainerOffset();
-    const CCPoint maxOffset = this->maxContainerOffset();
-    CCPoint offset;
-    offset.y = MAX(minOffset.y, MIN(maxOffset.y, y));
-    float diff = offset.y - y;
-    //CCLog("diff %f", diff);
-    
-    if(diff > REFRESH_START_Y){
-        if(m_pDelegate && !mIsRefreshing && mIsDone){
-            m_pDelegate->scrollViewDidRefresh(this);
+        float y = m_pContainer->getPosition().y;
+        const CCPoint minOffset = this->minContainerOffset();
+        const CCPoint maxOffset = this->maxContainerOffset();
+        CCPoint offset;
+        offset.y = MAX(minOffset.y, MIN(maxOffset.y, y));
+        float diff = offset.y - y;
+        //CCLog("diff %f", diff);
+        
+        if(diff > REFRESH_START_Y){
+            if(m_pDelegate && !mIsRefreshing && mIsDone){
+                m_pDelegate->scrollViewDidRefresh(this);
+            }
         }
+        mLabelRefresh->setPosition(CCPointMake(scrollSize.width/2.0, py));
+        mMenu->setPosition(CCPointMake(scrollSize.width - 30.0f, py));
     }
-    mLabelRefresh->setPosition(CCPointMake(scrollSize.width/2.0, py));
-    mMenu->setPosition(CCPointMake(scrollSize.width - 30.0f, py));
+
+    if(mHeaderBG)
+        mHeaderBG->setPosition(CCPointMake(0, scrollSize.height - 8.0f));
 }
 
 void CCScrollView::setRefreshStart(){
     mIsRefreshing = true;
     mIsDone = false;
-    mLabelRefresh->setString("Refreshing...");
+    if(mLabelRefresh)
+        mLabelRefresh->setString("Refreshing...");
 }
 
 void CCScrollView::setDoneFlag() {
@@ -1052,13 +1058,15 @@ void CCScrollView::setDoneFlag() {
 
 void CCScrollView::setRefreshDone(){
     mIsRefreshing = false;
-    mLabelRefresh->setString("Pull to refresh");
-    scheduleOnce(schedule_selector(CCScrollView::setDoneFlag), 1.0f);
+    if(mLabelRefresh)
+        mLabelRefresh->setString("Pull to refresh");
+    scheduleOnce(schedule_selector(CCScrollView::setDoneFlag), 1.5f);
     relocateContainer(true);
 }
 
 void CCScrollView::setRefreshText(const char *text){
-    mLabelRefresh->setString(text);
+    if(mLabelRefresh)
+        mLabelRefresh->setString(text);
 }
 
 void CCScrollView::clickCancelRefresh(CCObject *sender) {
@@ -1068,11 +1076,21 @@ void CCScrollView::clickCancelRefresh(CCObject *sender) {
 
 void CCScrollView::setRefreshEnabled(bool refresh) {
     mRefreshEnabled = refresh;
+
+    CCSize scrollSize = getContentSize();
+
+    if(mHasHeaderBG){
+        mHeaderBG = CCLayerColor::create(ccc4(78, 78, 78, 255), scrollSize.width, scrollSize.height);
+        mHeaderBG->setPosition(CCPointMake(0, scrollSize.height - 8.0f));
+        addChild(mHeaderBG);
+    }
     
     if(mRefreshEnabled){
         mLabelRefresh = CCLabelTTF::create("Pull to refresh", "ccbResources/Thonburi.ttf", 20);
-        mLabelRefresh->setColor(ccc3(76, 76, 76));
-        CCSize scrollSize = getContentSize();
+        if(mHasHeaderBG)
+            mLabelRefresh->setColor(ccc3(255, 255, 255));
+        else
+            mLabelRefresh->setColor(ccc3(76, 76, 76));
         mLabelRefresh->setPosition(CCPointMake(scrollSize.width/2.0, scrollSize.height+REFRESH_LABEL_Y));
         addChild(mLabelRefresh);
         mLabelRefresh->setAnchorPoint(ccp(0.5f, 0.5f));
