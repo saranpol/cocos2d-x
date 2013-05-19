@@ -328,8 +328,6 @@ CCSprite::~CCSprite(void)
 // #HLP_BEGIN
 
 void CCSprite::setTextureAndSize(CCTexture2D *texture){
-    setVisible(true);
-    
     bool isNew = texture != getTexture();
     
     CCSize size = getContentSize();
@@ -338,7 +336,9 @@ void CCSprite::setTextureAndSize(CCTexture2D *texture){
     // if broken image
     if(texture->getContentSize().width == 0)
         return;
-    
+
+    setVisible(true);
+
     initWithTexture(texture); // content size may change here
     setContentSize(size); // restore content size
     setAnchorPoint(anchor);
