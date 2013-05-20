@@ -194,7 +194,7 @@ void CCMenu::addChild(CCNode * child, int zOrder, int tag)
 void CCMenu::onExit()
 {
     if (m_eState == kCCMenuStateTrackingTouch)
-    {
+    {        
         if (m_pSelectedItem)
         {
             m_pSelectedItem->unselected();

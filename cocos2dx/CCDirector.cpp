@@ -61,6 +61,7 @@ THE SOFTWARE.
 
 // #HLP_BEGIN
 #include "CCIMEDispatcher.h"
+#include <s3eOSReadString.h>
 // #HLP_END
 
 /**
@@ -98,6 +99,10 @@ CCDirector* CCDirector::sharedDirector(void)
 
 // #HLP_BEGIN
 void CCDirector::hideKeyboard(){
+    
+    if (s3eOSReadStringAvailable() == S3E_FALSE)
+        return;
+    
     CCEGLView * pGlView = s_SharedDirector->getOpenGLView();
     pGlView->setIMEKeyboardState(false);
 
