@@ -494,7 +494,6 @@ public:
     void setUrl(const char *url);
     void setTextureAndSize(CCTexture2D *texture);
     HttpRequest *mRequest;
-    void deleteRequest();
     void didReceivedFile(HttpRequest* r, char *data, uint32 len);
     void didReceivedError(HttpRequest* r, const char *message);
 

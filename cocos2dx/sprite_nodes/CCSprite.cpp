@@ -315,7 +315,7 @@ CCSprite::~CCSprite(void)
 {
     // #HLP_BEGIN
     if(mRequest)
-        delete mRequest;
+        mRequest->stop();
     // #HLP_END
     
     CC_SAFE_RELEASE(m_pobTexture);
@@ -399,7 +399,7 @@ void CCSprite::setUrl(const char *url) {
     }
     
     if(mRequest){
-        delete mRequest;
+        mRequest->stop();
         mRequest = NULL;
     }
     
@@ -412,16 +412,12 @@ void CCSprite::setUrl(const char *url) {
         return;
     }
     
-    mRequest = new HttpRequest;
+    mRequest = HttpRequest::create();
     mRequest->delegate = this;
     mRequest->callURL(url);
     mRequest->mType = HTTP_REQUEST_FILE;
 }
 
-void CCSprite::deleteRequest() {
-    delete mRequest;
-    mRequest = NULL;
-}
 
 void CCSprite::didReceivedFile(HttpRequest* r, char *data, uint32 len) {
     if(r == mRequest){
@@ -438,13 +434,13 @@ void CCSprite::didReceivedFile(HttpRequest* r, char *data, uint32 len) {
         
         setTextureAndSize(texture);
         
-        scheduleOnce(schedule_selector(CCSprite::deleteRequest), 0.0);
+        mRequest = NULL;
     }
 }
 
 void CCSprite::didReceivedError(HttpRequest* r, const char *message) {
     if(r == mRequest){
-        scheduleOnce(schedule_selector(CCSprite::deleteRequest), 0.0);
+        mRequest = NULL;
     }
 }
 
