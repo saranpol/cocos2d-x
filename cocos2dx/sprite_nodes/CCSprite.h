@@ -490,6 +490,7 @@ public:
     
     
     // #HLP_BEGIN
+    void setImagePath(const char *path);
     // internet
     void setUrl(const char *url);
     void setTextureAndSize(CCTexture2D *texture);

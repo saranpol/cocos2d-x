@@ -389,6 +389,11 @@ void CCSprite::setTextureAndSize(CCTexture2D *texture){
 
 }
 
+void CCSprite::setImagePath(const char *path) {
+    CCTexture2D *tex = CCTextureCache::sharedTextureCache()->addImage(path);
+    setTextureAndSize(tex);
+}
+
 void CCSprite::setUrl(const char *url) {
     setVisible(false);
     
