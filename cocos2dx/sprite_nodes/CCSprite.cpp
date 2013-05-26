@@ -424,7 +424,7 @@ void CCSprite::setUrl(const char *url) {
 }
 
 
-void CCSprite::didReceivedFile(HttpRequest* r, char *data, uint32 len) {
+void CCSprite::didReceiveFile(HttpRequest* r, char *data, uint32 len) {
     if(r == mRequest){
         CCImage* img = new CCImage;
         img->initWithImageData(data, len);
@@ -443,7 +443,7 @@ void CCSprite::didReceivedFile(HttpRequest* r, char *data, uint32 len) {
     }
 }
 
-void CCSprite::didReceivedError(HttpRequest* r, const char *message) {
+void CCSprite::didReceiveError(HttpRequest* r, const char *message) {
     if(r == mRequest){
         mRequest = NULL;
     }

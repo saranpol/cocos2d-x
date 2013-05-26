@@ -495,8 +495,8 @@ public:
     void setUrl(const char *url);
     void setTextureAndSize(CCTexture2D *texture);
     HttpRequest *mRequest;
-    void didReceivedFile(HttpRequest* r, char *data, uint32 len);
-    void didReceivedError(HttpRequest* r, const char *message);
+    void didReceiveFile(HttpRequest* r, char *data, uint32 len);
+    void didReceiveError(HttpRequest* r, const char *message);
 
     bool mOriginalPosSet;
     float mOriginalX;
