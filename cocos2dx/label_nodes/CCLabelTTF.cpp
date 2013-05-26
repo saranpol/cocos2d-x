@@ -27,6 +27,9 @@ THE SOFTWARE.
 #include "shaders/CCGLProgram.h"
 #include "shaders/CCShaderCache.h"
 #include "CCApplication.h"
+// #HLP_BEGIN
+#include "support/CCPointExtension.h"
+// #HLP_END
 
 NS_CC_BEGIN
 
@@ -141,6 +144,57 @@ bool CCLabelTTF::initWithString(const char *string, const char *fontName, float 
 
 
 // #HLP_BEGIN
+// Fix blur font
+
+void CCLabelTTF::fixPosition() {
+    if(!getTexture())
+        return;
+    CCSize dim = getTexture()->getContentSize();
+    CCSprite::setPosition(intendedPosition_);
+    if (getScaleX() < 0.3 || getScaleY() < 0.3) return;
+
+    // compute world (= screen) coordinate of top left position of label
+    CCPoint worldSpaceTopleft = convertToWorldSpace(ccp(0, dim.height));
+
+    // align origin on a pixel boundary on screen coordinates
+    worldSpaceTopleft.x = roundf(worldSpaceTopleft.x * CC_CONTENT_SCALE_FACTOR()) / CC_CONTENT_SCALE_FACTOR();
+    worldSpaceTopleft.y = roundf(worldSpaceTopleft.y * CC_CONTENT_SCALE_FACTOR()) / CC_CONTENT_SCALE_FACTOR();
+    
+    // transform back into node space
+    CCPoint nodeSpaceTopleft = convertToNodeSpace(worldSpaceTopleft);
+    
+    // adjust position by the computed delta
+    CCPoint delta = ccpSub(nodeSpaceTopleft, ccp(0,dim.height));
+    CCPoint newPos = ccpAdd(getPosition(), delta);
+    
+    // finally set the position data
+    CCSprite::setPosition(newPos);
+
+}
+
+void CCLabelTTF::onEnter() {
+    fixPosition();
+    CCSprite::onEnter();
+}
+
+void CCLabelTTF::setParent(CCNode* parent) {
+    CCSprite::setParent(parent);
+    fixPosition();
+}
+
+void CCLabelTTF::setPosition(const CCPoint &position) {
+    intendedPosition_ = position;
+    fixPosition();
+}
+
+void CCLabelTTF::setRotation(float fRotation) {
+    CCSprite::setRotation(fRotation);
+    fixPosition();
+}
+
+
+
+
 // Shadow
 CCLabelTTF * CCLabelTTF::createShadowWithString(const char *string, CCPoint pos, const CCSize& offset ,
                                                 ccColor3B col ,ccColor3B shadowCol, const CCSize& dimensions ,
@@ -187,6 +241,8 @@ void CCLabelTTF::setString(const char *string)
                     shadow->setString(string);
             }
         }
+        
+        fixPosition();
         // #HLP_END
     }
 }

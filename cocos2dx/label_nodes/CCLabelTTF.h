@@ -81,6 +81,14 @@ public:
                         CCVerticalTextAlignment vAlignment);
     
     // #HLP_BEGIN
+    // Fix blur font
+    CCPoint intendedPosition_;
+    void fixPosition();
+    virtual void onEnter();
+    virtual void setParent(CCNode* parent);
+    virtual void setPosition(const CCPoint &position);
+    virtual void setRotation(float fRotation);
+    
     // Shadow
     static CCLabelTTF * createShadowWithString(const char *string, CCPoint pos, const CCSize& offset ,
                                                ccColor3B col ,ccColor3B shadowCol, const CCSize& dimensions ,
