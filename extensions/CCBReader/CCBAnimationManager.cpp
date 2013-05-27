@@ -6,7 +6,9 @@
 #include "CCNode+CCBRelativePositioning.h"
 #include <string>
 #include <set>
-#include "SimpleAudioEngine.h"
+// #HLP_BEGIN
+//#include "SimpleAudioEngine.h"
+// #HLP_END
 #include "CCBSelectorResolver.h"
 
 using namespace cocos2d;
@@ -985,7 +987,9 @@ CCObject* CCBSoundEffect::copyWithZone(CCZone *pZone)
 
 void CCBSoundEffect::update(float time)
 {
-    CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect(mSoundFile.c_str());
+    // #HLP_BEGIN
+    //CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect(mSoundFile.c_str());
+    // #HLP_END
 }
 
 

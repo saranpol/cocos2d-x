@@ -292,9 +292,6 @@ void CCTableView::_updateContentSize()
     CCSize size = CCSizeZero;
     unsigned int cellsCount = m_pDataSource->numberOfCellsInTableView(this);
 
-    cellSize  = m_pDataSource->cellSizeForTable(this);
-    cellCount = m_pDataSource->numberOfCellsInTableView(this);
-
 //    if (cellsCount > 0)
 //    {
 //        float maxPosition = m_vCellsPositions[cellsCount];
@@ -312,19 +309,21 @@ void CCTableView::_updateContentSize()
     
     
     // #HLP_BEGIN
+    CCSize cellSize  = m_pDataSource->cellSizeForTable(this);
+    
     if (m_pDataSource->hasFixedCellSize()) {
         switch (this->getDirection())
         {
             case kCCScrollViewDirectionHorizontal:
-                size = CCSizeMake(cellCount * cellSize.width, cellSize.height);
+                size = CCSizeMake(cellsCount * cellSize.width, cellSize.height);
                 break;
             default:
-                size = CCSizeMake(cellSize.width, cellCount * cellSize.height);
+                size = CCSizeMake(cellSize.width, cellsCount * cellSize.height);
                 break;
         }        
     }else{
         float w = 0, h = 0;
-        for (size_t i = 0; i != cellCount; ++i) {
+        for (size_t i = 0; i != cellsCount; ++i) {
             CCSize cellSize = m_pDataSource->cellSizeForIndex(this, i);
             
             switch (this->getDirection())
@@ -343,7 +342,7 @@ void CCTableView::_updateContentSize()
         size = CCSizeMake(w, h);
     }
     
-    if(cellCount == 0){
+    if(cellsCount == 0){
         size = getViewSize();
     }
     // #HLP_END

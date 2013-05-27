@@ -37,20 +37,20 @@ files
     ("../GUI/CCEditBox")
     "CCEditBox.h"
     "CCEditBox.cpp"
-    “CCEditBoxImplNone.cpp”
+    "CCEditBoxImplNone.cpp"
 
     ["GUI/CCScrollView"]
     ("../GUI/CCScrollView")
     "*.h"
     "*.cpp"
 
-    ["PhysicsNodes"]
-    ("../physics_nodes")
-    "*.h"
-    "*.cpp"
+#    ["PhysicsNodes"]
+#    ("../physics_nodes")
+#    "*.h"
+#    "*.cpp"
 
-    ["spine"]
-    ("../spine")
-    "*.h"
-    "*.cpp"
+#    ["spine"]
+#    ("../spine")
+#    "*.h"
+#    "*.cpp"
 }
