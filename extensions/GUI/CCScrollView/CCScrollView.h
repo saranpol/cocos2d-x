@@ -193,7 +193,7 @@ public:
     virtual void ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent);
 
     virtual void setContentSize(const CCSize & size);
-    virtual const CCSize& getContentSize();
+    virtual const CCSize& getContentSize() const;
 
 	void updateInset();
     /**
@@ -374,6 +374,11 @@ protected:
      * max and min scale
      */
     float m_fMinScale, m_fMaxScale;
+    /**
+     * scissor rect for parent, just for restoring GL_SCISSOR_BOX
+     */
+    CCRect m_tParentScissorRect;
+    bool m_bScissorRestored;
 };
 
 // end of GUI group

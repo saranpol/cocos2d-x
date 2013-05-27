@@ -9,9 +9,6 @@ INCLUDES += \
 			-I../../external/chipmunk/include/chipmunk \
 			-I../../extensions/network \
 
-DEFINES += -D__CC_PLATFORM_FILEUTILS_CPP__
-DEFINES += -DCC_ENABLE_CHIPMUNK_INTEGRATION
-
 SOURCES = ../actions/CCAction.cpp \
 ../actions/CCActionCamera.cpp \
 ../actions/CCActionEase.cpp \
@@ -37,6 +34,7 @@ SOURCES = ../actions/CCAction.cpp \
 ../cocoa/CCArray.cpp \
 ../cocoa/CCDictionary.cpp \
 ../cocoa/CCString.cpp \
+../cocoa/CCDataVisitor.cpp \
 ../draw_nodes/CCDrawingPrimitives.cpp \
 ../draw_nodes/CCDrawNode.cpp \
 ../effects/CCGrabber.cpp \
@@ -132,6 +130,7 @@ SOURCES = ../actions/CCAction.cpp \
 ../CCConfiguration.cpp \
 ../CCDirector.cpp \
 ../CCScheduler.cpp \
+../ccFPSImages.c \
 ../cocos2d.cpp 
 
 COCOS_ROOT = ../..

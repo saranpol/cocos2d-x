@@ -34,21 +34,25 @@ CCEditBox::CCEditBox(void)
 , m_eEditBoxInputMode(kEditBoxInputModeSingleLine)
 , m_eEditBoxInputFlag(kEditBoxInputFlagInitialCapsAllCharacters)
 , m_eKeyboardReturnType(kKeyboardReturnTypeDefault)
+, m_nFontSize(-1)
+, m_nPlaceholderFontSize(-1)
 , m_colText(ccWHITE)
 , m_colPlaceHolder(ccGRAY)
 , m_nMaxLength(0)
 , m_fAdjustHeight(0.0f)
+, m_nScriptEditBoxHandler(0)
 {
 }
 
 CCEditBox::~CCEditBox(void)
 {
     CC_SAFE_DELETE(m_pEditBoxImpl);
+    unregisterScriptEditBoxHandler();
 }
 
 
 void CCEditBox::touchDownAction(CCObject *sender, CCControlEvent controlEvent)
-{    
+{
     m_pEditBoxImpl->openKeyboard();
 }
 
@@ -84,6 +88,7 @@ bool CCEditBox::initWithSizeAndBackgroundSprite(const CCSize& size, CCScale9Spri
         m_pEditBoxImpl = __createSystemEditBox(this);
         m_pEditBoxImpl->initWithSize(size);
         
+        this->setZoomOnTouchDown(false);
         this->setPreferredSize(size);
         this->setPosition(ccp(0, 0));
         this->addTargetWithActionForControlEvent(this, cccontrol_selector(CCEditBox::touchDownAction), CCControlEventTouchUpInside);
@@ -118,20 +123,42 @@ const char* CCEditBox::getText(void)
 {
     if (m_pEditBoxImpl != NULL)
     {
-        return m_pEditBoxImpl->getText();
+		const char* pText = m_pEditBoxImpl->getText();
+		if(pText != NULL)
+			return pText;
     }
     
-    return NULL;
+    return "";
 }
 
 void CCEditBox::setFont(const char* pFontName, int fontSize)
 {
+    m_strFontName = pFontName;
+    m_nFontSize = fontSize;
     if (pFontName != NULL)
     {
         if (m_pEditBoxImpl != NULL)
         {
             m_pEditBoxImpl->setFont(pFontName, fontSize);
         }
+    }
+}
+
+void CCEditBox::setFontName(const char* pFontName)
+{
+    m_strFontName = pFontName;
+    if (m_pEditBoxImpl != NULL && m_nFontSize != -1)
+    {
+        m_pEditBoxImpl->setFont(pFontName, m_nFontSize);
+    }
+}
+
+void CCEditBox::setFontSize(int fontSize)
+{
+    m_nFontSize = fontSize;
+    if (m_pEditBoxImpl != NULL && m_strFontName.length() > 0)
+    {
+        m_pEditBoxImpl->setFont(m_strFontName.c_str(), m_nFontSize);
     }
 }
 
@@ -146,12 +173,32 @@ void CCEditBox::setFontColor(const ccColor3B& color)
 
 void CCEditBox::setPlaceholderFont(const char* pFontName, int fontSize)
 {
+    m_strPlaceholderFontName = pFontName;
+    m_nPlaceholderFontSize = fontSize;
     if (pFontName != NULL)
     {
         if (m_pEditBoxImpl != NULL)
         {
             m_pEditBoxImpl->setPlaceholderFont(pFontName, fontSize);
         }
+    }
+}
+
+void CCEditBox::setPlaceholderFontName(const char* pFontName)
+{
+    m_strPlaceholderFontName = pFontName;
+    if (m_pEditBoxImpl != NULL && m_nPlaceholderFontSize != -1)
+    {
+        m_pEditBoxImpl->setPlaceholderFont(pFontName, m_nFontSize);
+    }
+}
+
+void CCEditBox::setPlaceholderFontSize(int fontSize)
+{
+    m_nPlaceholderFontSize = fontSize;
+    if (m_pEditBoxImpl != NULL && m_strPlaceholderFontName.length() > 0)
+    {
+        m_pEditBoxImpl->setPlaceholderFont(m_strPlaceholderFontName.c_str(), m_nFontSize);
     }
 }
 
@@ -268,6 +315,15 @@ void CCEditBox::visit(void)
     }
 }
 
+void CCEditBox::onEnter(void)
+{
+    CCControlButton::onEnter();
+    if (m_pEditBoxImpl != NULL)
+    {
+        m_pEditBoxImpl->onEnter();
+    }
+}
+
 void CCEditBox::onExit(void)
 {
     CCControlButton::onExit();
@@ -280,7 +336,9 @@ void CCEditBox::onExit(void)
 
 static CCRect getRect(CCNode * pNode)
 {
-    return pNode->boundingBox();
+	CCSize contentSize = pNode->getContentSize();
+	CCRect rect = CCRectMake(0, 0, contentSize.width, contentSize.height);
+	return CCRectApplyAffineTransform(rect, pNode->nodeToWorldTransform());
 }
 
 void CCEditBox::keyboardWillShow(CCIMEKeyboardNotificationInfo& info)
@@ -289,10 +347,7 @@ void CCEditBox::keyboardWillShow(CCIMEKeyboardNotificationInfo& info)
     CCRect rectTracked = getRect(this);
 	// some adjustment for margin between the keyboard and the edit box.
 	rectTracked.origin.y -= 4;
-    if (m_pParent != NULL)
-    {
-        rectTracked.origin = m_pParent->convertToWorldSpace(rectTracked.origin);
-    }
+
     // if the keyboard area doesn't intersect with the tracking node area, nothing needs to be done.
     if (!rectTracked.intersectsRect(info.end))
     {
@@ -312,7 +367,7 @@ void CCEditBox::keyboardWillShow(CCIMEKeyboardNotificationInfo& info)
 
 void CCEditBox::keyboardDidShow(CCIMEKeyboardNotificationInfo& info)
 {
-
+	
 }
 
 void CCEditBox::keyboardWillHide(CCIMEKeyboardNotificationInfo& info)
@@ -326,7 +381,22 @@ void CCEditBox::keyboardWillHide(CCIMEKeyboardNotificationInfo& info)
 
 void CCEditBox::keyboardDidHide(CCIMEKeyboardNotificationInfo& info)
 {
+	
+}
 
+void CCEditBox::registerScriptEditBoxHandler(int handler)
+{
+    unregisterScriptEditBoxHandler();
+    m_nScriptEditBoxHandler = handler;
+}
+
+void CCEditBox::unregisterScriptEditBoxHandler(void)
+{
+    if (0 != m_nScriptEditBoxHandler)
+    {
+        CCScriptEngineManager::sharedManager()->getScriptEngine()->removeScriptHandler(m_nScriptEditBoxHandler);
+        m_nScriptEditBoxHandler = 0;
+    }
 }
 
 

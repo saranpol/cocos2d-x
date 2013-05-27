@@ -10,11 +10,15 @@ NS_CC_EXT_BEGIN
 
 void CCSpriteLoader::onHandlePropTypeSpriteFrame(CCNode * pNode, CCNode * pParent, const char * pPropertyName, CCSpriteFrame * pCCSpriteFrame, CCBReader * pCCBReader) {
     if(strcmp(pPropertyName, PROPERTY_DISPLAYFRAME) == 0) {
-        ((CCSprite *)pNode)->setDisplayFrame(pCCSpriteFrame);
-        // #HLP_BEGIN
-        CCSprite *sprite = ((CCSprite *)pNode);
-        sprite->setScale(sprite->getScale() * CC_CONTENT_SCALE_FACTOR() / CC_RESOURCE_SCALE_FACTOR());
-        // #HLP_END
+        if(pCCSpriteFrame != NULL) {
+            ((CCSprite *)pNode)->setDisplayFrame(pCCSpriteFrame);
+            // #HLP_BEGIN
+            CCSprite *sprite = ((CCSprite *)pNode);
+            sprite->setScale(sprite->getScale() * CC_CONTENT_SCALE_FACTOR() / CC_RESOURCE_SCALE_FACTOR());
+            // #HLP_END
+        } else {
+            CCLOG("ERROR: SpriteFrame NULL");
+        }
     } else {
         CCNodeLoader::onHandlePropTypeSpriteFrame(pNode, pParent, pPropertyName, pCCSpriteFrame, pCCBReader);
     }

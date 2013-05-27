@@ -33,6 +33,9 @@ THE SOFTWARE.
 #include "ccTypes.h"
 #include "cocoa/CCDictionary.h"
 #include <string>
+#ifdef EMSCRIPTEN
+#include "base_nodes/CCGLBufferedNode.h"
+#endif // EMSCRIPTEN
 
 // #HLP_BEGIN
 #include "HttpRequestDelegate.h"
@@ -84,6 +87,9 @@ class CC_DLL CCSprite : public CCNodeRGBA, public CCTextureProtocol
 // #HLP_BEGIN
 , public HttpRequestDelegate
 // #HLP_END
+#ifdef EMSCRIPTEN
+, public CCGLBufferedNode
+#endif // EMSCRIPTEN
 {
 public:
     /// @{

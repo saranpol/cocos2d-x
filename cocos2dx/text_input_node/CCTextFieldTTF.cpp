@@ -44,7 +44,7 @@ static int _calcCharCount(const char * pszText)
     while ((ch = *pszText))
     {
         CC_BREAK_IF(! ch);
-        
+
         if (0x80 != (0xC0 & ch))
         {
             ++n;
@@ -69,6 +69,7 @@ CCTextFieldTTF::CCTextFieldTTF()
 , mLayerCursor(NULL)
 , mIsTextView(false)
 // #HLP_END
+, m_bSecureTextEntry(false)
 {
     m_ColorSpaceHolder.r = m_ColorSpaceHolder.g = m_ColorSpaceHolder.b = 127;    
 }
@@ -188,7 +189,7 @@ void CCTextFieldTTF::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) {
 //////////////////////////////////////////////////////////////////////////
 
 CCTextFieldTTF * CCTextFieldTTF::textFieldWithPlaceHolder(const char *placeholder, const CCSize& dimensions, CCTextAlignment alignment, const char *fontName, float fontSize)
-{        
+{
     CCTextFieldTTF *pRet = new CCTextFieldTTF();
     if(pRet && pRet->initWithPlaceHolder("", dimensions, alignment, fontName, fontSize))
     {
@@ -401,7 +402,7 @@ void CCTextFieldTTF::insertText(const char * text, int len)
             // delegate doesn't want to insert text
             return;
         }
-        
+
         m_nCharCount += _calcCharCount(sInsert.c_str());
         std::string sText(*m_pInputText);
         sText.append(sInsert);
@@ -411,13 +412,13 @@ void CCTextFieldTTF::insertText(const char * text, int len)
     if ((int)sInsert.npos == nPos) {
         return;
     }
-    
+
     // '\n' inserted, let delegate process first
     if (m_pDelegate && m_pDelegate->onTextFieldInsertText(this, "\n", 1))
     {
         return;
     }
-    
+
     // if delegate hasn't processed, detach from IME by default
     if (!mIsTextView)
         detachWithIME();
@@ -508,6 +509,10 @@ void CCTextFieldTTF::setColorSpaceHolder(const ccColor3B& color)
 // input text property
 void CCTextFieldTTF::setString(const char *text)
 {
+    static char bulletString[] = {(char)0xe2, (char)0x80, (char)0xa2, (char)0x00};
+    std::string displayText;
+    int length;
+
     CC_SAFE_DELETE(m_pInputText);
     // #HLP_BEGIN
     //bool isMax = false;
@@ -516,6 +521,17 @@ void CCTextFieldTTF::setString(const char *text)
     if (text)
     {
         m_pInputText = new std::string(text);
+        displayText = *m_pInputText;
+        if (m_bSecureTextEntry)
+        {
+            displayText = "";
+            length = m_pInputText->length();
+            while (length)
+            {
+                displayText.append(bulletString);
+                --length;
+            }
+        }
     }
     else
     {
@@ -529,8 +545,7 @@ void CCTextFieldTTF::setString(const char *text)
     }
     else
     {
-        
-        //CCLabelTTF::setString(m_pInputText->c_str());
+        //CCLabelTTF::setString(displayText.c_str());
 
         // #HLP_BEGIN
         if (mIsPassword)
@@ -586,6 +601,21 @@ void CCTextFieldTTF::setPlaceHolder(const char * text)
 const char * CCTextFieldTTF::getPlaceHolder(void)
 {
     return m_pPlaceHolder->c_str();
+}
+
+// secureTextEntry
+void CCTextFieldTTF::setSecureTextEntry(bool value)
+{
+    if (m_bSecureTextEntry != value)
+    {
+        m_bSecureTextEntry = value;
+        setString(getString());
+    }
+}
+
+bool CCTextFieldTTF::isSecureTextEntry()
+{
+    return m_bSecureTextEntry;
 }
 
 NS_CC_END

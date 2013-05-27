@@ -39,7 +39,7 @@ if [ -z "${COCOS2DX_ROOT+aaa}" ]; then
 fi
 
 if [ -z "${CXX_GENERATOR_ROOT+aaa}" ]; then
-    CXX_GENERATOR_ROOT="$COCOS2DX_ROOT/tools/cxx-generator"
+    CXX_GENERATOR_ROOT="$COCOS2DX_ROOT/tools/bindings-generator"
 fi
 
 if [ -z "${TOJS_ROOT+aaa}" ]; then
@@ -68,6 +68,8 @@ _CONTENTS+="androidndkdir=$NDK_ROOT"'\n'
 _CONTENTS+="clangllvmdir=$CLANG_ROOT"'\n'
 _CONTENTS+="cocosdir=$COCOS2DX_ROOT"'\n'
 _CONTENTS+="cxxgeneratordir=$CXX_GENERATOR_ROOT"'\n'
+_CONTENTS+="extra_flags="'\n'
+
 echo 
 echo "generating userconf.ini..."
 echo ---
