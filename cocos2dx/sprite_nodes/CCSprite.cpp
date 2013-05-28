@@ -440,6 +440,8 @@ void CCSprite::didReceiveFile(HttpRequest* r, char *data, uint32 len) {
         setTextureAndSize(texture);
         
         mRequest = NULL;
+        
+        delete img;
     }
 }
 
