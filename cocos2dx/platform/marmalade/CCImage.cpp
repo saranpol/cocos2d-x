@@ -422,13 +422,20 @@ bool BitmapDC::divideString(FT_Face face, const wchar_t* sText, int iMaxWidth, i
 //			iCurXCursor = -RSHIFT6(face->glyph->metrics.horiBearingX);
             
             // #HLP_BEGIN
-            // HLP: Word warp
+            // HLP: Word wrap
             unsigned int backCount = 0;
             bool canWrap = true;
+            bool needWrap = true;
             int iCurXCursorBeforeTestWrap = iCurXCursor;
             const wchar_t* pTextBeforeTestWrap = pText;
             
-            while(1){
+            unsigned int numLine = m_vLines.size();
+            if(mMaxLine != 0 && numLine == mMaxLine-1){
+                needWrap = false;
+                canWrap = false;
+            }
+            
+            while(needWrap){
                 cLastCh = *pText;
                 wchar_t pTextBefore = *(pText-1);
                 
@@ -526,7 +533,9 @@ bool BitmapDC::divideString(FT_Face face, const wchar_t* sText, int iMaxWidth, i
 
             if(len >= 3){
                 
-                int dot_width = getCharWidth(face, L'.')*3;
+                //int dot_width = getCharWidth(face, L'.')*3;
+                // for prevent exceed half dot
+                int dot_width = getCharWidth(face, L'.')*4;
                 int s1 = getCharWidth(face, (*s)[len-3]);
                 int s2 = getCharWidth(face, (*s)[len-2]);
                 int s3 = getCharWidth(face, (*s)[len-1]);
