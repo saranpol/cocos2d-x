@@ -123,6 +123,8 @@ public:
     bool mIsPassword;
     /** for use TextView*/
     bool mIsTextView;
+    /** for use Text Thai for Android*/
+    bool mHasThai;
     CCLayerColor *mLayerCursor;
 
     // Cursor

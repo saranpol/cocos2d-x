@@ -68,6 +68,7 @@ CCTextFieldTTF::CCTextFieldTTF()
 , mIsPassword(false)
 , mLayerCursor(NULL)
 , mIsTextView(false)
+, mHasThai(false)
 // #HLP_END
 , m_bSecureTextEntry(false)
 {
@@ -303,6 +304,23 @@ bool CCTextFieldTTF::attachWithIME()
         {
             pGlView->setIMEKeyboardState(true);
         }
+        
+        // #HLP_BEGIN
+        
+        // TODO keyboard thai Android 
+//        if (mHasThai) {
+//            // open dialog keyboard
+//
+//        }else {
+//            // open keyboard
+//            CCEGLView * pGlView = CCDirector::sharedDirector()->getOpenGLView();
+//            if (pGlView)
+//            {
+//                pGlView->setIMEKeyboardState(true);
+//            }
+//        }
+        // #HLP_END
+
         
         // #HLP_BEGIN
         addCursor();
