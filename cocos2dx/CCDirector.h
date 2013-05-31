@@ -255,6 +255,36 @@ public:
             m_pNextScene = trans;
         }
     }
+    
+    template <typename T>
+    void popToSceneLevelWithTransition(float t, int level) {
+        int c = m_pobScenesStack->count();
+        while (c > level) {
+            m_pobScenesStack->removeLastObject();
+            c--;
+        }
+        m_bSendCleanupToScene = true;
+        m_pNextScene = (CCScene*)m_pobScenesStack->objectAtIndex(level-1);
+        CCScene* trans = T::create(t, m_pNextScene);
+        m_pobScenesStack->replaceObjectAtIndex(level-1, trans);
+        m_pNextScene = trans;
+    }
+
+    template <typename T>
+    void popToSceneWithTransition(float t, CCScene *s) {
+        int c = m_pobScenesStack->count();
+        while (true) {
+            CCScene *cs = (CCScene*)m_pobScenesStack->lastObject();
+            if(cs == s)
+                break;
+            m_pobScenesStack->removeLastObject();
+        }
+        m_bSendCleanupToScene = true;
+        m_pNextScene = (CCScene*)m_pobScenesStack->lastObject();
+        CCScene* trans = T::create(t, m_pNextScene);
+        m_pobScenesStack->replaceObjectAtIndex(m_pobScenesStack->count()-1, trans);
+        m_pNextScene = trans;
+    }
     // #HLP_END
     
     
