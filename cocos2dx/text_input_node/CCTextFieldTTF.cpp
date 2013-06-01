@@ -101,7 +101,7 @@ CCTextFieldTTF * CCTextFieldTTF::create()
 
 void CCTextFieldTTF::onEnter()
 {
-    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, false);
+    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 1, false);
     
     CCNode::onEnter();
     
