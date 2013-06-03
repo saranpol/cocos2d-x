@@ -102,7 +102,6 @@ void CCMenuItem::selected()
 {
     m_bSelected = true;
     // #HLP_BEGIN
-    #define LAYER_FADE_TAG 1002
     
     CCNode *p;
     if(mIsMoveDownWhenSelected || mFadeAnim)

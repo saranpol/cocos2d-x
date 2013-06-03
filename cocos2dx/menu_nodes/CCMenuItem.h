@@ -38,7 +38,12 @@ class CCLabelAtlas;
 class CCSprite;
 class CCSpriteFrame;
 #define kCCItemSize 32
-    
+
+// #HLP_BEGIN
+#define LAYER_FADE_TAG 1002
+// #HLP_END
+
+
 /**
  * @addtogroup GUI
  * @{
