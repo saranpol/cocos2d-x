@@ -416,7 +416,10 @@ bool BitmapDC::divideString(FT_Face face, const wchar_t* sText, int iMaxWidth, i
 		}
 		//check its width
 		//divide it when exceeding
-		if ((iMaxWidth > 0 && iCurXCursor + RSHIFT6(face->glyph->metrics.width) > iMaxWidth)) {
+//		if ((iMaxWidth > 0 && iCurXCursor + RSHIFT6(face->glyph->metrics.width) > iMaxWidth)) {
+// #HLP_BEGIN
+		if ((iMaxWidth > 0 && iCurXCursor + RSHIFT6(face->glyph->metrics.horiAdvance) > iMaxWidth)) {
+// #HLP_END
 //			buildLine(ss, face , iCurXCursor, cLastCh);
 //
 //			iCurXCursor = -RSHIFT6(face->glyph->metrics.horiBearingX);
