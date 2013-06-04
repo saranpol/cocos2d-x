@@ -1586,8 +1586,21 @@ bool CCImage::_initWithRawData(void *pData, int nDatalen, int nWidth, int nHeigh
 
 bool CCImage::saveToFile(const char *pszFilePath, bool bIsToRGB)
 {
+    // #HLP_BEGIN
+    CIwImage *x = new CIwImage();
+    x->SetFormat(CIwImage::ABGR_8888);
+    x->SetWidth(m_nWidth);
+    x->SetHeight(m_nHeight);
+    x->SetPitch(m_nWidth * 4);
+    x->SetBuffers(0, 0, 0, 0);
+    x->ReadTexels(m_pData);
+    x->SaveJpg(pszFilePath, 90);
+    delete x;
+    return true;
+    // #HLP_END
+    
 	// todo
-	return false;
+	//return false;
 }
 
 bool CCImage::_saveImageToPNG(const char * pszFilePath, bool bIsToRGB)
