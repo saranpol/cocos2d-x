@@ -81,6 +81,10 @@ protected:
     */
     virtual void insertText(const char * text, int len) {CC_UNUSED_PARAM(text);CC_UNUSED_PARAM(len);}
 
+    // #HLP_BEGIN
+    virtual void updateText(const char * text) {}
+    // #HLP_END
+    
     /**
     @brief    Called by CCIMEDispatcher after the user clicks the backward key.
     */

@@ -68,7 +68,6 @@ CCTextFieldTTF::CCTextFieldTTF()
 , mIsPassword(false)
 , mLayerCursor(NULL)
 , mIsTextView(false)
-, mHasThai(false)
 // #HLP_END
 , m_bSecureTextEntry(false)
 {
@@ -291,6 +290,8 @@ void CCTextFieldTTF::removeCursor() {
     }
 }
 
+#include "s3eIME.h"
+
 // #HLP_END
 
 bool CCTextFieldTTF::attachWithIME()
@@ -302,25 +303,14 @@ bool CCTextFieldTTF::attachWithIME()
         CCEGLView * pGlView = CCDirector::sharedDirector()->getOpenGLView();
         if (pGlView)
         {
+            // #HLP_BEGIN
+            if(s3eIMEAvailable()){
+                //Initial Text
+                s3eIMESetBuffer(m_pInputText->c_str());
+            }
+            // #HLP_END
             pGlView->setIMEKeyboardState(true);
         }
-        
-        // #HLP_BEGIN
-        
-        // TODO keyboard thai Android 
-//        if (mHasThai) {
-//            // open dialog keyboard
-//
-//        }else {
-//            // open keyboard
-//            CCEGLView * pGlView = CCDirector::sharedDirector()->getOpenGLView();
-//            if (pGlView)
-//            {
-//                pGlView->setIMEKeyboardState(true);
-//            }
-//        }
-        // #HLP_END
-
         
         // #HLP_BEGIN
         addCursor();
@@ -372,6 +362,14 @@ bool CCTextFieldTTF::canDetachWithIME()
 }
 
 #include <stdio.h>
+// #HLP_BEGIN
+// From s3eIME
+void CCTextFieldTTF::updateText(const char * text){
+    setString(text);
+}
+// #HLP_END
+
+
 
 void CCTextFieldTTF::insertText(const char * text, int len)
 {

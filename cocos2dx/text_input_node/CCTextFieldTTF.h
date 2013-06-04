@@ -124,7 +124,6 @@ public:
     /** for use TextView*/
     bool mIsTextView;
     /** for use Text Thai for Android*/
-    bool mHasThai;
     CCLayerColor *mLayerCursor;
 
     // Cursor
@@ -199,6 +198,9 @@ protected:
     virtual bool canAttachWithIME();
     virtual bool canDetachWithIME();
     virtual void insertText(const char * text, int len);
+    // #HLP_BEGIN
+    virtual void updateText(const char * text);
+    // #HLP_END
     virtual void deleteBackward();
     virtual const char * getContentText();
 private:

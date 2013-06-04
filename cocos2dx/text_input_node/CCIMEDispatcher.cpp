@@ -224,6 +224,21 @@ void CCIMEDispatcher::removeDelegate(CCIMEDelegate* pDelegate)
 // dispatch text message
 //////////////////////////////////////////////////////////////////////////
 
+// #HLP_BEGIN
+void CCIMEDispatcher::dispatchUpdateText(const char * pText, int nLen) {
+    do
+    {
+        CC_BREAK_IF(! m_pImpl || ! pText);
+        
+        // there is no delegate attached to IME
+        CC_BREAK_IF(! m_pImpl->m_DelegateWithIme);
+        
+        m_pImpl->m_DelegateWithIme->updateText(pText);
+    } while (0);
+}
+// #HLP_END
+
+
 void CCIMEDispatcher::dispatchInsertText(const char * pText, int nLen)
 {
     do

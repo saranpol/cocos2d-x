@@ -40,6 +40,50 @@ NS_CC_BEGIN
 CCEGLView* CCEGLView::m_pInstance = 0;
 
 
+
+
+
+
+
+
+
+
+// #HLP_BEGIN
+#include "s3eIME.h"
+static char g_KeyboardBuffer[1024];
+
+
+static int32 BufferChanged(void*, void*) {
+    //const int pos = s3eIMEGetInt(S3E_IME_CURSOR_POS);
+    const int len = s3eIMEGetInt(S3E_IME_BUFFER_LEN);
+    //const int sel = s3eIMEGetInt(S3E_IME_SELECTION_END);
+    s3eIMEGetBuffer(g_KeyboardBuffer, sizeof(g_KeyboardBuffer));
+    CCIMEDispatcher::sharedDispatcher()->dispatchUpdateText(g_KeyboardBuffer, len);
+    return 0;
+}
+
+//static int32 handler_s3eIME(void* sys, void*) {
+//    s3eKeyboardEvent* event = (s3eKeyboardEvent*)sys;
+//    if (event->m_Pressed) { // Down
+//
+//    }else{ // Up
+//        if(event->m_Key == s3eKeyBackspace){
+//            CCIMEDispatcher::sharedDispatcher()->dispatchDeleteBackward();
+//        }
+//    }
+//    return 0;
+//}
+// #HLP_END
+
+
+
+
+
+
+
+
+
+
 CCEGLView::CCEGLView()
 : m_bCaptured(false)
 , m_bAccelState(false)
@@ -71,8 +115,13 @@ CCEGLView::CCEGLView()
     
     // #HLP_BEGIN
     // Register keyboard event handler
-	s3eKeyboardRegister(S3E_KEYBOARD_KEY_EVENT, &KeyEventHandler, this);
-	s3eKeyboardRegister(S3E_KEYBOARD_CHAR_EVENT, &CharEventHandler, this);
+    if(s3eIMEAvailable()){ // Android s3eIME 
+        s3eIMERegister(S3E_IME_BUFFER_CHANGED, BufferChanged, NULL);
+        //s3eIMERegister(S3E_IME_KEY_EVENT, handler_s3eIME, NULL);
+    }else{ // Normal and iOS
+        s3eKeyboardRegister(S3E_KEYBOARD_KEY_EVENT, &KeyEventHandler, this);
+        s3eKeyboardRegister(S3E_KEYBOARD_CHAR_EVENT, &CharEventHandler, this);
+    }
     // #HLP_END
 }
 
@@ -204,8 +253,13 @@ void CCEGLView::end()
     }
     
     // #HLP_BEGIN
-	s3eKeyboardUnRegister(S3E_KEYBOARD_KEY_EVENT, &KeyEventHandler);
-	s3eKeyboardUnRegister(S3E_KEYBOARD_KEY_EVENT, &CharEventHandler);
+    if(s3eIMEAvailable()){ // Android s3eIME
+        if(s3eIMEAvailable())
+            s3eIMEUnRegister(S3E_IME_BUFFER_CHANGED, BufferChanged);
+    }else{ // Normal and iOS
+        s3eKeyboardUnRegister(S3E_KEYBOARD_KEY_EVENT, &KeyEventHandler);
+        s3eKeyboardUnRegister(S3E_KEYBOARD_KEY_EVENT, &CharEventHandler);
+    }
     // #HLP_END
 
 	if (IwGLIsInitialised())
@@ -222,6 +276,7 @@ void CCEGLView::swapBuffers()
 	IwGLSwapBuffers();
 }
 
+
 void CCEGLView::setIMEKeyboardState(bool bOpen)
 {
 //	if(bOpen && s3eOSReadStringAvailable() == S3E_TRUE) {
@@ -235,7 +290,14 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
 //	}
     
     // #HLP_BEGIN
-    s3eKeyboardSetInt(S3E_KEYBOARD_GET_CHAR, bOpen);
+    if(s3eIMEAvailable()){
+        if(bOpen)
+            s3eIMEStartSession();
+        else
+            s3eIMEEndSession();
+    }else{
+        s3eKeyboardSetInt(S3E_KEYBOARD_GET_CHAR, bOpen);
+    }
 //        int newCharState = s3eKeyboardGetInt(S3E_KEYBOARD_GET_CHAR);
 //        newCharState = !newCharState;
     

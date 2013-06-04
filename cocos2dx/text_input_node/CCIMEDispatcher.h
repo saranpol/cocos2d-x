@@ -60,7 +60,11 @@ public:
     @brief Dispatches the input text from IME.
     */
     void dispatchInsertText(const char * pText, int nLen);
-
+    // #HLP_BEGIN
+    void dispatchUpdateText(const char * pText, int nLen);
+    // #HLP_END
+    
+    
     /**
     @brief Dispatches the delete-backward operation.
     */
