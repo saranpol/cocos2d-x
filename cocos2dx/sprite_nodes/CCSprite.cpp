@@ -49,6 +49,7 @@ THE SOFTWARE.
 
 // #HLP_BEGIN
 #include "HttpRequest.h"
+#include "hashlibpp.h"
 // #HLP_END
 
 using namespace std;
@@ -394,6 +395,73 @@ void CCSprite::setImagePath(const char *path) {
     setTextureAndSize(tex);
 }
 
+const char* CCSprite::getFilePathFromURL(const char *url) {
+//    int l = strlen(url);
+//    char *x = (char*)malloc(sizeof(char)*(l+1));
+//    for(int i=0; i<l; i++){
+//        char c = url[i];
+//        if(c == '[')
+//            x[i] = '_';
+//        else if(c == '\\')
+//            x[i] = '_';
+//        else if(c == '/')
+//            x[i] = '_';
+//        else if(c == '?')
+//            x[i] = '_';
+//        else if(c == ':')
+//            x[i] = '_';
+//        else if(c == '*')
+//            x[i] = '_';
+//        else if(c == '"')
+//            x[i] = '_';
+//        else if(c == '"')
+//            x[i] = '_';
+//        else if(c == '>')
+//            x[i] = '_';
+//        else if(c == '<')
+//            x[i] = '_';
+//        else if(c == '|')
+//            x[i] = '_';
+//        else if(c == ']')
+//            x[i] = '_';
+//        else if(c == '+')
+//            x[i] = '_';
+//        else
+//            x[i] = c;
+//    }
+//    x[l] = '\0';
+    
+    hashwrapper *md5 = new md5wrapper();
+    std::string x = md5->getHashFromString(url);
+    delete md5;
+
+    static bool needCreateDir = true;
+    if(needCreateDir){
+        s3eFileMakeDirectory(IMAGE_CACHE_DIRECTORY);
+        needCreateDir = false;
+    }
+    CCString *s = CCString::createWithFormat("%s/%s", IMAGE_CACHE_DIRECTORY, x.c_str());
+//    delete x;
+    return s->getCString();
+}
+
+void CCSprite::clearOldImageCache(int oldTimeMs){
+    
+    s3eFileList* phList = s3eFileListDirectory(IMAGE_CACHE_DIRECTORY);
+    char x[255] = {0};
+    s3eResult r = s3eFileListNext(phList, x, 255);
+    while (r == S3E_RESULT_SUCCESS){
+        CCString *s = CCString::createWithFormat("%s/%s", IMAGE_CACHE_DIRECTORY, x);
+        int64 lastModify_ms = s3eFileGetFileInt(s->getCString(), S3E_FILE_MODIFIED_DATE);
+        if((s3eTimerGetUTC() - lastModify_ms) > oldTimeMs){
+            s3eFileDelete(s->getCString());
+        }
+        r = s3eFileListNext(phList, x, 255);
+    }
+    s3eFileListClose(phList);
+}
+
+
 void CCSprite::setUrl(const char *url) {
     setVisible(false);
     
@@ -408,42 +476,66 @@ void CCSprite::setUrl(const char *url) {
         mRequest = NULL;
     }
     
-    // TODO: implement disk cache too
     
     CCTextureCache *cache = CCTextureCache::sharedTextureCache();
-    CCTexture2D* texture = cache->textureForKey(url);
+//    CCTexture2D* texture = cache->textureForKey(url);
+    const char *filePath = getFilePathFromURL(url);
+    CCTexture2D* texture = cache->textureForKey(filePath);
+    
     if(texture){
         setTextureAndSize(texture);
         return;
     }
     
+    // Find in disk
+    if(s3eFileCheckExists(filePath)){
+        CCTexture2D* texture = cache->addImage(filePath);
+        if(texture){
+            setTextureAndSize(texture);
+            return;
+        }
+        // broken texture so delete it
+        s3eFileDelete(filePath);
+    }
+    
     mRequest = HttpRequest::create();
     mRequest->delegate = this;
     mRequest->callURL(url);
-    mRequest->mType = HTTP_REQUEST_FILE;
+    mRequest->mSaveFile = new CCString(filePath);
+    mRequest->mType = HTTP_REQUEST_SAVE_FILE;
 }
 
 
-void CCSprite::didReceiveFile(HttpRequest* r, char *data, uint32 len) {
+//void CCSprite::didReceiveFile(HttpRequest* r, char *data, uint32 len) {
+//    if(r == mRequest){
+//        CCImage* img = new CCImage;
+//        img->initWithImageData(data, len);
+//        
+//        // TODO: implement disk cache too
+//        
+//        CCTextureCache *cache = CCTextureCache::sharedTextureCache();
+//        CCTexture2D* texture = cache->addUIImage(img, r->mURL->getCString());
+//        //CCTexture2D* texture = new CCTexture2D;
+//        //texture->initWithImage(img);
+//        
+//        
+//        setTextureAndSize(texture);
+//        
+//        mRequest = NULL;
+//        
+//        delete img;
+//    }
+//}
+
+
+void CCSprite::didReceiveSaveFile(HttpRequest* r) {
     if(r == mRequest){
-        CCImage* img = new CCImage;
-        img->initWithImageData(data, len);
-        
-        // TODO: implement disk cache too
-        
-        CCTextureCache *cache = CCTextureCache::sharedTextureCache();
-        CCTexture2D* texture = cache->addUIImage(img, r->mURL->getCString());
-        //CCTexture2D* texture = new CCTexture2D;
-        //texture->initWithImage(img);
-        
-        
-        setTextureAndSize(texture);
-        
+        setImagePath(r->mSaveFile->getCString());
         mRequest = NULL;
-        
-        delete img;
     }
 }
+
+
 
 void CCSprite::didReceiveError(HttpRequest* r, const char *message) {
     if(r == mRequest){

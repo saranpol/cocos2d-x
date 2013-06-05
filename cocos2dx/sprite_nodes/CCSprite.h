@@ -59,6 +59,10 @@ struct transformValues_;
 
 #define CCSpriteIndexNotInitialized 0xffffffff     /// CCSprite invalid index on the CCSpriteBatchNode
 
+// #HLP_BEGIN
+#define IMAGE_CACHE_DIRECTORY "ram://image_cache"
+// #HLP_END
+
 
 /** 
  * CCSprite is a 2d image ( http://en.wikipedia.org/wiki/Sprite_(computer_graphics) )
@@ -498,10 +502,12 @@ public:
     // #HLP_BEGIN
     void setImagePath(const char *path);
     // internet
+    const char* getFilePathFromURL(const char *url);
+    static void clearOldImageCache(int oldTimeMs);
     void setUrl(const char *url);
     void setTextureAndSize(CCTexture2D *texture);
     HttpRequest *mRequest;
-    void didReceiveFile(HttpRequest* r, char *data, uint32 len);
+    void didReceiveSaveFile(HttpRequest* r);
     void didReceiveError(HttpRequest* r, const char *message);
 
     bool mOriginalPosSet;
