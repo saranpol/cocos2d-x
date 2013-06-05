@@ -260,7 +260,7 @@ void BitmapDC::buildLine(wstringstream& ss, FT_Face face, int iCurXCursor, wchar
     
     // #HLP_BEGIN
     if(cLastChar == ' '){
-        oTempLine.iLineWidth = iCurXCursor - RSHIFT6(face->glyph->metrics.horiAdvance);
+        oTempLine.iLineWidth = iCurXCursor;
     }else{
         oTempLine.iLineWidth =
         iCurXCursor -
