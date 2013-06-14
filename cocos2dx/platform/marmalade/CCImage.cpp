@@ -259,15 +259,15 @@ void BitmapDC::buildLine(wstringstream& ss, FT_Face face, int iCurXCursor, wchar
 //		- face->glyph->metrics.width)/*-iInterval*/;	//TODO interval
     
     // #HLP_BEGIN
-    if(cLastChar == ' '){
-        oTempLine.iLineWidth = iCurXCursor;
-    }else{
+//    if(cLastChar == ' '){
+//        oTempLine.iLineWidth = iCurXCursor;
+//    }else{
         oTempLine.iLineWidth =
         iCurXCursor -
         RSHIFT6( face->glyph->metrics.horiAdvance -
                 face->glyph->metrics.horiBearingX
                 - face->glyph->metrics.width);
-    }
+//    }
     //http://www.freetype.org/freetype2/docs/tutorial/step2.html
     // it should be advance - bearingx - width
     // #HLP_END    
@@ -446,7 +446,7 @@ bool BitmapDC::divideString(FT_Face face, const wchar_t* sText, int iMaxWidth, i
                 if(cLastCh == ' ' ||
                    cLastCh == '\t'
                    ){
-                    pText++;
+                    //pText++;
                     break;
                 }
                 
@@ -606,6 +606,8 @@ int BitmapDC::computeLineStart( FT_Face face, CCImage::ETextAlign eAlignMask, wc
 		// left or other situation
 		iRet = -RSHIFT6(face->glyph->metrics.horiBearingX );
 	}
+    if(cText == ' ' || cText == '\t')
+        iRet -= RSHIFT6(face->glyph->metrics.horiAdvance);
     // #HLP_END
     
     
