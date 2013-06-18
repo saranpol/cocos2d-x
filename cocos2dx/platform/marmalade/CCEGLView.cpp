@@ -34,6 +34,7 @@
 #include "ccMacros.h"
 #include <stdlib.h>
 #include <s3eOSReadString.h>
+#include "AndroidKeyboard.h"
 
 NS_CC_BEGIN
 
@@ -291,10 +292,14 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
     
     // #HLP_BEGIN
     if(s3eIMEAvailable()){
-        if(bOpen)
-            s3eIMEStartSession();
-        else
+        if(bOpen) {
             s3eIMEEndSession();
+            s3eIMEStartSession();
+        } else {
+            //hideAndroidKeyboard();
+        }
+//        else
+//            s3eIMEEndSession();
     }else{
         s3eKeyboardSetInt(S3E_KEYBOARD_GET_CHAR, bOpen);
     }
