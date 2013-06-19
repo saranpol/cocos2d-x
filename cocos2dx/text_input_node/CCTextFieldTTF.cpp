@@ -257,7 +257,7 @@ void CCTextFieldTTF::updateCursor() {
     if(mLayerCursor){
         float x = getTexture()->mCursorX/CC_CONTENT_SCALE_FACTOR();
         float y = getTexture()->mCursorY/CC_CONTENT_SCALE_FACTOR();
-        mLayerCursor->setPosition(CCPointMake(x, getContentSize().height - y + getFontSize()*0.90f));
+        mLayerCursor->setPosition(CCPointMake(x, getContentSize().height - y + getCursorHeight()));
     }
 }
 
