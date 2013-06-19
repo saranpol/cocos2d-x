@@ -296,7 +296,7 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
             s3eIMEEndSession();
             s3eIMEStartSession();
         } else {
-            //hideAndroidKeyboard();
+            hideAndroidKeyboard();
         }
 //        else
 //            s3eIMEEndSession();
