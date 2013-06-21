@@ -210,6 +210,7 @@ public:
     
     
     // #HLP_BEGIN
+    float m_fMinScale, m_fMaxScale;
     void moveToPage(int page, bool animated);
 	void moveToNextPage(bool animated);
 	void moveToPreviousPage(bool animated);
@@ -373,7 +374,9 @@ protected:
     /**
      * max and min scale
      */
-    float m_fMinScale, m_fMaxScale;
+    // #HLP_BEGIN
+    //float m_fMinScale, m_fMaxScale;
+    // #HLP_END
     /**
      * scissor rect for parent, just for restoring GL_SCISSOR_BOX
      */

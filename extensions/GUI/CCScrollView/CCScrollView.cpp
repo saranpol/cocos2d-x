@@ -953,7 +953,10 @@ void CCScrollView::ccTouchEnded(CCTouch* touch, CCEvent* event)
     }
     if (m_pTouches->containsObject(touch))
     {
-        if (m_pTouches->count() == 1 && m_bTouchMoved)
+        //if (m_pTouches->count() == 1 && m_bTouchMoved)
+        // #HLP_BEGIN
+        if (m_pTouches->count() >= 1)
+        // #HLP_END
         {
             this->schedule(schedule_selector(CCScrollView::deaccelerateScrolling));
         }
