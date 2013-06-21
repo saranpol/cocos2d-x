@@ -110,7 +110,7 @@ public:
 	void reset();
     
     // #HLP_BEGIN
-    FT_UInt thaiAdjust(FT_UInt current_index, FT_UInt prev_index, FT_UInt next_index);
+    FT_UInt thaiAdjust(FT_UInt current_index, FT_UInt prev_index, FT_UInt next_index, const char *fontName);
     bool canBreakThai(const wchar_t* pText);
     int mCursorX;
     int mCursorY;
@@ -646,21 +646,71 @@ int BitmapDC::openFont(const std::string& fontName, uint fontSize)
 // GPOS not support so we have to hack like this
 // until marmalade or cocos2d-x do ICU library support
 
-FT_UInt BitmapDC::thaiAdjust(FT_UInt current_index, FT_UInt prev_index, FT_UInt next_index){
-    // 3 space
-    //  ั 77 normal 17 left
-    //  ็ xx normal 18 left
-    //  ิ 80 normal 19 left
-    //  ี 81 normal 20 left
-    //  ึ 82 normal 21 left
-    //  ื 83 normal 22 left
-    // ำ 79
-    //  ่ 98 topright 23 topleft 5 lowleft 10 lowright
-    //  ้ 99 topright 24 topleft 6 lowleft 11 lowright
-    //  ๊ 100 topright 25 topleft 7 lowleft 12 lowright
-    //  ๋ 101 topright 26 topleft 8 lowleft 13 lowright
-    //  ์ 102 topright 27 topleft 9 lowleft 14 lowright
-    // ป ฝ ฟ ฬ 55 57 59 72
+FT_UInt BitmapDC::thaiAdjust(FT_UInt current_index, FT_UInt prev_index, FT_UInt next_index, const char *fontName){
+    
+    FT_UInt space;
+    FT_UInt maihanakat_normal, maihanakat_left;
+    FT_UInt maitaikhu_normal, maitaikhu_left;
+    FT_UInt sarai_normal, sarai_left;
+    FT_UInt saraii_normal, saraii_left;
+    FT_UInt saraue_normal, saraue_left;
+    FT_UInt sarauee_normal, sarauee_left;
+    FT_UInt saraam;
+    FT_UInt maiek_upperright, maiek_upperleft, maiek_lowleft, maiek_lowright;
+    FT_UInt maitho_upperright, maitho_upperleft, maitho_lowleft, maitho_lowright;
+    FT_UInt maitri_upperright, maitri_upperleft, maitri_lowleft, maitri_lowright;
+    FT_UInt maichattawa_upperright, maichattawa_upperleft, maichattawa_lowleft, maichattawa_lowright;
+    FT_UInt thanthakhat_upperright, thanthakhat_upperleft, thanthakhat_lowleft, thanthakhat_lowright;
+    FT_UInt popla, fofa, fofan, lochula;
+    
+    if(!strcmp(fontName, "SukhumvitReg.ttf")) {
+        space = 3;
+        maihanakat_normal = 201; maihanakat_left = 271;
+        maitaikhu_normal = 219; maitaikhu_left = 272;
+        sarai_normal = 204; sarai_left = 256;
+        saraii_normal = 205; saraii_left = 257;
+        saraue_normal = 206; saraue_left = 258;
+        sarauee_normal = 207; sarauee_left = 259;
+        saraam = 203;
+        maiek_upperright = 220; maiek_upperleft = 273; maiek_lowleft = 260; maiek_lowright = 265;
+        maitho_upperright = 221; maitho_upperleft = 274; maitho_lowleft = 261; maitho_lowright = 266;
+        maitri_upperright = 222; maitri_upperleft = 275; maitri_lowleft = 262; maitri_lowright = 267;
+        maichattawa_upperright = 223; maichattawa_upperleft = 276; maichattawa_lowleft = 263; maichattawa_lowright = 268;
+        thanthakhat_upperright = 224; thanthakhat_upperleft = 277; thanthakhat_lowleft = 264; thanthakhat_lowright = 269;
+        popla = 180; fofa = 182; fofan = 184; lochula = 196;
+    }else{
+        //if(!strcmp(fontName, "Thonburi.ttf") or Bold
+        // Thonburi.ttf
+        // 3 space
+        //  ั 77 normal 17 left
+        //  ็ 97 normal 18 left
+        //  ิ 80 normal 19 left
+        //  ี 81 normal 20 left
+        //  ึ 82 normal 21 left
+        //  ื 83 normal 22 left
+        // ำ 79
+        //  ่ 98 upperright 23 upperleft 5 lowleft 10 lowright
+        //  ้ 99 upperright 24 upperleft 6 lowleft 11 lowright
+        //  ๊ 100 upperright 25 upperleft 7 lowleft 12 lowright
+        //  ๋ 101 upperright 26 upperleft 8 lowleft 13 lowright
+        //  ์ 102 upperright 27 upperleft 9 lowleft 14 lowright
+        // ป ฝ ฟ ฬ 55 57 59 72
+        space = 3;
+        maihanakat_normal = 77; maihanakat_left = 17;
+        maitaikhu_normal = 97; maitaikhu_left = 18;
+        sarai_normal = 80; sarai_left = 19;
+        saraii_normal = 81; saraii_left = 20;
+        saraue_normal = 82; saraue_left = 21;
+        sarauee_normal = 83; sarauee_left = 22;
+        saraam = 79;
+        maiek_upperright = 98; maiek_upperleft = 23; maiek_lowleft = 5; maiek_lowright = 10;
+        maitho_upperright = 99; maitho_upperleft = 24; maitho_lowleft = 6; maitho_lowright = 11;
+        maitri_upperright = 100; maitri_upperleft = 25; maitri_lowleft = 7; maitri_lowright = 12;
+        maichattawa_upperright = 101; maichattawa_upperleft = 26; maichattawa_lowleft = 8; maichattawa_lowright = 13;
+        thanthakhat_upperright = 102; thanthakhat_upperleft = 27; thanthakhat_lowleft = 9; thanthakhat_lowright = 14;
+        popla = 55; fofa = 57; fofan = 59; lochula = 72;
+    }
+    
     
     
     
@@ -669,78 +719,78 @@ FT_UInt BitmapDC::thaiAdjust(FT_UInt current_index, FT_UInt prev_index, FT_UInt 
     //CCLog("ddddd %i", glyph_index);
     
     // low
-    if(prev_index != 77
-       && prev_index != 80
-       && prev_index != 81
-       && prev_index != 82
-       && prev_index != 83
-       && prev_index != 19
-       && prev_index != 20
-       && prev_index != 21
-       && prev_index != 22
+    if(prev_index != maihanakat_normal
+       && prev_index != sarai_normal
+       && prev_index != saraii_normal
+       && prev_index != saraue_normal
+       && prev_index != sarauee_normal
+       && prev_index != sarai_left
+       && prev_index != saraii_left
+       && prev_index != saraue_left
+       && prev_index != sarauee_left
        
-       && next_index != 79){
+       && next_index != saraam){
         
         
-        if(prev_index == 55 || prev_index == 57 || prev_index == 59 || prev_index == 72){
+        if(prev_index == popla || prev_index == fofa || prev_index == fofan || prev_index == lochula){
             // low left
-            if(current_index == 98)
-                glyph_index = 5;
-            else if(current_index == 99)
-                glyph_index = 6;
-            else if(current_index == 100)
-                glyph_index = 7;
-            else if(current_index == 101)
-                glyph_index = 8;
-            else if(current_index == 102)
-                glyph_index = 9;
-            else if(current_index == 80)
-                glyph_index = 19;
-            else if(current_index == 81)
-                glyph_index = 20;
-            else if(current_index == 82)
-                glyph_index = 21;
-            else if(current_index == 83)
-                glyph_index = 22;
+            if(current_index == maiek_upperright)
+                glyph_index = maiek_lowleft;
+            else if(current_index == maitho_upperright)
+                glyph_index = maitho_lowleft;
+            else if(current_index == maitri_upperright)
+                glyph_index = maitri_lowleft;
+            else if(current_index == maichattawa_upperright)
+                glyph_index = maichattawa_lowleft;
+            else if(current_index == thanthakhat_upperright)
+                glyph_index = thanthakhat_lowleft;
+            else if(current_index == sarai_normal)
+                glyph_index = sarai_left;
+            else if(current_index == saraii_normal)
+                glyph_index = saraii_left;
+            else if(current_index == saraue_normal)
+                glyph_index = saraue_left;
+            else if(current_index == sarauee_normal)
+                glyph_index = sarauee_left;
         }else{
             // low
-            if(current_index == 98)
-                glyph_index = 10;
-            else if(current_index == 99)
-                glyph_index = 11;
-            else if(current_index == 100)
-                glyph_index = 12;
-            else if(current_index == 101)
-                glyph_index = 13;
-            else if(current_index == 102)
-                glyph_index = 14;
+            if(current_index == maiek_upperright)
+                glyph_index = maiek_lowright;
+            else if(current_index == maitho_upperright)
+                glyph_index = maitho_lowright;
+            else if(current_index == maitri_upperright)
+                glyph_index = maitri_lowright;
+            else if(current_index == maichattawa_upperright)
+                glyph_index = maichattawa_lowright;
+            else if(current_index == thanthakhat_upperright)
+                glyph_index = thanthakhat_lowright;
             
         }
         
     }else{
         
-        if((prev_index != 77
-            &&prev_index != 80
-            && prev_index != 81
-            && prev_index != 82
-            && prev_index != 83)
+        if((prev_index != maihanakat_normal
+            &&prev_index != sarai_normal
+            && prev_index != saraii_normal
+            && prev_index != saraue_normal
+            && prev_index != sarauee_normal)
            ||
-           (prev_index == 19
-            || prev_index == 20
-            || prev_index == 21
-            || prev_index == 22)) {
+           (prev_index == sarai_left
+            || prev_index == saraii_left
+            || prev_index == saraue_left
+            || prev_index == sarauee_left)) {
                
                // top left
-               if(current_index == 98)
-                   glyph_index = 23;
-               else if(current_index == 99)
-                   glyph_index = 24;
-               else if(current_index == 100)
-                   glyph_index = 25;
-               else if(current_index == 101)
-                   glyph_index = 26;
-               else if(current_index == 102)
-                   glyph_index = 27;
+               if(current_index == maiek_upperright)
+                   glyph_index = maiek_upperleft;
+               else if(current_index == maitho_upperright)
+                   glyph_index = maitho_upperleft;
+               else if(current_index == maitri_upperright)
+                   glyph_index = maitri_upperleft;
+               else if(current_index == maichattawa_upperright)
+                   glyph_index = maichattawa_upperleft;
+               else if(current_index == thanthakhat_upperright)
+                   glyph_index = thanthakhat_upperleft;
            }
         
         
@@ -881,7 +931,7 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
                     next_index = FT_Get_Char_Index(m_face, *(pText+1));
                 else
                     next_index = 0;
-                glyph_index = thaiAdjust(current_index, prev_index, next_index);
+                glyph_index = thaiAdjust(current_index, prev_index, next_index, m_fontName.c_str());
                 prev_index = glyph_index;
                 
                 
