@@ -869,6 +869,10 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
         UTF8ToUCS2(text, text_len+1, (ucs2char*)wtext.c_str(), sizeof(wchar_t)*(text_len+1));
         const wchar_t * pText = wtext.c_str();
         iError = divideString(m_face, pText, nWidth, nHeight) ? 0 : 1 ;
+
+        FT_Pos adjustBearingY = 0;
+        if(!strcmp(m_fontName.c_str(), "SukhumvitReg.ttf"))
+            adjustBearingY = -3;
         // #HLP_END
         
 
@@ -947,7 +951,10 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 				//  and get the bitmap
 				FT_Bitmap & bitmap = m_face->glyph->bitmap;
 
-				FT_Pos horiBearingYPixels = RSHIFT6(m_face->glyph->metrics.horiBearingY) ;
+				//FT_Pos horiBearingYPixels = RSHIFT6(m_face->glyph->metrics.horiBearingY) ;
+                // #HLP_BEGIN
+                FT_Pos horiBearingYPixels = RSHIFT6(m_face->glyph->metrics.horiBearingY) + adjustBearingY ;
+                // #HLP_END
 				FT_Pos horiBearingXPixels = RSHIFT6(m_face->glyph->metrics.horiBearingX) ;
 				FT_Pos horiAdvancePixels = RSHIFT6(m_face->glyph->metrics.horiAdvance) ;
 
