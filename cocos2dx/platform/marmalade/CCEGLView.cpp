@@ -91,6 +91,10 @@ CCEGLView::CCEGLView()
 : m_bCaptured(false)
 , m_bAccelState(false)
 , m_Key(s3eKeyFirst)
+// #HLP_BEGIN
+, mIsKeyboardShow(false)
+// #HLP_END
+
 {
 	IW_CALLSTACK("CCEGLView::CCEGLView");
 	
@@ -295,10 +299,14 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
     // #HLP_BEGIN
     if(s3eIMEAvailable()){
         if(bOpen) {
+            mIsKeyboardShow = true;
             s3eIMEEndSession();
             s3eIMEStartSession();
         } else {
-            //hideAndroidKeyboard();
+            if (mIsKeyboardShow) {
+                mIsKeyboardShow = false;
+                hideAndroidKeyboard();
+            }
         }
 //        else
 //            s3eIMEEndSession();

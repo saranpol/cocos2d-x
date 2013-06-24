@@ -50,6 +50,10 @@ public:
 	 */
 	static CCEGLView* sharedOpenGLView();			// MH: Cocos2D now uses pointer instead of ref
 
+    // #HLP_BEGIN
+    bool mIsKeyboardShow;
+    // #HLP_END
+    
 private:
 	bool				m_bAccelState;
 	bool				m_bCaptured;
