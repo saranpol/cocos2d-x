@@ -97,7 +97,9 @@ void CCScene::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) {
         return;
     CCPoint start = pTouch->getStartLocation();
     CCPoint end = pTouch->getLocation();
-    if (start.x - end.x < -100.0f){
+    CCDirector *d = CCDirector::sharedDirector();
+    float w = d->getWinSize().width;
+    if (start.x - end.x < -w/3.0f){
         scheduleOnce(schedule_selector(CCScene::delayBack), 0.0f);
     }
 }
