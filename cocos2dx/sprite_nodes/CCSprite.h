@@ -61,6 +61,18 @@ struct transformValues_;
 
 // #HLP_BEGIN
 #define IMAGE_CACHE_DIRECTORY "ram://image_cache"
+
+
+class CCSprite;
+
+class CCSpriteDelegate
+{
+public:
+    virtual void didSpriteReceiveFile(CCSprite *sprite) {}
+    virtual void didSpriteReceiveError(CCSprite *sprite) {}
+};
+
+
 // #HLP_END
 
 
@@ -500,6 +512,8 @@ public:
     
     
     // #HLP_BEGIN
+    // delegate
+    CCSpriteDelegate *mDelegate;
     void setImagePath(const char *path);
     // internet
     const char* getFilePathFromURL(const char *url);

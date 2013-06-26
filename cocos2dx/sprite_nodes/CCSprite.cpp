@@ -306,8 +306,9 @@ CCSprite::CCSprite(void)
 : m_bShouldBeHidden(false),
 m_pobTexture(NULL)
 // #HLP_BEGIN
-,mRequest(NULL)
-,mOriginalPosSet(false)
+, mDelegate(NULL)
+, mRequest(NULL)
+, mOriginalPosSet(false)
 //,mWillSetImagePath(NULL)
 // #HLP_END
 {
@@ -507,6 +508,8 @@ void CCSprite::setUrl(const char *url) {
     
     if(texture){
         setTextureAndSize(texture);
+        if(mDelegate)
+            mDelegate->didSpriteReceiveFile(this);
         return;
     }
     
@@ -553,6 +556,9 @@ void CCSprite::didReceiveFile(HttpRequest* r, char *data, uint32 len) {
         mRequest = NULL;
         
         delete img;
+        
+        if(mDelegate)
+            mDelegate->didSpriteReceiveFile(this);
     }
 }
 
@@ -569,6 +575,9 @@ void CCSprite::didReceiveFile(HttpRequest* r, char *data, uint32 len) {
 void CCSprite::didReceiveError(HttpRequest* r, const char *message) {
     if(r == mRequest){
         mRequest = NULL;
+        
+        if(mDelegate)
+            mDelegate->didSpriteReceiveError(this);
     }
 }
 
