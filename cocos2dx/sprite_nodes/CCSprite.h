@@ -517,14 +517,14 @@ public:
     void setImagePath(const char *path);
     // internet
     const char* getFilePathFromURL(const char *url);
-    //static void clearOldImageCache(int oldTimeMs);
-    //void didReceiveImage(CCObject *tex);
-    //CCString *mWillSetImagePath;
-    //void setImageFromCache();
+    static void clearOldImageCache(int oldTimeMs);
+    void didReceiveImage(CCObject *tex);
+    CCString *mWillSetImagePath;
+    void setImageFromCache();
     void setUrl(const char *url);
     void setTextureAndSize(CCTexture2D *texture);
     HttpRequest *mRequest;
-    //void didReceiveSaveFile(HttpRequest* r);
+    void didReceiveSaveFile(HttpRequest* r);
     void didReceiveFile(HttpRequest* r, char *data, uint32 len);
     void didReceiveError(HttpRequest* r, const char *message);
 
