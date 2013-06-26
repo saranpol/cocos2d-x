@@ -31,6 +31,9 @@ THE SOFTWARE.
 NS_CC_BEGIN
 
 CCScene::CCScene()
+// #HLP_BEGIN
+: mEnableSlideBack(false)
+// #HLP_END
 {
     m_bIgnoreAnchorPointForPosition = true;
     setAnchorPoint(ccp(0.5f, 0.5f));
@@ -49,7 +52,11 @@ bool CCScene::init()
          CC_BREAK_IF( ! (pDirector = CCDirector::sharedDirector()) );
          this->setContentSize(pDirector->getWinSize());
          // success
-         bRet = true;
+         //bRet = true;
+         // #HLP_BEGIN
+         bRet = CCLayer::init();
+         setTouchEnabled(true);
+         // #HLP_END
      } while (0);
      return bRet;
 }
@@ -68,5 +75,40 @@ CCScene *CCScene::create()
         return NULL;
     }
 }
+
+// #HLP_BEGIN
+void CCScene::registerWithTouchDispatcher()
+{
+    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, CCLayer::getTouchPriority(), false);
+}
+
+bool CCScene::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent) {
+    if(!mEnableSlideBack)
+        return false;
+    return true;
+}
+
+void CCScene::delayBack() {
+    clickBack(NULL, NULL);
+}
+
+void CCScene::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent) {
+    if(!mEnableSlideBack)
+        return;
+    CCPoint start = pTouch->getStartLocation();
+    CCPoint end = pTouch->getLocation();
+    if (start.x - end.x < -100.0f){
+        scheduleOnce(schedule_selector(CCScene::delayBack), 0.0f);
+    }
+}
+
+void CCScene::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent) {
+    
+}
+
+
+// #HLP_END
+
+
 
 NS_CC_END

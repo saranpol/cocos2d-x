@@ -28,6 +28,11 @@ THE SOFTWARE.
 #define __CCSCENE_H__
 
 #include "base_nodes/CCNode.h"
+// #HLP_BEGIN
+#include "touch_dispatcher/CCTouchDelegateProtocol.h"
+#include "CCTouchDispatcher.h"
+#include "CCLayer.h"
+// #HLP_END
 
 NS_CC_BEGIN
 
@@ -46,7 +51,10 @@ additional logic.
 
 It is a good practice to use and CCScene as the parent of all your nodes.
 */
-class CC_DLL CCScene : public CCNode
+//class CC_DLL CCScene : public CCNode
+// #HLP_BEGIN
+class CC_DLL CCScene : public CCLayer
+// #HLP_END
 {
 public:
     CCScene();
@@ -56,7 +64,15 @@ public:
     static CCScene *create(void);
     
     // #HLP_BEGIN
+    virtual void registerWithTouchDispatcher();
+    virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
+    
+    bool mEnableSlideBack;
+    void delayBack();
     virtual void clickBack(CCObject *pSender, unsigned int pCCControlEvent) {}
+    CCScene *mSlideBackDelegate;
     // #HLP_END
 };
 
