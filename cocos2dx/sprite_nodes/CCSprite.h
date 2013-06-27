@@ -73,6 +73,8 @@ public:
 };
 
 
+class CCImageWithPath;
+
 // #HLP_END
 
 
@@ -512,21 +514,20 @@ public:
     
     
     // #HLP_BEGIN
+    CCString *mFilePath;
+    int mCountShow;
     // delegate
     CCSpriteDelegate *mDelegate;
     void setImagePath(const char *path);
     // internet
     const char* getFilePathFromURL(const char *url);
     static void clearOldImageCache(int oldTimeMs);
-    CCString *mWillSetImagePath;
     void setImageFromImage();
-    CCImage *mWillSetImage;
-    unsigned char *mImageData;
-    unsigned long mImageLen;
+    CCImageWithPath *mWillSetImage;
     void setUrl(const char *url);
     void setTextureAndSize(CCTexture2D *texture);
     HttpRequest *mRequest;
-    void addSpriteToThread();
+    void createNewSpriteProcess(CCString *path);
     void didReceiveSaveFile(HttpRequest* r);
     void didReceiveFile(HttpRequest* r, char *data, uint32 len);
     void didReceiveError(HttpRequest* r, const char *message);

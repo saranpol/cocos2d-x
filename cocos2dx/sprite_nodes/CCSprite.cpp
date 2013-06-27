@@ -300,6 +300,74 @@ CCSprite* CCSprite::initWithCGImage(CGImageRef pImage, const char *pszKey)
 }
 */
 
+
+
+
+
+
+// #HLP_BEGIN
+
+static s3eThreadLock* g_ThreadQueueLock;
+static s3eThread* g_ListenThread = NULL;
+static CCArray *mSpriteProcessArray = NULL;
+
+class SpriteProcess : public CCObject {
+public:
+    CCSprite *mSprite;
+    CCString *mPath;
+    unsigned char *mImageData;
+    unsigned long mImageLen;
+    
+    SpriteProcess();
+    ~SpriteProcess();
+};
+
+SpriteProcess::SpriteProcess()
+: mImageData(NULL)
+, mSprite(NULL)
+, mPath(NULL)
+{
+    
+}
+
+SpriteProcess::~SpriteProcess() {
+    if(mSprite)
+        mSprite->release();
+    if(mPath)
+        mPath->release();
+    if(mImageData)
+        delete mImageData;
+}
+
+
+
+class CCImageWithPath : public CCImage {
+public:
+    CCString *mPath;
+    CCImageWithPath();
+    ~CCImageWithPath();
+};
+
+CCImageWithPath::CCImageWithPath()
+: mPath(NULL) {
+}
+
+CCImageWithPath::~CCImageWithPath() {
+    if(mPath)
+        mPath->release();
+}
+
+// #HLP_END
+
+
+
+
+
+
+
+
+
+
 CCSprite::CCSprite(void)
 : m_bShouldBeHidden(false),
 m_pobTexture(NULL)
@@ -307,9 +375,9 @@ m_pobTexture(NULL)
 , mDelegate(NULL)
 , mRequest(NULL)
 , mOriginalPosSet(false)
-, mWillSetImagePath(NULL)
 , mWillSetImage(NULL)
-, mImageData(NULL)
+, mCountShow(0)
+, mFilePath(NULL)
 // #HLP_END
 {
 }
@@ -319,12 +387,13 @@ CCSprite::~CCSprite(void)
     // #HLP_BEGIN
     if(mRequest)
         mRequest->stop();
-    if(mWillSetImagePath)
-        mWillSetImagePath->release();
 
     if(mWillSetImage)
         delete mWillSetImage;
 
+    if(mFilePath)
+        mFilePath->release();
+    
     // #HLP_END
     
     CC_SAFE_RELEASE(m_pobTexture);
@@ -337,6 +406,11 @@ CCSprite::~CCSprite(void)
 // #HLP_BEGIN
 
 void CCSprite::setTextureAndSize(CCTexture2D *texture){
+    if(mCountShow <= 0)
+        setVisible(true);
+    else
+        return;
+    
     bool isNew = texture != getTexture();
     
     CCSize size = getContentSize();
@@ -345,8 +419,7 @@ void CCSprite::setTextureAndSize(CCTexture2D *texture){
     // if broken image
     if(texture->getContentSize().width == 0)
         return;
-
-    setVisible(true);
+    
 
     initWithTexture(texture); // content size may change here
     setContentSize(size); // restore content size
@@ -471,74 +544,94 @@ void CCSprite::clearOldImageCache(int oldTimeMs){
 
 
 
+
+
+
 void CCSprite::setImageFromImage() {
-    if(mWillSetImage && mWillSetImagePath) {
+    if(mWillSetImage && mWillSetImage->mPath && mCountShow <= 0) {
+        
+        if(mFilePath && strcmp(mFilePath->getCString(), mWillSetImage->mPath->getCString()) )
+            return;
+        
         CCTextureCache *cache = CCTextureCache::sharedTextureCache();
-        CCTexture2D* texture = cache->addUIImage(mWillSetImage, mWillSetImagePath->getCString());
+        CCTexture2D* texture = cache->addUIImage((CCImage*)mWillSetImage, mWillSetImage->mPath->getCString());
         if(texture){
             setTextureAndSize(texture);
             if(mDelegate)
                 mDelegate->didSpriteReceiveFile(this);
         }else{
             // broken texture so delete it
-            s3eFileDelete(mWillSetImagePath->getCString());
+            s3eFileDelete(mWillSetImage->mPath->getCString());
             if(mDelegate)
                 mDelegate->didSpriteReceiveError(this);
         }
         delete mWillSetImage;
         mWillSetImage = NULL;
-        mWillSetImagePath->release();
-        mWillSetImagePath = NULL;
     }
 }
 
 
-static s3eThreadLock* g_ThreadQueueLock;
-static s3eThread* g_ListenThread = NULL;
-static CCArray *mSpriteArray = NULL;
 
 void* SpriteListenThread(void* arg)
 {
     while (!s3eDeviceCheckQuitRequest()) {
         s3eDeviceYield(100);
         
-        if(mSpriteArray->count() > 0){
-            CCSprite *sprite = (CCSprite*)mSpriteArray->objectAtIndex(0);
+        if(mSpriteProcessArray->count() > 0){
+            SpriteProcess *sp = (SpriteProcess*)mSpriteProcessArray->objectAtIndex(0);
             
-            CCImage* img = new CCImage;
-            img->initWithImageData(sprite->mImageData, sprite->mImageLen);
-            if(sprite->mWillSetImage)
-                delete sprite->mWillSetImage;
-            sprite->mWillSetImage = img;
+            CCImageWithPath* img = new CCImageWithPath;
+            img->mPath = sp->mPath;
+            img->mPath->retain();
+            img->initWithImageData(sp->mImageData, sp->mImageLen);
+            if(sp->mSprite->mWillSetImage)
+                delete sp->mSprite->mWillSetImage;
+            sp->mSprite->mWillSetImage = img;
             
-            delete sprite->mImageData;
-            sprite->mImageData = NULL;
-            
-            mSpriteArray->removeObjectAtIndex(0);
-            //mSpriteArray->removeObject(sprite, false);
+            sp->mSprite->mCountShow--;
+            mSpriteProcessArray->removeObjectAtIndex(0);
         }
     }
     
     return NULL;
 }
 
+
+
+void CCSprite::createNewSpriteProcess(CCString *path) {
+    SpriteProcess *sp = new SpriteProcess;
+    sp->autorelease();
+    
+    sp->mSprite = this;
+    sp->mSprite->retain();
+    sp->mPath = path;
+    sp->mPath->retain();
+    sp->mImageData = CCFileUtils::sharedFileUtils()->getFileData(path->getCString(), "rb", &sp->mImageLen);
+
+    if(sp->mImageData){
+        sp->mSprite->setVisible(false);
+        sp->mSprite->mCountShow++;
+        mSpriteProcessArray->addObject(sp);
+    }
+}
+
+
+
 #define THREAD_IMAGE
 
 void CCSprite::setUrl(const char *url) {
-    
 #ifdef THREAD_IMAGE
     if(!g_ListenThread){
-        mSpriteArray = CCArray::create();
-        mSpriteArray->retain(); // never release
+        mSpriteProcessArray = CCArray::create();
+        mSpriteProcessArray->retain(); // never release
         g_ThreadQueueLock = s3eThreadLockCreate();
         g_ListenThread = s3eThreadCreate(SpriteListenThread, NULL, NULL);
     }
 
-    unscheduleAllSelectors();
+    unschedule(schedule_selector(CCSprite::setImageFromImage));
     schedule(schedule_selector(CCSprite::setImageFromImage));
 #endif
 
-    
     setVisible(false);
     
     if(!mOriginalPosSet){
@@ -558,13 +651,20 @@ void CCSprite::setUrl(const char *url) {
     
 #ifdef THREAD_IMAGE
     const char *filePath = getFilePathFromURL(url);
+    if(mFilePath)
+        mFilePath->release();
+    mFilePath = CCString::create(filePath);
+    mFilePath->retain();
     CCTexture2D* texture = cache->textureForKey(filePath);
 #else
     CCTexture2D* texture = cache->textureForKey(url);
 #endif
     
     if(texture){
+        int tmp = mCountShow;
+        mCountShow = 0;
         setTextureAndSize(texture);
+        mCountShow = tmp;
         if(mDelegate)
             mDelegate->didSpriteReceiveFile(this);
         return;
@@ -572,20 +672,14 @@ void CCSprite::setUrl(const char *url) {
     
 #ifdef THREAD_IMAGE
     // Find in disk
+    // still crash in device dont know why
     if(s3eFileCheckExists(filePath)){
-        // not work in marmalade yet
-        //cache->addImageAsync(filePath, this, callfuncO_selector(CCSprite::didReceiveImage));
-        //return;
+        if(mWillSetImage)
+            delete mWillSetImage;
+        mWillSetImage = NULL;
 
-        if(mWillSetImagePath)
-            mWillSetImagePath->release();
-        mWillSetImagePath = CCString::create(filePath);
-        mWillSetImagePath->retain();
-        
-        if(mImageData)
-            delete mImageData;
-        mImageData = CCFileUtils::sharedFileUtils()->getFileData(mWillSetImagePath->getCString(), "rb", &mImageLen);
-        mSpriteArray->addObject(this);
+        //scheduleOnce(schedule_selector(CCSprite::createNewSpriteProcess), 0.0f);
+        createNewSpriteProcess(CCString::create(filePath));
         return;
     }
 #endif
@@ -629,15 +723,28 @@ void CCSprite::didReceiveFile(HttpRequest* r, char *data, uint32 len) {
 
 void CCSprite::didReceiveSaveFile(HttpRequest* r) {
     if(r == mRequest){
-        if(mWillSetImagePath)
-            mWillSetImagePath->release();
-        mWillSetImagePath = CCString::create(r->mSaveFile->getCString());
-        mWillSetImagePath->retain();
+        if(!s3eFileCheckExists(r->mSaveFile->getCString())){
+            mRequest = NULL;
+            return;
+        }
+          
+        if(mWillSetImage)
+            delete mWillSetImage;
+        mWillSetImage = NULL;
 
-        if(mImageData)
-            delete mImageData;
-        mImageData = CCFileUtils::sharedFileUtils()->getFileData(mWillSetImagePath->getCString(), "rb", &mImageLen);
-        mSpriteArray->addObject(this);
+        SpriteProcess *sp = new SpriteProcess;
+        sp->autorelease();
+        
+        sp->mSprite = this;
+        sp->mSprite->retain();
+        sp->mPath = CCString::create(r->mSaveFile->getCString());
+        sp->mPath->retain();
+        sp->mImageData = CCFileUtils::sharedFileUtils()->getFileData(sp->mPath->getCString(), "rb", &sp->mImageLen);
+
+        sp->mSprite->setVisible(false);
+        sp->mSprite->mCountShow++;
+        mSpriteProcessArray->addObject(sp);
+        
         mRequest = NULL;
         
     }
