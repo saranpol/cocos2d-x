@@ -162,8 +162,6 @@ bool CCSprite::initWithTexture(CCTexture2D *pTexture, const CCRect& rect, bool r
     if (CCNodeRGBA::init())
     {
         m_pobBatchNode = NULL;
-        // shader program
-        setShaderProgram(CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTextureColor));
         
         m_bRecursiveDirty = false;
         setDirty(false);
@@ -309,7 +307,9 @@ m_pobTexture(NULL)
 , mDelegate(NULL)
 , mRequest(NULL)
 , mOriginalPosSet(false)
-//,mWillSetImagePath(NULL)
+, mWillSetImagePath(NULL)
+, mWillSetImage(NULL)
+, mImageData(NULL)
 // #HLP_END
 {
 }
@@ -319,8 +319,12 @@ CCSprite::~CCSprite(void)
     // #HLP_BEGIN
     if(mRequest)
         mRequest->stop();
-//    if(mWillSetImagePath)
-//        mWillSetImagePath->release();
+    if(mWillSetImagePath)
+        mWillSetImagePath->release();
+
+    if(mWillSetImage)
+        delete mWillSetImage;
+
     // #HLP_END
     
     CC_SAFE_RELEASE(m_pobTexture);
@@ -465,31 +469,73 @@ void CCSprite::clearOldImageCache(int oldTimeMs){
     s3eFileListClose(phList);
 }
 
-void CCSprite::didReceiveImage(CCObject *tex) {
-    CCTexture2D *texture = (CCTexture2D*)tex;
-    if(texture)
-        setTextureAndSize(texture);
 
-    if(mDelegate)
-        mDelegate->didSpriteReceiveFile(this);
-}
 
-void CCSprite::setImageFromCache() {
-    if(!mWillSetImagePath)
-        return;
-    CCTextureCache *cache = CCTextureCache::sharedTextureCache();
-    CCTexture2D* texture = cache->addImage(mWillSetImagePath->getCString());
-    if(texture){
-        setTextureAndSize(texture);
-        return;
+void CCSprite::setImageFromImage() {
+    if(mWillSetImage && mWillSetImagePath) {
+        CCTextureCache *cache = CCTextureCache::sharedTextureCache();
+        CCTexture2D* texture = cache->addUIImage(mWillSetImage, mWillSetImagePath->getCString());
+        if(texture){
+            setTextureAndSize(texture);
+            if(mDelegate)
+                mDelegate->didSpriteReceiveFile(this);
+        }else{
+            // broken texture so delete it
+            s3eFileDelete(mWillSetImagePath->getCString());
+            if(mDelegate)
+                mDelegate->didSpriteReceiveError(this);
+        }
+        delete mWillSetImage;
+        mWillSetImage = NULL;
+        mWillSetImagePath->release();
+        mWillSetImagePath = NULL;
     }
-    // broken texture so delete it
-    s3eFileDelete(mWillSetImagePath->getCString());
-    mWillSetImagePath->release();
-    mWillSetImagePath = NULL;
 }
+
+
+static s3eThreadLock* g_ThreadQueueLock;
+static s3eThread* g_ListenThread = NULL;
+static CCArray *mSpriteArray = NULL;
+
+void* SpriteListenThread(void* arg)
+{
+    while (!s3eDeviceCheckQuitRequest()) {
+        s3eDeviceYield(100);
+        
+        if(mSpriteArray->count() > 0){
+            CCSprite *sprite = (CCSprite*)mSpriteArray->objectAtIndex(0);
+            sprite->unscheduleAllSelectors();
+            
+            CCImage* img = new CCImage;
+//            img->initWithImageFile(sprite->mWillSetImagePath->getCString(), CCImage::kFmtUnKnown);
+            img->initWithImageData(sprite->mImageData, sprite->mImageLen);
+            if(sprite->mWillSetImage)
+                delete sprite->mWillSetImage;
+            sprite->mWillSetImage = img;
+            
+            delete sprite->mImageData;
+            sprite->mImageData = NULL;
+            
+            sprite->scheduleOnce(schedule_selector(CCSprite::setImageFromImage), 0.0f);
+            
+            mSpriteArray->removeObjectAtIndex(0);
+        }
+    }
+    
+    return NULL;
+}
+
 
 void CCSprite::setUrl(const char *url) {
+    
+    if(!g_ListenThread){
+        g_ThreadQueueLock = s3eThreadLockCreate();
+        g_ListenThread = s3eThreadCreate(SpriteListenThread, NULL, NULL);
+        mSpriteArray = CCArray::create();
+        mSpriteArray->retain(); // never release
+    }
+    
+    
     setVisible(false);
     
     if(!mOriginalPosSet){
@@ -505,6 +551,7 @@ void CCSprite::setUrl(const char *url) {
     
     
     CCTextureCache *cache = CCTextureCache::sharedTextureCache();
+
 //    CCTexture2D* texture = cache->textureForKey(url);
     const char *filePath = getFilePathFromURL(url);
     CCTexture2D* texture = cache->textureForKey(filePath);
@@ -517,31 +564,26 @@ void CCSprite::setUrl(const char *url) {
     }
     
     // Find in disk
-    if(s3eFileCheckExists(filePath)){
-        // not work in marmalade yet
-        cache->addImageAsync(filePath, this, callfuncO_selector(CCSprite::didReceiveImage));
-        return;
-
-        if(mWillSetImagePath)
-            mWillSetImagePath->release();
-        mWillSetImagePath = CCString::create(filePath);
-        mWillSetImagePath->retain();
-        scheduleOnce(schedule_selector(CCSprite::setImageFromCache), 0.5);
-
-        CCTexture2D* texture = cache->addImage(filePath);
-        if(texture){
-            setTextureAndSize(texture);
-            return;
-        }
-        // broken texture so delete it
-        s3eFileDelete(filePath);
-    }
+//    if(s3eFileCheckExists(filePath)){
+//        // not work in marmalade yet
+//        //cache->addImageAsync(filePath, this, callfuncO_selector(CCSprite::didReceiveImage));
+//        //return;
+//
+//        if(mWillSetImagePath)
+//            mWillSetImagePath->release();
+//        mWillSetImagePath = CCString::create(filePath);
+//        mWillSetImagePath->retain();
+//        mSpriteArray->addObject(this);
+//        return;
+//    }
     
     mRequest = HttpRequest::create();
     mRequest->delegate = this;
+    
     mRequest->mSaveFile = new CCString(filePath);
     mRequest->mType = HTTP_REQUEST_SAVE_FILE;
 //    mRequest->mType = HTTP_REQUEST_FILE;
+    
     mRequest->callURL(url);
 }
 
@@ -565,12 +607,27 @@ void CCSprite::didReceiveFile(HttpRequest* r, char *data, uint32 len) {
     }
 }
 
+//void CCSprite::addSpriteToThread() {
+//    if(mImageData)
+//        delete mImageData;
+//    mImageData = CCFileUtils::sharedFileUtils()->getFileData(mWillSetImagePath->getCString(), "rb", &mImageLen);
+//    mSpriteArray->addObject(this);
+//}
+
 
 void CCSprite::didReceiveSaveFile(HttpRequest* r) {
     if(r == mRequest){
-        //setImagePath(r->mSaveFile->getCString());
-        CCTextureCache *cache = CCTextureCache::sharedTextureCache();
-        cache->addImageAsync(r->mSaveFile->getCString(), this, callfuncO_selector(CCSprite::didReceiveImage));
+        if(mWillSetImagePath)
+            mWillSetImagePath->release();
+        mWillSetImagePath = CCString::create(r->mSaveFile->getCString());
+        mWillSetImagePath->retain();
+
+//        unscheduleAllSelectors();
+//        scheduleOnce(schedule_selector(CCSprite::addSpriteToThread), 0.0f);
+        if(mImageData)
+            delete mImageData;
+        mImageData = CCFileUtils::sharedFileUtils()->getFileData(mWillSetImagePath->getCString(), "rb", &mImageLen);
+        mSpriteArray->addObject(this);
         mRequest = NULL;
         
     }
@@ -851,17 +908,13 @@ void CCSprite::draw(void)
     if (m_pobTexture != NULL)
     {
         ccGLBindTexture2D( m_pobTexture->getName() );
+        ccGLEnableVertexAttribs( kCCVertexAttribFlag_PosColorTex );
     }
     else
     {
         ccGLBindTexture2D(0);
+        ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position | kCCVertexAttribFlag_Color );
     }
-    
-    //
-    // Attributes
-    //
-
-    ccGLEnableVertexAttribs( kCCVertexAttribFlag_PosColorTex );
 
 #define kQuadSize sizeof(m_sQuad.bl)
 #ifdef EMSCRIPTEN
@@ -875,10 +928,13 @@ void CCSprite::draw(void)
     int diff = offsetof( ccV3F_C4B_T2F, vertices);
     glVertexAttribPointer(kCCVertexAttrib_Position, 3, GL_FLOAT, GL_FALSE, kQuadSize, (void*) (offset + diff));
 
-    // texCoods
-    diff = offsetof( ccV3F_C4B_T2F, texCoords);
-    glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, kQuadSize, (void*)(offset + diff));
-
+    if (m_pobTexture != NULL)
+    {
+        // texCoods
+        diff = offsetof( ccV3F_C4B_T2F, texCoords);
+        glVertexAttribPointer(kCCVertexAttrib_TexCoords, 2, GL_FLOAT, GL_FALSE, kQuadSize, (void*)(offset + diff));
+    }
+    
     // color
     diff = offsetof( ccV3F_C4B_T2F, colors);
     glVertexAttribPointer(kCCVertexAttrib_Color, 4, GL_UNSIGNED_BYTE, GL_TRUE, kQuadSize, (void*)(offset + diff));
@@ -1380,6 +1436,16 @@ void CCSprite::setTexture(CCTexture2D *texture)
     // accept texture==nil as argument
     CCAssert( !texture || dynamic_cast<CCTexture2D*>(texture), "setTexture expects a CCTexture2D. Invalid argument");
 
+    // shader program
+    if (texture)
+    {
+        setShaderProgram(CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionTextureColor));
+    }
+    else
+    {
+        setShaderProgram(CCShaderCache::sharedShaderCache()->programForKey(kCCShader_PositionColor));
+    }
+    
     if (!m_pobBatchNode && m_pobTexture != texture)
     {
         CC_SAFE_RETAIN(texture);

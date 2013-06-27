@@ -1114,10 +1114,7 @@ bool CCImage::initWithImageData(void * pData,
         }
         else if (kFmtRawData == eFmt)
         {
-            //bRet = _initWithRawData(pData, nDataLen, nWidth, nHeight, nBitsPerComponent);
-            // #HLP_BEGIN
             bRet = _initWithRawData(pData, nDataLen, nWidth, nHeight, nBitsPerComponent, false);
-            // #HLP_END
             break;
         }
         else
@@ -1623,10 +1620,7 @@ bool CCImage::_initWithTiffData(void* pData, int nDataLen)
     return bRet;
 }
 
-//bool CCImage::_initWithRawData(void * pData, int nDatalen, int nWidth, int nHeight, int nBitsPerComponent)
-// #HLP_BEGIN
-bool CCImage::_initWithRawData(void *pData, int nDatalen, int nWidth, int nHeight, int nBitsPerComponent, bool bPreMulti)
-// #HLP_END
+bool CCImage::_initWithRawData(void * pData, int nDatalen, int nWidth, int nHeight, int nBitsPerComponent, bool bPreMulti)
 {
     bool bRet = false;
     do 

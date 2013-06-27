@@ -103,6 +103,18 @@ CCLabelTTF* CCLabelTTF::create(const char *string, const char *fontName, float f
     return NULL;
 }
 
+CCLabelTTF * CCLabelTTF::createWithFontDefinition(const char *string, ccFontDefinition &textDefinition)
+{
+    CCLabelTTF *pRet = new CCLabelTTF();
+    if(pRet && pRet->initWithStringAndTextDefinition(string, textDefinition))
+    {
+        pRet->autorelease();
+        return pRet;
+    }
+    CC_SAFE_DELETE(pRet);
+    return NULL;
+}
+
 bool CCLabelTTF::init()
 {
     return this->initWithString("", "Helvetica", 12);
@@ -462,7 +474,7 @@ void CCLabelTTF::enableShadow(const CCSize &shadowOffset, float shadowOpacity, f
         }
     
     #else
-        CCAssert(false, "Currently only supported on iOS and Android!");
+        CCLOGERROR("Currently only supported on iOS and Android!");
     #endif
     
 }
@@ -481,7 +493,7 @@ void CCLabelTTF::disableShadow(bool updateTexture)
         }
     
     #else
-        CCAssert(false, "Currently only supported on iOS and Android!");
+        CCLOGERROR("Currently only supported on iOS and Android!");
     #endif
 }
 
@@ -515,7 +527,7 @@ void CCLabelTTF::enableStroke(const ccColor3B &strokeColor, float strokeSize, bo
         }
     
     #else
-        CCAssert(false, "Currently only supported on iOS and Android!");
+        CCLOGERROR("Currently only supported on iOS and Android!");
     #endif
     
 }
@@ -533,7 +545,7 @@ void CCLabelTTF::disableStroke(bool updateTexture)
         }
     
     #else
-        CCAssert(false, "Currently only supported on iOS and Android!");
+        CCLOGERROR("Currently only supported on iOS and Android!");
     #endif
     
 }
@@ -549,7 +561,7 @@ void CCLabelTTF::setFontFillColor(const ccColor3B &tintColor, bool updateTexture
                 this->updateTexture();
         }
     #else
-        CCAssert(false, "Currently only supported on iOS and Android!");
+        CCLOGERROR("Currently only supported on iOS and Android!");
     #endif
 }
 
