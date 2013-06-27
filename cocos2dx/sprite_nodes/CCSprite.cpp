@@ -504,10 +504,8 @@ void* SpriteListenThread(void* arg)
         
         if(mSpriteArray->count() > 0){
             CCSprite *sprite = (CCSprite*)mSpriteArray->objectAtIndex(0);
-            sprite->unscheduleAllSelectors();
             
             CCImage* img = new CCImage;
-//            img->initWithImageFile(sprite->mWillSetImagePath->getCString(), CCImage::kFmtUnKnown);
             img->initWithImageData(sprite->mImageData, sprite->mImageLen);
             if(sprite->mWillSetImage)
                 delete sprite->mWillSetImage;
@@ -516,25 +514,30 @@ void* SpriteListenThread(void* arg)
             delete sprite->mImageData;
             sprite->mImageData = NULL;
             
-            sprite->scheduleOnce(schedule_selector(CCSprite::setImageFromImage), 0.0f);
-            
             mSpriteArray->removeObjectAtIndex(0);
+            //mSpriteArray->removeObject(sprite, false);
         }
     }
     
     return NULL;
 }
 
+#define THREAD_IMAGE
 
 void CCSprite::setUrl(const char *url) {
     
+#ifdef THREAD_IMAGE
     if(!g_ListenThread){
-        g_ThreadQueueLock = s3eThreadLockCreate();
-        g_ListenThread = s3eThreadCreate(SpriteListenThread, NULL, NULL);
         mSpriteArray = CCArray::create();
         mSpriteArray->retain(); // never release
+        g_ThreadQueueLock = s3eThreadLockCreate();
+        g_ListenThread = s3eThreadCreate(SpriteListenThread, NULL, NULL);
     }
-    
+
+    unscheduleAllSelectors();
+    schedule(schedule_selector(CCSprite::setImageFromImage));
+#endif
+
     
     setVisible(false);
     
@@ -552,9 +555,13 @@ void CCSprite::setUrl(const char *url) {
     
     CCTextureCache *cache = CCTextureCache::sharedTextureCache();
 
-//    CCTexture2D* texture = cache->textureForKey(url);
+    
+#ifdef THREAD_IMAGE
     const char *filePath = getFilePathFromURL(url);
     CCTexture2D* texture = cache->textureForKey(filePath);
+#else
+    CCTexture2D* texture = cache->textureForKey(url);
+#endif
     
     if(texture){
         setTextureAndSize(texture);
@@ -563,26 +570,37 @@ void CCSprite::setUrl(const char *url) {
         return;
     }
     
+#ifdef THREAD_IMAGE
     // Find in disk
-//    if(s3eFileCheckExists(filePath)){
-//        // not work in marmalade yet
-//        //cache->addImageAsync(filePath, this, callfuncO_selector(CCSprite::didReceiveImage));
-//        //return;
-//
-//        if(mWillSetImagePath)
-//            mWillSetImagePath->release();
-//        mWillSetImagePath = CCString::create(filePath);
-//        mWillSetImagePath->retain();
-//        mSpriteArray->addObject(this);
-//        return;
-//    }
+    if(s3eFileCheckExists(filePath)){
+        // not work in marmalade yet
+        //cache->addImageAsync(filePath, this, callfuncO_selector(CCSprite::didReceiveImage));
+        //return;
+
+        if(mWillSetImagePath)
+            mWillSetImagePath->release();
+        mWillSetImagePath = CCString::create(filePath);
+        mWillSetImagePath->retain();
+        
+        if(mImageData)
+            delete mImageData;
+        mImageData = CCFileUtils::sharedFileUtils()->getFileData(mWillSetImagePath->getCString(), "rb", &mImageLen);
+        mSpriteArray->addObject(this);
+        return;
+    }
+#endif
+    
     
     mRequest = HttpRequest::create();
     mRequest->delegate = this;
     
+#ifdef THREAD_IMAGE
     mRequest->mSaveFile = new CCString(filePath);
     mRequest->mType = HTTP_REQUEST_SAVE_FILE;
-//    mRequest->mType = HTTP_REQUEST_FILE;
+#else
+    mRequest->mType = HTTP_REQUEST_FILE;
+#endif
+
     
     mRequest->callURL(url);
 }
@@ -607,12 +625,6 @@ void CCSprite::didReceiveFile(HttpRequest* r, char *data, uint32 len) {
     }
 }
 
-//void CCSprite::addSpriteToThread() {
-//    if(mImageData)
-//        delete mImageData;
-//    mImageData = CCFileUtils::sharedFileUtils()->getFileData(mWillSetImagePath->getCString(), "rb", &mImageLen);
-//    mSpriteArray->addObject(this);
-//}
 
 
 void CCSprite::didReceiveSaveFile(HttpRequest* r) {
@@ -622,8 +634,6 @@ void CCSprite::didReceiveSaveFile(HttpRequest* r) {
         mWillSetImagePath = CCString::create(r->mSaveFile->getCString());
         mWillSetImagePath->retain();
 
-//        unscheduleAllSelectors();
-//        scheduleOnce(schedule_selector(CCSprite::addSpriteToThread), 0.0f);
         if(mImageData)
             delete mImageData;
         mImageData = CCFileUtils::sharedFileUtils()->getFileData(mWillSetImagePath->getCString(), "rb", &mImageLen);
