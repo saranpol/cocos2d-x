@@ -378,6 +378,7 @@ m_pobTexture(NULL)
 , mWillSetImage(NULL)
 , mCountShow(0)
 , mFilePath(NULL)
+, mPlaceholderImage(NULL)
 // #HLP_END
 {
 }

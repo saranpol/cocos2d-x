@@ -516,6 +516,7 @@ public:
     // #HLP_BEGIN
     CCString *mFilePath;
     int mCountShow;
+    const char *mPlaceholderImage;
     // delegate
     CCSpriteDelegate *mDelegate;
     void setImagePath(const char *path);
