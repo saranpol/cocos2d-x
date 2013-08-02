@@ -68,6 +68,7 @@ CCTextFieldTTF::CCTextFieldTTF()
 , mIsPassword(false)
 , mLayerCursor(NULL)
 , mIsTextView(false)
+, mEnableEnter(false)
 // #HLP_END
 , m_bSecureTextEntry(false)
 {
@@ -365,7 +366,24 @@ bool CCTextFieldTTF::canDetachWithIME()
 // #HLP_BEGIN
 // From s3eIME
 void CCTextFieldTTF::updateText(const char * text){
-    setString(text);
+    //bool mEnableEnter = true; // xxx
+    
+    bool hasEnter = false;
+    
+    // check last key is enter ?
+//    CCString *xxx = CCString::createWithFormat("#####%s#####", text);
+//    s3eDebugErrorShow(S3E_MESSAGE_CONTINUE, xxx->getCString());
+    if(!strcmp(&text[strlen(text)-1], "\n"))
+        hasEnter = true;
+    
+    if(mEnableEnter && hasEnter){
+        if(m_pDelegate){
+            m_pDelegate->didEnterKey();
+            //s3eDebugErrorShow(S3E_MESSAGE_CONTINUE, "did enter");
+        }
+    }else{
+        setString(text);
+    }
 }
 // #HLP_END
 

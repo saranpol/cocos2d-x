@@ -96,6 +96,7 @@ public:
     
     // #HLP_BEGIN
     virtual void textChanged(CCTextFieldTTF * sender) {}
+    virtual void didEnterKey() {}
     // #HLP_END
 };
 
@@ -125,6 +126,8 @@ public:
     bool mIsTextView;
     /** for use Text Thai for Android*/
     CCLayerColor *mLayerCursor;
+    /** for Enable Enter Android*/
+    bool mEnableEnter;
 
     // Cursor
     float getCursorHeight();
