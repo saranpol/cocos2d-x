@@ -52,16 +52,55 @@ CCEGLView* CCEGLView::m_pInstance = 0;
 
 
 // #HLP_BEGIN
-#include "s3eIME.h"
-static char g_KeyboardBuffer[1024];
 
+static int _calcCharCount(const char * pszText, int &lastCharIndex)
+{
+    int n = 0;
+    char ch = 0;
+    int currentByte = 0;
+    while ((ch = *pszText))
+    {
+        CC_BREAK_IF(! ch);
+        
+        // last byte of char
+        if (0x80 != (0xC0 & ch))
+        {
+            ++n;
+            lastCharIndex = currentByte;
+        }
+        ++pszText;
+        currentByte++;
+    }    
+    return n;
+}
+
+#include "s3eIME.h"
+#define KEYBOARD_BUFFER_LENTH 1024
+static char g_KeyboardBuffer[KEYBOARD_BUFFER_LENTH];
+static char g_KeyboardBufferOld[KEYBOARD_BUFFER_LENTH];
 
 static int32 BufferChanged(void*, void*) {
     //const int pos = s3eIMEGetInt(S3E_IME_CURSOR_POS);
     const int len = s3eIMEGetInt(S3E_IME_BUFFER_LEN);
     //const int sel = s3eIMEGetInt(S3E_IME_SELECTION_END);
     s3eIMEGetBuffer(g_KeyboardBuffer, sizeof(g_KeyboardBuffer));
-    CCIMEDispatcher::sharedDispatcher()->dispatchUpdateText(g_KeyboardBuffer, len);
+    
+    int newLastCharIndex = 0;
+    int oldLastCharIndex = 0;
+    int newLen = _calcCharCount(g_KeyboardBuffer, newLastCharIndex);
+    int oldLen = _calcCharCount(g_KeyboardBufferOld, oldLastCharIndex);
+    
+    if(newLen < oldLen){
+        g_KeyboardBufferOld[oldLastCharIndex] = 0;
+        s3eIMESetBuffer(g_KeyboardBufferOld);
+    }else{
+        strncpy(g_KeyboardBufferOld, g_KeyboardBuffer, KEYBOARD_BUFFER_LENTH);
+    }
+    
+    
+//    CCIMEDispatcher::sharedDispatcher()->dispatchUpdateText(g_KeyboardBuffer, len);
+    CCIMEDispatcher::sharedDispatcher()->dispatchUpdateText(g_KeyboardBufferOld, len);
+    
     return 0;
 }
 
@@ -302,6 +341,7 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
             mIsKeyboardShow = true;
             s3eIMEEndSession();
             s3eIMEStartSession();
+            g_KeyboardBufferOld[0] = 0;
         } else {
             if (mIsKeyboardShow) {
                 mIsKeyboardShow = false;
