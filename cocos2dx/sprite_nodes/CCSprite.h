@@ -60,7 +60,7 @@ struct transformValues_;
 #define CCSpriteIndexNotInitialized 0xffffffff     /// CCSprite invalid index on the CCSpriteBatchNode
 
 // #HLP_BEGIN
-#define IMAGE_CACHE_DIRECTORY "ram://image_cache"
+#define IMAGE_CACHE_DIRECTORY "ram://image_caches"
 
 
 class CCSprite;
