@@ -372,7 +372,7 @@ void CCTextFieldTTF::updateText(const char * text){
     
     // check last key is enter ?
 //    CCString *xxx = CCString::createWithFormat("#####%s#####", text);
-//    s3eDebugErrorShow(S3E_MESSAGE_CONTINUE, xxx->getCString());
+    //s3eDebugErrorShow(S3E_MESSAGE_CONTINUE, text);
     if(!strcmp(&text[strlen(text)-1], "\n"))
         hasEnter = true;
     
@@ -382,7 +382,22 @@ void CCTextFieldTTF::updateText(const char * text){
             //s3eDebugErrorShow(S3E_MESSAGE_CONTINUE, "did enter");
         }
     }else{
+        
+
+        if (m_pDelegate && m_pDelegate->onTextFieldInsertText(this, text, strlen(text)))
+        {
+            // delegate doesn't want to insert text
+            return;
+        }
+        
         setString(text);
+  
+        
+        if (m_pDelegate && m_pDelegate->onTextFieldInsertText(this, "\n", 1))
+        {
+            return;
+        }
+        
     }
 }
 // #HLP_END
@@ -431,15 +446,18 @@ void CCTextFieldTTF::insertText(const char * text, int len)
     
     if (len > 0)
     {
-        if (m_pDelegate && m_pDelegate->onTextFieldInsertText(this, sInsert.c_str(), len))
-        {
-            // delegate doesn't want to insert text
-            return;
-        }
-
+        int old_m_nCharCount = m_nCharCount;
         m_nCharCount += _calcCharCount(sInsert.c_str());
         std::string sText(*m_pInputText);
         sText.append(sInsert);
+        
+        if (m_pDelegate && m_pDelegate->onTextFieldInsertText(this, sText.c_str(), len))
+        {
+            // delegate doesn't want to insert text
+            m_nCharCount = old_m_nCharCount;
+            return;
+        }
+
         setString(sText.c_str());
     }
 
