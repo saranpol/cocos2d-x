@@ -663,7 +663,23 @@ FT_UInt BitmapDC::thaiAdjust(FT_UInt current_index, FT_UInt prev_index, FT_UInt 
     FT_UInt thanthakhat_upperright, thanthakhat_upperleft, thanthakhat_lowleft, thanthakhat_lowright;
     FT_UInt popla, fofa, fofan, lochula;
     
-    if(!strcmp(fontName, "SukhumvitReg.ttf")) {
+    if(!strcmp(fontName, "can_Rukdeaw.ttf")) {
+        space = 3;
+        maihanakat_normal = 179; maihanakat_left = 122;
+        maitaikhu_normal = 201; maitaikhu_left = 124;
+        sarai_normal = 182; sarai_left = 99;
+        saraii_normal = 183; saraii_left = 100;
+        saraue_normal = 184; saraue_left = 101;
+        sarauee_normal = 185; sarauee_left = 102;
+        saraam = 181;
+        maiek_upperright = 202; maiek_upperleft = 125; maiek_lowleft = 104; maiek_lowright = 109;
+        maitho_upperright = 203; maitho_upperleft = 126; maitho_lowleft = 105; maitho_lowright = 110;
+        maitri_upperright = 204; maitri_upperleft = 127; maitri_lowleft = 106; maitri_lowright = 111;
+        maichattawa_upperright = 205; maichattawa_upperleft = 128; maichattawa_lowleft = 107; maichattawa_lowright = 112;
+        thanthakhat_upperright = 206; thanthakhat_upperleft = 129; thanthakhat_lowleft = 108; thanthakhat_lowright = 113;
+        popla = 157; fofa = 159; fofan = 161; lochula = 228;
+        
+    }else if(!strcmp(fontName, "SukhumvitReg.ttf")) {
         space = 3;
         maihanakat_normal = 201; maihanakat_left = 271;
         maitaikhu_normal = 219; maitaikhu_left = 272;
