@@ -220,6 +220,7 @@ public:
     void removeAllTouch();
 
     bool mPagingEnabled;
+    bool mCheckLockDirection;
 	float mScrollWidth;
     float mScrollHeight;
     float mForcePageWidth;

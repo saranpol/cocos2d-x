@@ -76,6 +76,7 @@ CCScrollView::CCScrollView()
 , m_bDisableHorizontal(false)
 , m_bDidVertical(false)
 , m_bDidHorizontal(false)
+, mCheckLockDirection(false)
 , mForcePageWidth(0)
 , mForcePageHeight(0)
 , mPageMarginX(0)
@@ -860,22 +861,26 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
             if (m_eDirection == kCCScrollViewDirectionVertical)
             {
                 // #HLP_BEGIN
-                if(!m_bDidVertical && (m_bDisableVertical || fabsf(moveDistance.x) > fabsf(moveDistance.y))){
-                    m_bDisableVertical = true;
-                    return;
+                if(mCheckLockDirection){
+                    if(!m_bDidVertical && (m_bDisableVertical || fabsf(moveDistance.x) > fabsf(moveDistance.y))){
+                        m_bDisableVertical = true;
+                        return;
+                    }
+                    m_bDidVertical = true;
                 }
-                m_bDidVertical = true;
                 // #HLP_END
                 dis = moveDistance.y;
             }
             else if (m_eDirection == kCCScrollViewDirectionHorizontal)
             {
                 // #HLP_BEGIN
-                if(!m_bDidHorizontal && (m_bDisableHorizontal || fabsf(moveDistance.y) > fabsf(moveDistance.x))){
-                    m_bDisableHorizontal = true;
-                    return;
+                if(mCheckLockDirection){
+                    if(!m_bDidHorizontal && (m_bDisableHorizontal || fabsf(moveDistance.y) > fabsf(moveDistance.x))){
+                        m_bDisableHorizontal = true;
+                        return;
+                    }
+                    m_bDidHorizontal = true;
                 }
-                m_bDidHorizontal = true;
                 // #HLP_END
                 dis = moveDistance.x;
             }
