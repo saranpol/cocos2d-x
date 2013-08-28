@@ -885,7 +885,7 @@ bool CCTableView::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
     
     // #HLP_BEGIN
     else {
-        removeAllTouch();
+        //removeAllTouch();
         
         if(m_pTouchedCell) {
             if(m_pTableViewDelegate != NULL) {

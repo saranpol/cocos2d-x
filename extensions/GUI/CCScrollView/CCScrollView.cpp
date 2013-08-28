@@ -797,8 +797,11 @@ bool CCScrollView::ccTouchBegan(CCTouch* touch, CCEvent* event)
     CCRect frame = getViewRect();
 
     //dispatcher does not know about clipping. reject touches outside visible bounds.
-    if (m_pTouches->count() > 2 ||
-        m_bTouchMoved          ||
+    //if (m_pTouches->count() > 2 ||
+    //    m_bTouchMoved          ||
+    // #HLP_BEGIN
+    if (
+    // #HLP_END
         !frame.containsPoint(m_pContainer->convertToWorldSpace(m_pContainer->convertTouchToNodeSpace(touch))))
     {
         return false;
@@ -808,8 +811,18 @@ bool CCScrollView::ccTouchBegan(CCTouch* touch, CCEvent* event)
     {
         m_pTouches->addObject(touch);
     }
+    // #HLP_BEGIN
+    else{
+        // bring it to last object
+        m_pTouches->removeObject(touch);
+        m_pTouches->addObject(touch);
+    }
+    // #HLP_END
 
-    if (m_pTouches->count() == 1)
+    //if (m_pTouches->count() == 1)
+    // #HLP_BEGIN
+    if(m_pTouches->count() >= 1)
+    // #HLP_END
     { // scrolling
         m_tTouchPoint     = this->convertTouchToNodeSpace(touch);
         m_bTouchMoved     = false;
@@ -817,13 +830,19 @@ bool CCScrollView::ccTouchBegan(CCTouch* touch, CCEvent* event)
         m_tScrollDistance = ccp(0.0f, 0.0f);
         m_fTouchLength    = 0.0f;
     }
-    else if (m_pTouches->count() == 2)
+    //else if (m_pTouches->count() == 2)
+    // #HLP_BEGIN
+    if(m_pTouches->count() >= 2)
+    // #HLP_END
     {
         m_tTouchPoint  = ccpMidpoint(this->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(0)),
                                    this->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(1)));
         m_fTouchLength = ccpDistance(m_pContainer->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(0)),
                                    m_pContainer->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(1)));
-        m_bDragging  = false;
+        //m_bDragging  = false;
+        // #HLP_BEGIN
+        
+        // #HLP_END
     } 
     return true;
 }
@@ -846,7 +865,10 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
     
     if (m_pTouches->containsObject(touch))
     {
-        if (m_pTouches->count() == 1 && m_bDragging)
+        //if (m_pTouches->count() == 1 && m_bDragging)
+        // #HLP_BEGIN
+        if (m_pTouches->count() >= 1 && m_bDragging)
+        // #HLP_END
         { // scrolling
             CCPoint moveDistance, newPoint, maxInset, minInset;
             CCRect  frame;
@@ -854,7 +876,10 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
             
             frame = getViewRect();
 
-            newPoint     = this->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(0));
+            //newPoint     = this->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(0));
+            // #HLP_BEGIN
+            newPoint     = this->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(m_pTouches->count()-1));
+            // #HLP_END
             moveDistance = ccpSub(newPoint, m_tTouchPoint);
             
             float dis = 0.0f;
@@ -936,7 +961,10 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
                 this->setContentOffset(ccp(newX, newY));
             }
         }
-        else if (m_pTouches->count() == 2 && !m_bDragging)
+        //else if (m_pTouches->count() == 2 && !m_bDragging)
+        // #HLP_BEGIN
+        if (m_pTouches->count() >= 2)
+        // #HLP_END
         {
             const float len = ccpDistance(m_pContainer->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(0)),
                                             m_pContainer->convertTouchToNodeSpace((CCTouch*)m_pTouches->objectAtIndex(1)));
@@ -1080,7 +1108,7 @@ void CCScrollView::updateRefreshUI() {
         CCPoint offset;
         offset.y = MAX(minOffset.y, MIN(maxOffset.y, y));
         float diff = offset.y - y;
-        //CCLog("diff %f", diff);
+        // ("diff %f", diff);
         
         if(diff > REFRESH_START_Y){
             if(m_pDelegate && !mIsRefreshing && mIsDone){
