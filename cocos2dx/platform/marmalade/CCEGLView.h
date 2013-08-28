@@ -105,7 +105,16 @@ private:
 		return 0;
 	}
 };
-	
+
+// #HLP_BEGIN
+void revertOldBuffer(const char *s);
+// #HLP_END
+
+
 NS_CC_END
+
+
+
+
 
 #endif	// end of __CC_EGLVIEW_MARMALADE_H__

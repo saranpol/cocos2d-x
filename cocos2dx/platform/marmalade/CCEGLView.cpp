@@ -79,6 +79,14 @@ static int _calcCharCount(const char * pszText, int &lastCharIndex)
 static char g_KeyboardBuffer[KEYBOARD_BUFFER_LENTH];
 static char g_KeyboardBufferOld[KEYBOARD_BUFFER_LENTH];
 
+void revertOldBuffer(const char *s) {
+    if(s3eIMEAvailable() && s){
+        strncpy(g_KeyboardBufferOld, s, KEYBOARD_BUFFER_LENTH);
+        s3eIMESetBuffer(g_KeyboardBufferOld);
+    }
+}
+
+
 static int32 BufferChanged(void*, void*) {
     //const int pos = s3eIMEGetInt(S3E_IME_CURSOR_POS);
     const int len = s3eIMEGetInt(S3E_IME_BUFFER_LEN);

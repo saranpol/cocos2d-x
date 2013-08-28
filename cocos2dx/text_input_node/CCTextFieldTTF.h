@@ -214,6 +214,10 @@ private:
 // end of input group
 /// @}
 
+// #HLP_BEGIN
+bool isNumber(const char *s);
+// #HLP_END
+
 NS_CC_END
 
 #endif    // __CC_TEXT_FIELD_H__

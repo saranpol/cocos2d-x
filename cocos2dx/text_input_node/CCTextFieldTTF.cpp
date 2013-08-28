@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "CCActionInterval.h"
 #include "CCActionEase.h"
 #include "CCActionInstant.h"
+#include "CCEGLView.h"
 // #HLP_END
 
 NS_CC_BEGIN
@@ -387,6 +388,7 @@ void CCTextFieldTTF::updateText(const char * text){
         if (m_pDelegate && m_pDelegate->onTextFieldInsertText(this, text, strlen(text)))
         {
             // delegate doesn't want to insert text
+            revertOldBuffer(getString());
             return;
         }
         
@@ -669,5 +671,18 @@ bool CCTextFieldTTF::isSecureTextEntry()
 {
     return m_bSecureTextEntry;
 }
+
+
+// #HLP_BEGIN
+bool isNumber(const char *s){
+    for(unsigned int i=0; i<strlen(s); i++){
+        if(!atoi(&s[i]) && s[i]!='0')
+            return false;
+    }
+    return true;
+}
+// #HLP_END
+
+
 
 NS_CC_END
