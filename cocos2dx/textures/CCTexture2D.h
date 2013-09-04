@@ -146,6 +146,7 @@ public:
     // #HLP_BEGIN
     bool initWithString(const char *text,  const char *fontName, float fontSize, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment, int fixLineHeight = 0, unsigned int maxLine = 0);
     int mCursorX;
+    int mCursorXStart;
     int mCursorY;
     // #HLP_END
     /** Initializes a texture from a string with font name and font size */

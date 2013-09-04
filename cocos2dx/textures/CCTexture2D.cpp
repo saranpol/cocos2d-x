@@ -506,6 +506,7 @@ bool CCTexture2D::initWithString(const char *text, const char *fontName, float f
             // #HLP_BEGIN
             bRet = pImage->initWithString(text, (int)dimensions.width, (int)dimensions.height, eAlign, fontName, (int)fontSize, fixLineHeight, maxLine);
             mCursorX = pImage->mCursorX;
+            mCursorXStart = pImage->mCursorXStart;
             mCursorY = pImage->mCursorY;
             // #HLP_END
             CC_BREAK_IF(!bRet);

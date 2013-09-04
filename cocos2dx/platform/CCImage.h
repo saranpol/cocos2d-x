@@ -129,6 +129,7 @@ public:
                         );
     
     int mCursorX;
+    int mCursorXStart;
     int mCursorY;
 // #HLP_END
     

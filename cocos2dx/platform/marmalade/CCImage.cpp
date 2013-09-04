@@ -113,6 +113,7 @@ public:
     FT_UInt thaiAdjust(FT_UInt current_index, FT_UInt prev_index, FT_UInt next_index, const char *fontName);
     bool canBreakThai(const wchar_t* pText);
     int mCursorX;
+    int mCursorXStart;
     int mCursorY;
     unsigned int mMaxLine;
     // #HLP_END
@@ -833,6 +834,10 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 	//		}
 
 	int iCurXCursor, iCurYCursor;
+    // #HLP_BEGIN
+    int iCurXCursorStart;
+    // #HLP_END
+    
 	bool bRet = false;
 	if (m_libError) {
 		return false;
@@ -933,6 +938,8 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 			iCurXCursor = computeLineStart(m_face, eAlignMask, *pText, i);
 
             // #HLP_BEGIN
+            iCurXCursorStart = iCurXCursor;
+            
             // #hack for Thonburi.ttf only
             FT_UInt current_index;
             FT_UInt glyph_index;
@@ -1030,6 +1037,7 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
 
     // #HLP_BEGIN
     mCursorX = iCurXCursor;
+    mCursorXStart = iCurXCursorStart;
     mCursorY = iCurYCursor;
     // #HLP_END
     
@@ -1437,6 +1445,7 @@ bool CCImage::initWithString(
         dc.mMaxLine = maxLine;
         CC_BREAK_IF(! dc.getBitmap(pText, nWidth, nHeight, eAlignMask, fullFontName.c_str(), nSize, fixLineHeight));
         mCursorX = dc.mCursorX;
+        mCursorXStart = dc.mCursorXStart;
         mCursorY = dc.mCursorY;
         // #HLP_END
 
