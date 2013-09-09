@@ -396,11 +396,11 @@ void CCTextFieldTTF::updateText(const char * text){
         
         setString(text);
   
-        
-        if (m_pDelegate && m_pDelegate->onTextFieldInsertText(this, "\n", 1))
-        {
-            return;
-        }
+        // TODO ???????
+//        if (m_pDelegate && m_pDelegate->onTextFieldInsertText(this, "\n", 1))
+//        {
+//            return;
+//        }
         
     }
 }
