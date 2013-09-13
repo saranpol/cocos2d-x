@@ -617,6 +617,11 @@ void CCMenuItemSprite::selected()
 {
     CCMenuItem::selected();
 
+// #HLP_BEGIN
+    if(mControlVisible)
+        return;
+// #HLP_END
+    
     if (m_pNormalImage)
     {
         if (m_pDisabledImage)
@@ -639,6 +644,12 @@ void CCMenuItemSprite::selected()
 void CCMenuItemSprite::unselected()
 {
     CCMenuItem::unselected();
+
+// #HLP_BEGIN
+    if(mControlVisible)
+        return;
+// #HLP_END
+
     if (m_pNormalImage)
     {
         m_pNormalImage->setVisible(true);

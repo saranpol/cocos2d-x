@@ -259,8 +259,15 @@ public:
     :m_pNormalImage(NULL)
     ,m_pSelectedImage(NULL)
     ,m_pDisabledImage(NULL)
+    // #HLP_BEGIN
+    ,mControlVisible(false)
+    // #HLP_END
     {}
 
+    // #HLP_BEGIN
+    bool mControlVisible;
+    // #HLP_END
+    
     /** creates a menu item with a normal, selected and disabled image*/
     static CCMenuItemSprite * create(CCNode* normalSprite, CCNode* selectedSprite, CCNode* disabledSprite = NULL);
     /** creates a menu item with a normal and selected image with target/selector */
