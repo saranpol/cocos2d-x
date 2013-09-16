@@ -1038,7 +1038,10 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
     // #HLP_BEGIN
     mCursorX = iCurXCursor;
     mCursorXStart = iCurXCursorStart;
-    mCursorY = iCurYCursor;
+    int adjustCursorY = 0;
+    if(!strcmp(m_fontName.c_str(), "Thonburi.ttf"))
+        adjustCursorY = 4.0;
+    mCursorY = iCurYCursor + adjustCursorY;
     // #HLP_END
     
 	return bRet;
