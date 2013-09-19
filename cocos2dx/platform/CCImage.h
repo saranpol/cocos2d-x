@@ -130,7 +130,7 @@ public:
     
     int mCursorX;
     int mCursorXStart;
-    int mCursorY;
+    float mCursorY;
 // #HLP_END
     
     #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID) || (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)

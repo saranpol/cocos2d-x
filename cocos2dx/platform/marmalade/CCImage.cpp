@@ -46,6 +46,7 @@
 
 // #HLP_BEGIN
 #include "ccMacros.h"
+#include "CCDirector.h"
 using namespace std;
 // #HLP_END
 
@@ -114,7 +115,7 @@ public:
     bool canBreakThai(const wchar_t* pText);
     int mCursorX;
     int mCursorXStart;
-    int mCursorY;
+    float mCursorY;
     unsigned int mMaxLine;
     // #HLP_END
 
@@ -1038,9 +1039,9 @@ bool BitmapDC::getBitmap( const char *text, int nWidth, int nHeight, CCImage::ET
     // #HLP_BEGIN
     mCursorX = iCurXCursor;
     mCursorXStart = iCurXCursorStart;
-    int adjustCursorY = 0;
+    float adjustCursorY = 0;
     if(!strcmp(m_fontName.c_str(), "Thonburi.ttf"))
-        adjustCursorY = 4.0;
+        adjustCursorY = 1.48*CC_CONTENT_SCALE_FACTOR()*CC_CONTENT_SCALE_FACTOR();
     mCursorY = iCurYCursor + adjustCursorY;
     // #HLP_END
     
