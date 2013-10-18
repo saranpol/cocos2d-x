@@ -75,15 +75,23 @@ static int _calcCharCount(const char * pszText, int &lastCharIndex)
 }
 
 #include "s3eIME.h"
-#define KEYBOARD_BUFFER_LENTH 1024
+#define KEYBOARD_BUFFER_LENTH 16384
 static char g_KeyboardBuffer[KEYBOARD_BUFFER_LENTH];
-static char g_KeyboardBufferOld[KEYBOARD_BUFFER_LENTH];
+//static char g_KeyboardBufferOld[KEYBOARD_BUFFER_LENTH];
 
 void revertOldBuffer(const char *s) {
+    /*
     if(s3eIMEAvailable() && s){
         strncpy(g_KeyboardBufferOld, s, KEYBOARD_BUFFER_LENTH);
         s3eIMESetBuffer(g_KeyboardBufferOld);
     }
+    */
+    if(s3eIMEAvailable() && s){
+        strncpy(g_KeyboardBuffer, s, KEYBOARD_BUFFER_LENTH);
+        s3eIMESetBuffer(g_KeyboardBuffer);
+    }
+    
+    
 }
 
 
@@ -93,21 +101,21 @@ static int32 BufferChanged(void*, void*) {
     //const int sel = s3eIMEGetInt(S3E_IME_SELECTION_END);
     s3eIMEGetBuffer(g_KeyboardBuffer, sizeof(g_KeyboardBuffer));
     
-    int newLastCharIndex = 0;
-    int oldLastCharIndex = 0;
-    int newLen = _calcCharCount(g_KeyboardBuffer, newLastCharIndex);
-    int oldLen = _calcCharCount(g_KeyboardBufferOld, oldLastCharIndex);
+//    int newLastCharIndex = 0;
+//    int oldLastCharIndex = 0;
+//    int newLen = _calcCharCount(g_KeyboardBuffer, newLastCharIndex);
+//    int oldLen = _calcCharCount(g_KeyboardBufferOld, oldLastCharIndex);
     
-    if(newLen < oldLen){
-        g_KeyboardBufferOld[oldLastCharIndex] = 0;
-        s3eIMESetBuffer(g_KeyboardBufferOld);
-    }else{
-        strncpy(g_KeyboardBufferOld, g_KeyboardBuffer, KEYBOARD_BUFFER_LENTH);
-    }
+//    if(newLen < oldLen){
+//        g_KeyboardBufferOld[oldLastCharIndex] = 0;
+//        s3eIMESetBuffer(g_KeyboardBufferOld);
+//    }else{
+//        strncpy(g_KeyboardBufferOld, g_KeyboardBuffer, KEYBOARD_BUFFER_LENTH);
+//    }
     
     
-//    CCIMEDispatcher::sharedDispatcher()->dispatchUpdateText(g_KeyboardBuffer, len);
-    CCIMEDispatcher::sharedDispatcher()->dispatchUpdateText(g_KeyboardBufferOld, len);
+    CCIMEDispatcher::sharedDispatcher()->dispatchUpdateText(g_KeyboardBuffer, len);
+//    CCIMEDispatcher::sharedDispatcher()->dispatchUpdateText(g_KeyboardBufferOld, len);
     
     return 0;
 }
@@ -347,11 +355,13 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
     if(s3eIMEAvailable()){
         if(bOpen) {
             mIsKeyboardShow = true;
-            s3eIMEEndSession();
+            s3eIMESetInt( S3E_IME_BYPASS, 0);
             s3eIMEStartSession();
-            g_KeyboardBufferOld[0] = 0;
+//            g_KeyboardBufferOld[0] = 0;
         } else {
             if (mIsKeyboardShow) {
+                s3eIMESetInt( S3E_IME_BYPASS, 1);
+                s3eIMEEndSession();
                 mIsKeyboardShow = false;
                 hideAndroidKeyboard();
             }
