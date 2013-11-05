@@ -148,6 +148,7 @@ CCEGLView::CCEGLView()
 , m_Key(s3eKeyFirst)
 // #HLP_BEGIN
 , mIsKeyboardShow(false)
+, mIsSearchKeyboard(false)
 // #HLP_END
 
 {
@@ -355,8 +356,11 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
     if(s3eIMEAvailable()){
         if(bOpen) {
             mIsKeyboardShow = true;
-            s3eIMESetInt( S3E_IME_BYPASS, 0);
-            s3eIMEStartSession();
+            s3eIMESetInt(S3E_IME_BYPASS, 0);
+            if (mIsSearchKeyboard)
+                s3eIMEStartSearchSession();
+            else
+                s3eIMEStartSession();
 //            g_KeyboardBufferOld[0] = 0;
         } else {
             if (mIsKeyboardShow) {

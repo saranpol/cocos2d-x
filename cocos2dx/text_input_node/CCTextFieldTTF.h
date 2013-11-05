@@ -128,6 +128,8 @@ public:
     CCLayerColor *mLayerCursor;
     /** for Enable Enter Android*/
     bool mEnableEnter;
+    /** for show search button **/
+    bool mIsSearchKeyboard;
 
     // Cursor
     float getCursorHeight();

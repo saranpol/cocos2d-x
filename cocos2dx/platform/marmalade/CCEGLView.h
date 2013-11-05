@@ -52,6 +52,7 @@ public:
 
     // #HLP_BEGIN
     bool mIsKeyboardShow;
+    bool mIsSearchKeyboard;
     // #HLP_END
     
 private:

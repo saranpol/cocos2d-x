@@ -70,6 +70,7 @@ CCTextFieldTTF::CCTextFieldTTF()
 , mLayerCursor(NULL)
 , mIsTextView(false)
 , mEnableEnter(false)
+, mIsSearchKeyboard(false)
 // #HLP_END
 , m_bSecureTextEntry(false)
 {
@@ -312,6 +313,7 @@ bool CCTextFieldTTF::attachWithIME()
                 //Initial Text
                 s3eIMESetBuffer(m_pInputText->c_str());
             }
+            pGlView->mIsSearchKeyboard = mIsSearchKeyboard;
             // #HLP_END
             pGlView->setIMEKeyboardState(true);
         }
