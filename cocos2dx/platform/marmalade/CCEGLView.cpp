@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <s3eOSReadString.h>
 // #HLP_BEGIN
+//#include "sStream"
 #include "AndroidKeyboard.h"
 // #HLP_END
 
@@ -114,23 +115,47 @@ static int32 BufferChanged(void*, void*) {
 //    }
     
     
+    
+    
+    
     CCIMEDispatcher::sharedDispatcher()->dispatchUpdateText(g_KeyboardBuffer, len);
 //    CCIMEDispatcher::sharedDispatcher()->dispatchUpdateText(g_KeyboardBufferOld, len);
     
     return 0;
 }
 
-//static int32 handler_s3eIME(void* sys, void*) {
-//    s3eKeyboardEvent* event = (s3eKeyboardEvent*)sys;
+static int32 handler_s3eIME(void* sys, void*) {
+    s3eKeyboardEvent* event = (s3eKeyboardEvent*)sys;
+
+    int key = event->m_Key;
+    int keyPress = event->m_Pressed;
+    CCIMEDispatcher::sharedDispatcher()->dispatchClickKeyboardButton(key, keyPress);
+    
+    /*
+    std::stringstream sstr;
+    sstr << event->m_Key;
+    std::string str1 = sstr.str();
+    s3eDebugErrorShow(S3E_MESSAGE_CONTINUE, str1.c_str());
+    */
+//    if (event->m_Key == 4) {
+//        //s3eDebugErrorShow(S3E_MESSAGE_CONTINUE, "Search !!!!!");
+//        CCIMEDispatcher::sharedDispatcher()->dispatchDeleteBackward();
+//    }
+    
+//    
 //    if (event->m_Pressed) { // Down
 //
 //    }else{ // Up
 //        if(event->m_Key == s3eKeyBackspace){
-//            CCIMEDispatcher::sharedDispatcher()->dispatchDeleteBackward();
+//
+//            //CCIMEDispatcher::sharedDispatcher()->dispatchDeleteBackward();
 //        }
+//        
+//        
+//        
 //    }
-//    return 0;
-//}
+    return 0;
+}
 // #HLP_END
 
 
@@ -180,7 +205,7 @@ CCEGLView::CCEGLView()
     // Register keyboard event handler
     if(s3eIMEAvailable()){ // Android s3eIME 
         s3eIMERegister(S3E_IME_BUFFER_CHANGED, BufferChanged, NULL);
-        //s3eIMERegister(S3E_IME_KEY_EVENT, handler_s3eIME, NULL);
+        s3eIMERegister(S3E_IME_KEY_EVENT, handler_s3eIME, NULL);
     }else{ // Normal and iOS
         s3eKeyboardRegister(S3E_KEYBOARD_KEY_EVENT, &KeyEventHandler, this);
         s3eKeyboardRegister(S3E_KEYBOARD_CHAR_EVENT, &CharEventHandler, this);
@@ -273,7 +298,6 @@ void CCEGLView::setKeyTouch(void* systemData)
  		else
  		{
 // 			CCKeypadDispatcher::sharedDispatcher()->dispatchKeypadMSG(kTypeBackClicked);
- 
  		}
  		m_Key =event->m_Key;
  	}
@@ -319,6 +343,7 @@ void CCEGLView::end()
     if(s3eIMEAvailable()){ // Android s3eIME
         if(s3eIMEAvailable())
             s3eIMEUnRegister(S3E_IME_BUFFER_CHANGED, BufferChanged);
+            s3eIMEUnRegister(S3E_IME_KEY_EVENT, handler_s3eIME);
     }else{ // Normal and iOS
         s3eKeyboardUnRegister(S3E_KEYBOARD_KEY_EVENT, &KeyEventHandler);
         s3eKeyboardUnRegister(S3E_KEYBOARD_KEY_EVENT, &CharEventHandler);

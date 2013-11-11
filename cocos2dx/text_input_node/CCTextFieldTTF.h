@@ -97,6 +97,7 @@ public:
     // #HLP_BEGIN
     virtual void textChanged(CCTextFieldTTF * sender) {}
     virtual void didEnterKey() {}
+    virtual void didClickKeyboard(int key, int keyPress) {}
     // #HLP_END
 };
 
@@ -205,6 +206,7 @@ protected:
     virtual void insertText(const char * text, int len);
     // #HLP_BEGIN
     virtual void updateText(const char * text);
+    virtual void clickKeyboard(int pKey, int pKeyPress);
     // #HLP_END
     virtual void deleteBackward();
     virtual const char * getContentText();

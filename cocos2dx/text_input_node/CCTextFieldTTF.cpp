@@ -406,6 +406,12 @@ void CCTextFieldTTF::updateText(const char * text){
         
     }
 }
+
+void CCTextFieldTTF::clickKeyboard(int pKey, int pKeyPress) {
+    if (m_pDelegate)
+        m_pDelegate->didClickKeyboard(pKey, pKeyPress);
+}
+
 // #HLP_END
 
 

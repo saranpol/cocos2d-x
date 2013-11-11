@@ -236,6 +236,20 @@ void CCIMEDispatcher::dispatchUpdateText(const char * pText, int nLen) {
         m_pImpl->m_DelegateWithIme->updateText(pText);
     } while (0);
 }
+
+void CCIMEDispatcher::dispatchClickKeyboardButton(int pKey, int pkeyPress) {
+    do
+    {
+        CC_BREAK_IF(! m_pImpl);
+        
+        // there is no delegate attached to IME
+        CC_BREAK_IF(! m_pImpl->m_DelegateWithIme);
+        
+        m_pImpl->m_DelegateWithIme->clickKeyboard(pKey, pkeyPress);
+    } while (0);
+}
+
+
 // #HLP_END
 
 

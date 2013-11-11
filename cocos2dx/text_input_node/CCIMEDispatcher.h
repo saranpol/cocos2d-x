@@ -62,6 +62,7 @@ public:
     void dispatchInsertText(const char * pText, int nLen);
     // #HLP_BEGIN
     void dispatchUpdateText(const char * pText, int nLen);
+    void dispatchClickKeyboardButton(int pKey, int pkeyPress);
     // #HLP_END
     
     

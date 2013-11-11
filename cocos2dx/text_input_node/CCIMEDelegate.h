@@ -83,6 +83,7 @@ protected:
 
     // #HLP_BEGIN
     virtual void updateText(const char * text) {}
+    virtual void clickKeyboard(int pKey, int pKeyPress) {}
     // #HLP_END
     
     /**
